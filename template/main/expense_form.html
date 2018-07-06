@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+
+{% block title_block %}
+	<title>Add Expense</title>
+{% endblock %}
+
+
+{% block body_block %}
+	<div class="jumbotron">
+		<h3>Enter New Expense: </h3>
+		<form method = "POST">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<input class="btn btn-primary" type="submit" value="Submit">
+		</form>		
+	</div>
+{% endblock %}

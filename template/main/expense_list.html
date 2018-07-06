@@ -1,0 +1,34 @@
+{% extends 'main/base.html' %}
+
+{% block title_block %}
+	<title>Expense List</title>
+{% endblock %}
+
+
+{% block body_block %}
+	<div class="jumbotron">
+		<h3>List of all expenses:</h3>
+		<ol>
+		{% for e in expense_list %}
+				<li><h5><a href="{% url 'main:expense_detail' pk=e.pk %}">{{ e.title }}</a></h5></li>
+				<div style="border: solid black 2px; padding: 5px; border-radius: 5px">
+					<table>
+						<tr>
+							<td style="padding-right: 5px"><strong>Date:</strong></td>
+							<td style="padding-right: 5px"><span>{{ e.date }}</span></td>
+						</tr>
+						<tr>
+							<td style="padding-right: 5px"><strong>Title:</strong></td>
+							<td style="padding-right: 5px"><span>{{ e.title }}</span></td>
+						</tr>
+						<tr>
+							<td style="padding-right: 5px"><strong>Amount:</strong></td>
+							<td style="padding-right: 5px"><span>Rs {{ e.amount }}</span></td>
+						</tr>
+						</table>
+				</div>
+				<br>
+			{% endfor %}
+		</ol>
+	</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'main/base.html' %}
+
+{% block title_block %}
+	<title>Special</title>
+{% endblock %}
+
+
+{% block body_block %}
+	<div class="jumbotron">
+		<a class="btn btn-primary" href="{% url 'main:filter_by_date' %}">Filter Again</a>
+		<hr>
+		<h5>Expenses from</h5>
+		<h5>{{ start_date|date }} to {{ end_date|date }}</h5>
+		
+		{% if expenses %}
+			<ol>
+			{% for e in expenses %}
+				<li>
+					<a href="{% url 'main:expense_detail' pk=e.pk %}">{{ e }}</a>
+					<ul>
+						<li>Date: {{ e.date }}</li>
+						<li>Amount: Rs {{ e.amount }}</li>
+					</ul>
+				</li>
+			{% endfor %}
+			</ol>
+			<h4>Total: Rs {{ total }}</h4>
+		{% else %}
+		<center>
+			<h4 style="color: green">It's empty!</h4>
+		</center>
+		<p style="color: blue">No expenses for the selected period!!</p>
+		{% endif %}
+	</div>
+{% endblock %}
