@@ -8,8 +8,14 @@
 {% block body_block %}
 	<div class="jumbotron">
 		<h3>Welcome to the ExpensesManager</h3>
-		<p>Click <a href="{% url 'main:expense_list' %}">here</a> to see list of all expenses.</p>
-		<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
-		<p>Click <a href="{% url 'main:filter_by_date' %}">here</a> to see expenses between selected dates.</p>
+		{% if user.is_authenticated %}
+			<p>Click <a href="{% url 'main:expense_list' %}">here</a> to see list of all expenses.</p>
+			<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
+			<p>Click <a href="{% url 'main:filter_by_date' %}">here</a> to see expenses between selected dates.</p>
+		{% else %}
+			<p style="color: red;">Every page require user to be logged in.</p>
+			<p>Click <a href="{% url 'main:user_login' %}">here</a> to login.</p>
+			<p>Click <a href="{% url 'main:user_registration' %}">here</a> to Sign up.</p>
+		{% endif %}
 	</div>
 {% endblock %}

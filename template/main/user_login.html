@@ -1,0 +1,31 @@
+{% extends 'main/base.html' %}
+
+{% block title_block %}
+	<title>Login</title>
+{% endblock %}
+
+
+{% block body_block %}
+<div class="continer col-md-4 mx-auto" id="loginOrDisc" style="padding-top: 50px; max-width: 350px">
+
+	<h4 id="heading">Login</h4>
+
+	{% if errors %}
+		<p style="color: red">{{ errors }}</p>	
+	{% endif %}
+
+	<form id="login" action="{% url 'main:user_login' %}" method="POST">
+		{% csrf_token %}
+		<div class="form-group">
+				<input type="username" class="form-control" id="email" placeholder="Enter username" name="username" required autocomplete="off" style="border-bottom: none;">
+				<input type="password" class="form-control" id="password" placeholder="Enter password" name="password">
+		</div>
+		
+		<div class="form-group">
+			<button type="submit" class="btn btn-sm btn-block btn-success">Login</button>
+			<div class="btn btn-sm btn-info btn-block"><a style="color: white" href="{% url 'main:user_registration' %}">New User?</a></div>
+		</div>
+	</form>
+
+</div>
+{% endblock %}

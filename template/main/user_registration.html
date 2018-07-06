@@ -1,0 +1,34 @@
+{% extends "main/base.html" %}
+
+{% block title_block %}
+<title>Register</title>
+{% endblock %}
+
+
+{% block body_block %}
+
+{% if registered %}
+<h1>Thank you for registering!</h1>
+
+{% else %}
+
+<style type="text/css">
+	.helptext{
+	  display: none;
+	}
+</style>
+<div class="container">
+	<div>
+		<form enctype="multipart/form-data" method="POST">
+			{% csrf_token %}
+			<table>
+				{{ userBasicForm.as_table }}
+			</table>
+			<input class="btn btn-primary" type="submit" value="Register">
+		</form>
+	</div>
+
+</div>
+{% endif %}
+
+{% endblock %}

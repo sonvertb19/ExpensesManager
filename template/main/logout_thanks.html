@@ -1,0 +1,13 @@
+{% extends "main/base.html" %}
+
+{% block title_block %}
+<title>Logged Out</title>
+{% endblock %}
+
+
+{% block body_block %}
+<div class="container" style="padding-top: 20px">
+	<p>You have logged Out succesfully</p>
+	<p>Click <a href="{% url "main:user_login" %}">here</a> to login again.</p>
+</div>
+{% endblock %}

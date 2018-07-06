@@ -10,7 +10,9 @@
 		<h3>Enter New Expense: </h3>
 		<form method = "POST">
 			{% csrf_token %}
-			{{ form.as_p }}
+			<table>
+				{{ form.as_table }}
+			</table>
 			<input class="btn btn-primary" type="submit" value="Submit">
 		</form>		
 	</div>
