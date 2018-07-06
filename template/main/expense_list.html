@@ -6,67 +6,71 @@
 
 
 {% block body_block %}
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
-	<style type="text/css">
-		table, th, td{
-			border:solid black 1px;
-			padding-left: 5px;
-			padding-right: 5px;
-		}
-		td{
-			width: 100%
-		}
-		th{
-			width: 70%
-		}
-	</style>
-	<script type="text/javascript">
-		$(document).ready(function(){
+	{% if confirmed == False %}
+		<p style="color: red;">Your email is not confirmed.You can only add expenses but can not view them.</p>
+	{% else %}
+		<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+		<style type="text/css">
+			table, th, td{
+				border:solid black 1px;
+				padding-left: 5px;
+				padding-right: 5px;
+			}
+			td{
+				width: 100%
+			}
+			th{
+				width: 70%
+			}
+		</style>
+		<script type="text/javascript">
+			$(document).ready(function(){
 
-			{% regroup expense_list by date as regrouped_expense_list %}
+				{% regroup expense_list by date as regrouped_expense_list %}
 
-				{% for date, expense_data in regrouped_expense_list %}
-					
+					{% for date, expense_data in regrouped_expense_list %}
+						
 
-					$("#{{ date|date:"U" }}").click(function(){
+						$("#{{ date|date:"U" }}").click(function(){
+							$("#{{ date|date:"U" }}_div").slideToggle("slow")
+						});
+
+						var t = 0;
+							{% for e in expense_data %}
+								{% if forloop.counter0 == 0 %}
+								{% endif %}
+								t += {{ e.amount }};
+							{% endfor %}
+									a = "<tr><th style = 'text-align:right'>Total: </th><td><strong>Rs " + t + "</strong></td></tr>"
+									$("#{{ date|date:"U" }}_table").append(a)
+						{% if forloop.counter0 == 0 %}
 						$("#{{ date|date:"U" }}_div").slideToggle("slow")
-					});
+						{% endif %}
+						
+					{% endfor %}
 
-					var t = 0;
-						{% for e in expense_data %}
-							{% if forloop.counter0 == 0 %}
-							{% endif %}
-							t += {{ e.amount }};
-						{% endfor %}
-								a = "<tr><th style = 'text-align:right'>Total: </th><td><strong>Rs " + t + "</strong></td></tr>"
-								$("#{{ date|date:"U" }}_table").append(a)
-					{% if forloop.counter0 == 0 %}
-					$("#{{ date|date:"U" }}_div").slideToggle("slow")
-					{% endif %}
-					
+				})
+		</script>
+		<div class="jumbotron" >
+			<h3>List of all expenses:</h3>
+				{% for date, expense_data in regrouped_expense_list %}
+				<div class="dropdown">
+					<!-- <p> -->
+					<button id="{{ date|date:"U" }}" class="btn btn-block dropdown-toggle" style=" background-color: rgb(210, 210, 210);  color: black;">{{ date }}</button>
+						<div id="{{ date|date:"U" }}_div" style="display: none; width: 100%">
+							<table id="{{ date|date:"U" }}_table" style="width: 100%">
+							{% for e in expense_data %}
+								<tr>
+									<th >{{ e.title }}</th>
+									<td>Rs {{ e.amount }}</td>
+								</tr>
+							{% endfor %}
+							</table>
+						</div>
+					<!-- </p> -->
+				</div>
+				<br>
 				{% endfor %}
-
-			})
-	</script>
-	<div class="jumbotron" >
-		<h3>List of all expenses:</h3>
-			{% for date, expense_data in regrouped_expense_list %}
-			<div class="dropdown">
-				<!-- <p> -->
-				<button id="{{ date|date:"U" }}" class="btn btn-block dropdown-toggle" style=" background-color: rgb(210, 210, 210);  color: black;">{{ date }}</button>
-					<div id="{{ date|date:"U" }}_div" style="display: none; width: 100%">
-						<table id="{{ date|date:"U" }}_table" style="width: 100%">
-						{% for e in expense_data %}
-							<tr>
-								<th >{{ e.title }}</th>
-								<td>Rs {{ e.amount }}</td>
-							</tr>
-						{% endfor %}
-						</table>
-					</div>
-				<!-- </p> -->
-			</div>
-			<br>
-			{% endfor %}
-	</div>
+		</div>
+	{% endif %}
 {% endblock %}

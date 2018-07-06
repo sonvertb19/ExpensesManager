@@ -17,8 +17,30 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from main import forms
 
+from django.core.mail import send_mail
+
+import random
+
+from django.contrib.auth.models import User
+
+def make_dictionary(request):
+
+	dictionary = {}
+
+	if request.user.is_authenticated:
+	
+		user = request.user
+		x = models.UserEmailConfirmation.objects.get(user = user)
+
+		confirmed = x.confirmed
+		dictionary.update({'confirmed': confirmed})
+
+	return dictionary
+
 def Index(request):
-	return render(request, "main/index.html")
+	dictionary = make_dictionary(request)
+
+	return render(request, "main/index.html", context = dictionary)
 
 def user_login(request):
 
@@ -70,6 +92,14 @@ class ExpenseCreateView(LoginRequiredMixin, CreateView):
 		form.instance.user = self.request.user
 		return super().form_valid(form)
 
+	def get_context_data(self, **kwargs):
+		# Call the base implementation first to get a context
+		context = super().get_context_data(**kwargs)
+		# Add in a QuerySet of the UserProfileModel
+		dictionary = make_dictionary(self.request)
+		context.update(dictionary)
+		return context
+
 # class ExpenseDetailView(LoginRequiredMixin, DetailView):
 # 	model = models.Expense
 
@@ -79,6 +109,15 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 
 	def get_queryset(self):
 		return models.Expense.objects.filter(user = self.request.user).order_by('-date')
+
+
+	def get_context_data(self, **kwargs):
+		# Call the base implementation first to get a context
+		context = super().get_context_data(**kwargs)
+		# Add in a QuerySet of the UserProfileModel
+		dictionary = make_dictionary(self.request)
+		context.update(dictionary)
+		return context
 
 # class ExpenseDeleteView(LoginRequiredMixin, DeleteView):
 # 	model = models.Expense
@@ -94,19 +133,33 @@ def filter_by_date(request):
 			start_date = formData.cleaned_data['start_date']
 			end_date = formData.cleaned_data['end_date']
 
+			# If start_date is more than end_date
+			if end_date < start_date:
+				dictionaryForm = { 'start_date': datetime.now(), 'end_date': datetime.now() }
+				form = FilterForm(initial = dictionaryForm)
+
+				dictionary = make_dictionary(request)
+				dictionary.update({'form': form, 'error': "start_date can not be more than end_date"})
+				return render(request, 'main/filterForm.html', context=dictionary)
+
+
+
 
 		x = models.Expense.objects.filter(date__gte=start_date, date__lte=end_date, user = request.user).order_by('-date')
 
-		total = 0
-		for e in x:
-			total = total + e.amount
+		dictionary = make_dictionary(request)
+		dictionary.update({'expenses': x, 'start_date': start_date, 'end_date': end_date})
 
-		return render(request, "main/filter_by_date.html", context = {'expenses': x, 'start_date': start_date, 'end_date': end_date, 'total': total})
+		return render(request, "main/filter_by_date.html", context = dictionary)
 
 	else:
-		dictionary = { 'start_date': datetime.now(), 'end_date': datetime.now() }
-		form = FilterForm(initial = dictionary)
-		return render(request, 'main/filterForm.html', context={'form': form})
+		dictionaryForm = { 'start_date': datetime.now(), 'end_date': datetime.now() }
+		form = FilterForm(initial = dictionaryForm)
+
+		dictionary = make_dictionary(request)
+		dictionary.update({'form': form})
+
+		return render(request, 'main/filterForm.html', context=dictionary)
 
 def user_registration(request):
 
@@ -126,7 +179,6 @@ def user_registration(request):
 	elif request.method == 'POST':
 
 		userBasicForm = forms.userBasicForm(request.POST)
-		print(request.POST)
 
 		registered = False
 
@@ -136,9 +188,60 @@ def user_registration(request):
 			uBF.set_password(uBF.password)
 			uBF.save()
 
-			print(request.POST)
-			registered = True
-		else:
-			print(str(userBasicForm.errors) + "\n\n" +str(userProfileForm.errors))
+			username = userBasicForm.cleaned_data['username']
+			print(username)
 
-		return render(request, 'main/user_registration.html',{'registered': registered})
+			registered = True
+			error = False
+			user = User.objects.get(username = username)
+			create_code(user)
+		else:
+			error = str(userBasicForm.errors)
+
+		return render(request, 'main/user_registration.html',{'registered': registered, 'error': error})
+
+
+def create_code(user):
+	x = random.randint(100000, 999999)
+	
+	models.UserEmailConfirmation.objects.create(user = user, code = x)
+
+@login_required
+def send_email_confirmation(request):
+
+	if request.method == "GET":
+		x = models.UserEmailConfirmation.objects.get(user = request.user)
+
+		if(x.confirmed):
+			return HttpResponseRedirect(reverse("index"))
+
+		code = x.code
+
+		ret = send_mail(
+			'Confirmation Email for ExpensesManager',
+			'Your email confirmation code is: ' + str(code),
+			'phasorx19@gmail.com',
+			[
+				'sonvertb19@gmail.com',
+				request.user.email,
+			],
+			fail_silently = False,
+			)
+
+		# return HttpResponse(ret)
+		return render(request, "main/confirm_email_code.html")
+	elif request.method == "POST":
+
+		code_entered = request.POST.get('code_entered')
+
+		# Converting the recieved code into integer.
+		code_entered = int(code_entered)
+
+		x = models.UserEmailConfirmation.objects.get(user = request.user)
+
+		if x.code == code_entered:
+			x.confirmed = True
+			x.save()
+			return render(request, "main/confirm_email_code.html", context = {'confirmed': x.confirmed})
+		else:
+			return render(request, "main/confirm_email_code.html", context = {'incorrect_code': True})

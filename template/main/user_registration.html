@@ -9,6 +9,7 @@
 
 {% if registered %}
 <h1>Thank you for registering!</h1>
+<p>Click <a href="{% url 'main:user_login' %}">here</a> to login.</p>
 
 {% else %}
 
@@ -22,9 +23,16 @@
 		<form enctype="multipart/form-data" method="POST">
 			{% csrf_token %}
 			<table>
-				{{ userBasicForm.as_table }}
+				{% if error %}
+					{{ error }}
+					<p>Click <a href="{% url 'main:user_registration' %}">here</a> to register again</p>
+				{% endif %}
+					{{ userBasicForm.as_table }}
 			</table>
-			<input class="btn btn-primary" type="submit" value="Register">
+			{% if not error %}
+				<input class="btn btn-primary" type="submit" value="Register">
+			{% endif %}
+			
 		</form>
 	</div>
 

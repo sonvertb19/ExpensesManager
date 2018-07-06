@@ -18,3 +18,12 @@ class Expense(models.Model):
 
 	def get_absolute_url(self):
 		return reverse("main:expense_list")
+
+class UserEmailConfirmation(models.Model):
+	
+	user = models.ForeignKey(User, on_delete = models.CASCADE, null = True)
+	code = models.PositiveIntegerField()
+	confirmed = models.BooleanField(default = False)
+
+	def __str__(self):
+		return self.user.username
