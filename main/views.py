@@ -222,7 +222,7 @@ def send_email_confirmation(request):
 			'Your email confirmation code is: ' + str(code),
 			'phasorx19@gmail.com',
 			[
-				'sonvertb19@gmail.com',
+				# 'sonvertb19@gmail.com',
 				request.user.email,
 			],
 			fail_silently = False,

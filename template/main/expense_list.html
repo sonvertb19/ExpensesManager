@@ -70,6 +70,9 @@
 					<!-- </p> -->
 				</div>
 				<br>
+				{% empty %}
+					<p>No expenses yet!</p>
+					<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
 				{% endfor %}
 		</div>
 	{% endif %}
