@@ -13,5 +13,6 @@ urlpatterns = [
 	path('list/', views.ExpenseListView.as_view(), name = "expense_list"),
 	# path('delete/<int:pk>', views.ExpenseDeleteView.as_view(), name = "expense_delete"),
 	path('special/', views.filter_by_date, name= "filter_by_date"),
-	path('registration_success', views.registration_success, name = "registration_success")
+	path('registration_success', views.registration_success, name = "registration_success"),
+	path('search/', views.ExpensesSearchView.as_view(), name="search"),
 ]

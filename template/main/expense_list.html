@@ -30,11 +30,9 @@
 
 					{% for date, expense_data in regrouped_expense_list %}
 						
-
 						$("#{{ date|date:"U" }}").click(function(){
 							$("#{{ date|date:"U" }}_div").slideToggle("slow")
 						});
-
 						var t = 0;
 							{% for e in expense_data %}
 								{% if forloop.counter0 == 0 %}
@@ -43,21 +41,36 @@
 							{% endfor %}
 									a = "<tr><th style = 'text-align:right'>Total: </th><td><strong>Rs " + t + "</strong></td></tr>"
 									$("#{{ date|date:"U" }}_table").append(a)
-						{% if forloop.counter0 == 0 %}
-						$("#{{ date|date:"U" }}_div").slideToggle("slow")
+									
+						{% if not query %}
+							{% if forloop.counter0 == 0 %}
+							$("#{{ date|date:"U" }}_div").slideToggle("slow")
+							{% endif %}
 						{% endif %}
+									
 						
 					{% endfor %}
-
 				})
 		</script>
 		<div class="jumbotron" >
-			<h3>List of all expenses:</h3>
+			<form action="{% url 'main:expense_list' %}" method="GET">
+				<div class="input-group input-group-sm mb-3">
+					<input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query">
+					<!-- <div class="input-group-append"> -->
+						<input type = "submit" class=" btn input-group-text" style="background-color: rgba(21, 21, 21, 0.3)" id="inputGroup-sizing-sm" value = "Search">
+					<!-- </div> -->
+				</div>
+			</form>
 				{% for date, expense_data in regrouped_expense_list %}
 				<div class="dropdown">
 					<!-- <p> -->
 					<button id="{{ date|date:"U" }}" class="btn btn-block dropdown-toggle" style=" background-color: rgb(210, 210, 210);  color: black;">{{ date }}</button>
-						<div id="{{ date|date:"U" }}_div" style="display: none; width: 100%">
+						{% if not query %}
+							<div id="{{ date|date:"U" }}_div" style="display: none; width: 100%">
+						{% else %}
+							<div id="{{ date|date:"U" }}_div" style =" width: 100%">
+						{% endif %}
+					
 							<table id="{{ date|date:"U" }}_table" style="width: 100%">
 							{% for e in expense_data %}
 								<tr>
@@ -71,8 +84,17 @@
 				</div>
 				<br>
 				{% empty %}
-					<p>No expenses yet!</p>
-					<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
+					{% if not query %}
+						<!-- If no search is done -->
+						<center>
+							<p>No expenses yet!</p>
+							<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
+						</center>
+					{% else %}
+						<!-- If a search is done -->
+						<p style = "color: red">No matching results for your query: <strong>{{ query }}</strong></p>
+					{% endif %}
+
 				{% endfor %}
 		</div>
 	{% endif %}

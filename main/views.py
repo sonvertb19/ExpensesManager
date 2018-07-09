@@ -112,7 +112,38 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 	ordering = ['-date']
 
 	def get_queryset(self):
-		return models.Expense.objects.filter(user = self.request.user).order_by('-date')
+		query = self.request.GET.get('query')
+		if query:
+			return models.Expense.objects.filter(user = self.request.user, title__contains = query).order_by('-date')
+		else:
+			return models.Expense.objects.filter(user = self.request.user,).order_by('-date')
+
+
+	def get_context_data(self, **kwargs):
+		# Call the base implementation first to get a context
+		context = super().get_context_data(**kwargs)
+		# Add in a QuerySet of the UserProfileModel
+		dictionary = make_dictionary(self.request)
+		context.update(dictionary)
+
+		query = self.request.GET.get('query')
+
+		# If user searched comething
+		context.update({'query': query})
+
+		return context
+
+class ExpensesSearchView(LoginRequiredMixin, ListView):
+	# model = models.Expense
+	ordering = ['-date']
+	template_name = "main/expense_list.html"
+
+	def get_queryset(self):
+		query = self.request.GET.get('query')
+		print("Query: " + query)
+		print("Request: " + str(self.request))
+
+		return models.Expense.objects.filter(user = self.request.user, title__contains = query).order_by('-date')
 
 
 	def get_context_data(self, **kwargs):
