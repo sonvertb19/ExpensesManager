@@ -1,4 +1,4 @@
-{% extends 'main/base.html' %}
+						{% extends 'main/base.html' %}
 
 {% block title_block %}
 	<title>Expense List</title>
@@ -42,15 +42,13 @@
 								t += {{ e.amount }};
 							{% endfor %}
 									a = "<tr><th style = 'text-align:right'>Total: </th><td><strong>Rs " + t + "</strong></td></tr>"
-									$("#{{ date|date:"U" }}_table").append(a)
-						{% if forloop.counter0 == 0 %}
-						$("#{{ date|date:"U" }}_div").slideToggle("slow")
-						{% endif %}
-						
+									$("#{{ date|date:"U" }}_table").append(a)						
 					{% endfor %}
 				})
 		</script>
 		<div class="jumbotron" >
+			<a href="{% url 'main:expense_list' %}"><- Go To CompleteList</a>
+			<hr>
 			<form action="{% url 'main:search' %}" method="GET">
 				<div class="input-group input-group-sm mb-3">
 					<input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query">
@@ -59,12 +57,16 @@
 					<!-- </div> -->
 				</div>
 			</form>
-			<h3>List of all expenses:</h3>
 				{% for date, expense_data in regrouped_expense_list %}
+					{% if forloop.counter0 == 0 %}
+						<h5>Expenses containing the word <span style="color: green"><strong>'{{ query }}'</strong></span>:</h5>
+						<br>
+					{% endif %}
+
 				<div class="dropdown">
 					<!-- <p> -->
 					<button id="{{ date|date:"U" }}" class="btn btn-block dropdown-toggle" style=" background-color: rgb(210, 210, 210);  color: black;">{{ date }}</button>
-						<div id="{{ date|date:"U" }}_div" style="display: none; width: 100%">
+						<div id="{{ date|date:"U" }}_div" style="width: 100%">
 							<table id="{{ date|date:"U" }}_table" style="width: 100%">
 							{% for e in expense_data %}
 								<tr>
@@ -78,8 +80,7 @@
 				</div>
 				<br>
 				{% empty %}
-					<p>No expenses yet!</p>
-					<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
+					<p style = "color: red">No matching results for your query: <strong>{{ query }}</strong></p>
 				{% endfor %}
 		</div>
 	{% endif %}

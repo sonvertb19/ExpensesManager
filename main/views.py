@@ -112,11 +112,7 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 	ordering = ['-date']
 
 	def get_queryset(self):
-		query = self.request.GET.get('query')
-		if query:
-			return models.Expense.objects.filter(user = self.request.user, title__contains = query).order_by('-date')
-		else:
-			return models.Expense.objects.filter(user = self.request.user,).order_by('-date')
+		return models.Expense.objects.filter(user = self.request.user,).order_by('-date')
 
 
 	def get_context_data(self, **kwargs):
@@ -125,18 +121,12 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 		# Add in a QuerySet of the UserProfileModel
 		dictionary = make_dictionary(self.request)
 		context.update(dictionary)
-
-		query = self.request.GET.get('query')
-
-		# If user searched comething
-		context.update({'query': query})
-
 		return context
 
 class ExpensesSearchView(LoginRequiredMixin, ListView):
 	# model = models.Expense
 	ordering = ['-date']
-	template_name = "main/expense_list.html"
+	template_name = "main/search_result.html"
 
 	def get_queryset(self):
 		query = self.request.GET.get('query')
@@ -150,8 +140,12 @@ class ExpensesSearchView(LoginRequiredMixin, ListView):
 		# Call the base implementation first to get a context
 		context = super().get_context_data(**kwargs)
 		# Add in a QuerySet of the UserProfileModel
+
+		query = self.request.GET.get('query')
+
 		dictionary = make_dictionary(self.request)
 		context.update(dictionary)
+		context.update({'query': query})
 		return context
 
 # class ExpenseDeleteView(LoginRequiredMixin, DeleteView):
