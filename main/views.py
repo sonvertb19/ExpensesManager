@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic.edit import CreateView, DeleteView
 from django.views.generic import DetailView, ListView
 from . import models
+from django import forms as djangoForms
 from django.urls import reverse_lazy
 
 from main.forms import FilterForm, ExpenseCreateForm
@@ -44,29 +45,32 @@ def Index(request):
 
 def user_login(request):
 
-	if request.method == "GET":
-		return render(request, "main/user_login.html")
+	if request.user.is_authenticated:
+		return HttpResponseRedirect(reverse('index'))
+	else:
+		if request.method == "GET":
+			return render(request, "main/user_login.html")
 
-	elif request.method == "POST":
+		elif request.method == "POST":
 
-		username = request.POST.get('username')
-		password = request.POST.get('password')
+			username = request.POST.get('username')
+			password = request.POST.get('password')
 
-		user = authenticate(username = username, password = password)
+			user = authenticate(username = username, password = password)
 
-		user_info = {}
+			user_info = {}
 
-		if user:
-			if user.is_active:
-				login(request, user)
-				return HttpResponseRedirect(reverse('index'))
+			if user:
+				if user.is_active:
+					login(request, user)
+					return HttpResponseRedirect(reverse('index'))
+				else:
+					return HttpResponse("<h1>Account Not Active</h1>")
+			
 			else:
-				return HttpResponse("<h1>Account Not Active</h1>")
-		
-		else:
-			user_info.update({'errors': "Invalid Credentials"})
+				user_info.update({'errors': "Invalid Credentials"})
 
-			return render(request, "main/user_login.html", context = user_info)
+				return render(request, "main/user_login.html", context = user_info)
 
 
 @login_required
@@ -161,45 +165,23 @@ def filter_by_date(request):
 
 		return render(request, 'main/filterForm.html', context=dictionary)
 
-def user_registration(request):
+class UserRegistration(CreateView):
+	model = User
+	template_name = "main/user_registration.html"
+	form_class = forms.UserRegistrationForm
+	success_url = reverse_lazy('main:registration_success')
 
-	if request.method == "GET":
-		if request.user.is_authenticated:
-			return render(request, "main/logged_in_registration.html")
+	def form_valid(self, form):
+		super().form_valid(form)
+		username = form.cleaned_data.get('username')
+		print(username)
+		user = User.objects.get(username = username)
+		create_code(user)
 
-		registered = False
+		return HttpResponseRedirect(reverse('main:registration_success'))
 
-		userBasicForm = forms.userBasicForm()
-
-		return render(request, 'main/user_registration.html',
-					   {'userBasicForm': userBasicForm,
-					   	'registered': registered
-					   })
-
-	elif request.method == 'POST':
-
-		userBasicForm = forms.userBasicForm(request.POST)
-
-		registered = False
-
-		if userBasicForm.is_valid():
-			
-			uBF = userBasicForm.save(commit = False)
-			uBF.set_password(uBF.password)
-			uBF.save()
-
-			username = userBasicForm.cleaned_data['username']
-			print(username)
-
-			registered = True
-			error = False
-			user = User.objects.get(username = username)
-			create_code(user)
-		else:
-			error = str(userBasicForm.errors)
-
-		return render(request, 'main/user_registration.html',{'registered': registered, 'error': error})
-
+def registration_success(request):
+	return render(request, "main/registration_success.html",)
 
 def create_code(user):
 	x = random.randint(100000, 999999)

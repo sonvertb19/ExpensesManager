@@ -1,4 +1,5 @@
 {% extends "main/base.html" %}
+{% load bootstrap4 %}
 
 {% block title_block %}
 <title>Register</title>
@@ -6,37 +7,14 @@
 
 
 {% block body_block %}
-
-{% if registered %}
-<h1>Thank you for registering!</h1>
-<p>Click <a href="{% url 'main:user_login' %}">here</a> to login.</p>
-
-{% else %}
-
-<style type="text/css">
-	.helptext{
-	  display: none;
-	}
-</style>
 <div class="container">
 	<div>
-		<form enctype="multipart/form-data" method="POST">
+		<form method="POST">
 			{% csrf_token %}
-			<table>
-				{% if error %}
-					{{ error }}
-					<p>Click <a href="{% url 'main:user_registration' %}">here</a> to register again</p>
-				{% endif %}
-					{{ userBasicForm.as_table }}
-			</table>
-			{% if not error %}
-				<input class="btn btn-primary" type="submit" value="Register">
-			{% endif %}
-			
+			{% bootstrap_form form %}
+			<input class="btn btn-primary" type="submit" value="Register">			
 		</form>
 	</div>
-
 </div>
-{% endif %}
 
 {% endblock %}
