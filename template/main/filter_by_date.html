@@ -58,11 +58,27 @@
 		<div style="padding-top: 20px" class="jumbotron">
 			<a href="{% url 'main:filter_by_date' %}"><- Filter Again</a>
 			<hr>
-			<h6>Expenses 
-			{% if start_date == end_date %}
-				for <em style="color: green"><strong>{{ start_date|date }}</strong></em></h6>
-			{% else %}
-				from <em style="color: green"><strong>{{ start_date|date }}</strong></em> to <em style="color: green"><strong>{{ end_date|date }}</strong></em></h6>
+			{% if expenses %}			
+			<form action="{% url 'main:filter_by_date' %}" method="GET">
+				<div class="input-group input-group-sm mb-3">
+					<input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query">
+					<input type = "submit" class=" btn input-group-text" style="background-color: rgba(21, 21, 21, 0.3)" id="inputGroup-sizing-sm" value = "Search">
+					<input type="hidden" name="start_date" value="{{ start_date|date:"Y-m-d" }}">
+					<input type="hidden" name="end_date" value="{{ end_date|date:"Y-m-d" }}">
+
+				</div>
+			</form>
+			{% endif %}
+			<h6>
+				Expenses 
+				{% if start_date == end_date %}
+					for <em style="color: green"><strong>{{ start_date|date }}</strong></em>
+				{% if query %}containing <strong style="color: green">"{{ query }}"</strong>{% endif %}
+				</h6>
+				{% else %}
+					from <em style="color: green"><strong>{{ start_date }}</strong></em> to <em style="color: green"><strong>{{ end_date }}</strong></em>
+					{% if query %}containing <strong style="color: green">"{{ query }}"</strong>{% endif %}
+			</h6>
 			{% endif %}
 			<br>
 			{% if expenses %}
@@ -84,10 +100,14 @@
 						<br>
 				{% endfor %}
 			{% else %}
+			{%if not query %}
 			<center>
 				<h4 style="color: green">It's empty!</h4>
 				<p style="color: blue">No expenses for the selected period!!</p>
 			</center>
+			{% else %}
+			<p style = "color: red">No matching results for your query: <strong>{{ query }}</strong></p>
+			{% endif %}
 			{% endif %}
 		</div>
 	{% endif %}

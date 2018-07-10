@@ -172,8 +172,6 @@ def filter_by_date(request):
 				return render(request, 'main/filterForm.html', context=dictionary)
 
 
-
-
 		x = models.Expense.objects.filter(date__gte=start_date, date__lte=end_date, user = request.user).order_by('-date')
 
 		dictionary = make_dictionary(request)
@@ -182,13 +180,36 @@ def filter_by_date(request):
 		return render(request, "main/filter_by_date.html", context = dictionary)
 
 	else:
-		dictionaryForm = { 'start_date': datetime.now(), 'end_date': datetime.now() }
-		form = FilterForm(initial = dictionaryForm)
 
-		dictionary = make_dictionary(request)
-		dictionary.update({'form': form})
+		# Making view searchable,search form requests GET with 3 args.
+		if request.GET.get('start_date') and request.GET.get('end_date') and request.GET.get('query'):
+			start_date = request.GET.get('start_date')
+			end_date = request.GET.get('end_date')
+			query = request.GET.get('query')
 
-		return render(request, 'main/filterForm.html', context=dictionary)
+			x = models.Expense.objects.filter(date__gte=start_date, date__lte=end_date, title__icontains = query, user = request.user).order_by('-date')
+
+			dictionary = make_dictionary(request)
+
+			start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+			end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+			dictionary.update({'expenses': x, 'start_date': start_date, 'end_date': end_date})
+
+			if query:
+				dictionary.update({'query': query})
+
+			return render(request, "main/filter_by_date.html", context = dictionary)
+
+		# Else, noe search query, renser the simple form.
+		else:
+			dictionaryForm = { 'start_date': datetime.now(), 'end_date': datetime.now() }
+			print(dictionaryForm['start_date'])
+			form = FilterForm(initial = dictionaryForm)
+
+			dictionary = make_dictionary(request)
+			dictionary.update({'form': form})
+
+			return render(request, 'main/filterForm.html', context=dictionary)
 
 class UserRegistration(CreateView):
 	model = User
