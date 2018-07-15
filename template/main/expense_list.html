@@ -24,13 +24,9 @@
 			}
 			td{
 				width: 100%;
-				font-family: monospace;
-				font-size: 1.3em;
 			}
 			th{
 				width: 70%;
-				font-family: monospace;
-				font-size: 1.3em;
 			}
 		</style>
 		<script type="text/javascript">
@@ -61,51 +57,147 @@
 				})
 		</script>
 
+		<!-- PDF creation Script using jsPDF-autoTable-plugin -->
 	    <script type="text/javascript">
-			function generate(x) {
+			function generate() {
 
-			// console.log(x);
-			i = x.indexOf("+");
-			len = x.length;
-			// console.log(i + ", " + len);
+				var month_names = new Array("January", "February", "March", 
+				"April", "May", "June", "July", "August", "September", 
+				"October", "November", "December");
 
-			xI = x.slice(0, i)
-			s = x.slice(i+1, len)
+				tableObjects = document.getElementsByTagName('table');
 
-			console.log(xI);
-			console.log(s);
+				var tableIdArray = []
+				var previousY = 0
+				var doc = new jsPDF('p', 'pt');
 
-			id = xI + "_table"
-			
-			var doc = new jsPDF('p', 'pt');
-			var res = doc.autoTableHtmlToJson(document.getElementById(id));
-			// console.log(res);
-			
-			var header = function(data) {
-				doc.setFontSize(18);
+				//Creating array of table ID's.
+				for (var i = 0 ; i < tableObjects.length ; i++)
+				{
+					xx = i+1
+					indexOfUnderscore = tableObjects[i].id.indexOf("_");
+					tableIdArray[i] = tableObjects[i].id.toString().slice(0, indexOfUnderscore);
+
+					//Required in JavaScript
+					s = tableIdArray[i] + "000";
+					x = tableIdArray[i];
+
+					//Getting date from unixEpoh
+					date = new Date(parseInt(s))
+					s = date.getDate().toString() + "-" + month_names[date.getMonth()] + "-" + date.getFullYear()
+
+					if (i == 0)
+					{
+						endDate = s;
+					}
+
+					if(i == tableObjects.length - 1)
+					{
+						startDate = s;
+					}
+				}
+
+				doc.setFontSize(12);
 				doc.setTextColor(40);
-				doc.setFontStyle('normal');
-				doc.text("Expenses Report for " + s , data.settings.margin.left, 50);
-			};
 
-			var options = {
-				theme: 'grid', 
-				addPageContent: header,
-				// margin: { top: 80 },
-				startY: 70,
+				d = new Date()
+				userDetails = " Downloaded by {{ user.first_name }} {{ user.last_name }} on " + d.getDate().toString() + "-" + month_names[d.getMonth()] + "-" + d.getFullYear() + " at " + d.toLocaleTimeString()
 
-				//WRAP CELLS ACCORDING TO TEST LENGTH.
-				// styles: {overflow: 'hidden', columnWidth: 'wrap'},
-				// columnStyles: {text: {columnWidth: 'auto'}}
-			};
+				doc.text(userDetails , 40, 30);
 
-			doc.autoTable(res.columns, res.data, options);
 
-			doc.save("ExpensesList-" + s + ".pdf");
-		}
+				doc.setFontSize(17);
+				doc.setTextColor(40);
+				message = "Expenses Report from " + startDate + " to " + endDate
+				doc.text(message , 40, 55);
+
+
+				for (var i = 0 ; i < tableObjects.length ; i++)
+				{
+					doc.setFontSize(5);
+					//Required in JavaScript
+					s = tableIdArray[i] + "000";
+					x = tableIdArray[i];
+
+					//Getting date from unixEpoh
+					date = new Date(parseInt(s))
+					s = date.getDate().toString() + "-" + month_names[date.getMonth()] + "-" + date.getFullYear()
+
+					id = x + "_table"
+
+					pageNumberBeforeTablePrinting = doc.internal.getCurrentPageInfo().pageNumber
+
+
+					var header = function(data) {
+						doc.setFontSize(13);
+						doc.setTextColor(40);
+						doc.setFontStyle('normal');
+
+						if (i == 0){
+							doc.text(s , data.settings.margin.left, previousY + 80);
+						}
+
+						else{
+							if(doc.internal.getCurrentPageInfo().pageNumber != pageNumberBeforeTablePrinting)
+							{
+								previousY = 0
+								doc.text(s , data.settings.margin.left, previousY + 50);
+							}
+							else
+							{
+								doc.text(s , data.settings.margin.left, previousY + 50);
+							}
+						}
+					};
+
+
+
+					var options = {
+						theme: 'grid', 
+
+						//Auto paggination makes header text print twice on the same and the following page.
+						margin: { top: 60 },
+						
+						//startY overrides margin top, startY is used when auto paggination does not occur.
+						startY: previousY + 60,
+						pageBreak: "avoid",
+
+						addPageContent: header,
+						//WRAP CELLS ACCORDING TO TEST LENGTH.
+						// styles: {overflow: 'hidden', columnWidth: 'wrap'},
+						// columnStyles: {text: {columnWidth: 'auto'}}
+
+						drawCell: function(cell, data) {
+							var rows = data.table.rows;
+							if (data.row.index == rows.length - 1) {
+								doc.setTextColor("green");
+								doc.setFillColor(220, 220, 220);
+							}
+						}
+					};
+
+					if (i == 0)
+					{
+						options.startY = previousY + 90;
+					}
+					
+					var res = doc.autoTableHtmlToJson(document.getElementById(id));
+
+					doc.autoTable(res.columns, res.data, options);
+
+					previousY = doc.autoTable.previous.finalY;
+				}
+				doc.save("ExpensesList_" + startDate + "_to_" + endDate + ".pdf");
+			}
 	    </script>
 
-		<div class="jumbotron" >
+		<div class="jumbotron" style="padding-top: 30px">
+
+
+			<button class="container-fluid btn btn-primary" style="height: 30px; padding: 0" onClick ="generate()">Download list as PDF</button>
+
+			<hr>
+
 			<form action="{% url 'main:search' %}" method="GET">
 				<div class="input-group input-group-sm mb-3">
 					<input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query">
@@ -132,7 +224,6 @@
 								</tr>
 							{% endfor %}
 							</table>
-							<button id = "{{ date|date:"U" }}+{{ date|date:"d-F-Y" }}" class="btn btn-primary" onClick ="generate(this.id)">Download PDF</button>
 						</div>
 					<!-- </p> -->
 				</div>

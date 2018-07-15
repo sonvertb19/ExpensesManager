@@ -68,6 +68,10 @@
 					<button id="{{ date|date:"U" }}" class="btn btn-block dropdown-toggle" style=" background-color: rgb(210, 210, 210);  color: black;">{{ date }}</button>
 						<div id="{{ date|date:"U" }}_div" style="width: 100%">
 							<table id="{{ date|date:"U" }}_table" style="width: 100%">
+								<tr style="color: green;">
+									<th>Title</th>
+									<td>Amount</td>
+								</tr>
 							{% for e in expense_data %}
 								<tr>
 									<th >{{ e.title }}</th>
