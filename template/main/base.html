@@ -3,6 +3,9 @@
 <head>
 	{% block title_block %}
 	{% endblock %}
+
+	{% block extra_head_content %}
+	{% endblock %}
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -54,7 +57,7 @@
 	{% if confirmed == False %}
 		<div class="container-fluid btn btn-danger" style="border-radius: 0px"><a href="{% url 'send_email_confirmation' %}" style="color: white">Confirm Your Email!</a></div>
 	{% endif %}
-	<nav class="navbar nav-default navbar-expand-lg navbar-dark bg-dark fixed-top">
+	<nav class="navbar nav-default navbar-expand-lg navbar-dark bg-dark">
 		<div class="container">
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
 				<span class="navbar-toggler-icon"></span>
@@ -106,7 +109,7 @@
 	<canvas id="myCanvas" width="500" height="500" style="border:2px solid #000000; display: none;"></canvas>
 
 	<br>
-	<div class="container" style="padding-top: 40px">
+	<div class="container">
 
 		{% block body_block %}
 		{% endblock %}
