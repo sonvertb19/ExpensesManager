@@ -193,11 +193,11 @@
 
 		<div class="jumbotron" style="padding-top: 30px">
 
-
+			{% if expense_list %}
 			<button class="container-fluid btn btn-primary" style="height: 30px; padding: 0" onClick ="generate()">Download list as PDF</button>
 
 			<hr>
-
+			{% endif %}
 			<form action="{% url 'main:search' %}" method="GET">
 				<div class="input-group input-group-sm mb-3">
 					<input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query">
