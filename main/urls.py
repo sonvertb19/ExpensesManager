@@ -15,4 +15,5 @@ urlpatterns = [
 	path('special/', views.filter_by_date, name= "filter_by_date"),
 	path('registration_success', views.registration_success, name = "registration_success"),
 	path('search/', views.ExpensesSearchView.as_view(), name="search"),
+	path('bar/', views.bar_graph, name = "bar_graph"),
 ]

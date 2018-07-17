@@ -18,10 +18,13 @@ from django.urls import path, include
 from main import urls as mainURLS
 from main import views
 
+from django.conf.urls.static import static
+from django.conf import settings
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 	path('', views.Index, name = "index"),
     path('main/', include(mainURLS)),
     path('send_mail/', views.send_email_confirmation, name = "send_email_confirmation"),
     path('logout_thanks/', views.logout_thanks, name = 'logout_thanks'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

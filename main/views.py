@@ -24,6 +24,12 @@ import random
 
 from django.contrib.auth.models import User
 
+import matplotlib.pyplot as plt
+from django.conf import settings
+import os
+
+import json
+
 def make_dictionary(request):
 
 	dictionary = {}
@@ -106,6 +112,123 @@ class ExpenseCreateView(LoginRequiredMixin, CreateView):
 
 # class ExpenseDetailView(LoginRequiredMixin, DetailView):
 # 	model = models.Expense
+
+@login_required
+def bar_graph(request):
+
+
+	expenses = models.Expense.objects.filter(user = request.user,).order_by('-date')
+	# print(expenses)
+
+	prev_date = 0;
+
+	grouped_expenses = {}
+	list_of_dates = []
+
+	for e in expenses:
+		prev_date_str = str(prev_date)
+		current_date = e.date
+
+
+		if(str(current_date) in grouped_expenses):
+			# print(str(current_date) + " exists in grouped_expenses.")
+			pass
+		else:
+			# Updating dictionary with key as date_name and value as a dictionary an array with its key as expenses.
+			grouped_expenses.update(	
+										{
+											str(current_date): 
+												{ 
+													'expenses': [] 
+												}  
+										}
+									)
+
+		if(prev_date_str != str(current_date)):
+			# print(current_date)
+			prev_date = current_date
+			list_of_dates.append(str(current_date))
+
+		# Creating dictionary of current expense.
+		current_expense_dictionary = { 'title': e.title, 'amount': e.amount}
+
+		# print(current_expense_dictionary)
+
+		# Updating the date dictionary with current expense dictionary.
+		grouped_expenses[str(current_date)]['expenses'].append( current_expense_dictionary )
+		# print("\n" + str(current_date) + ": " + str(grouped_expenses[str(current_date)]))
+
+
+
+	# print("\n")
+	# print(grouped_expenses)
+
+	# for date in grouped_expenses:
+		# print("\n" + date + ": ")
+
+		# print("Total: " + str(len(grouped_expenses[date]['expenses'])))
+
+		# print("{")
+		# for x in range(1, len(grouped_expenses[date]['expenses']) ):
+		# 	print("\t" + str(grouped_expenses[date]['expenses'][x]['title']) + " - " + str(grouped_expenses[date]['expenses'][x]['amount']) )
+		# print("}")
+
+	grouped_expenses_json = json.dumps(grouped_expenses, sort_keys=True, indent=4)
+	# print(grouped_expenses_json)
+
+	for d in list_of_dates:
+		print(d)
+
+		e_list = grouped_expenses[d]['expenses']
+
+		# print(e_list)
+
+		amount = []
+		title = []
+
+		N = len(e_list)
+		for i in range(N):
+			amount.append(e_list[i]['amount'])
+			title.append(e_list[i]['title'])
+		ind = range(N)
+		width = 0.35       # the width of the bars: can also be len(x) sequence
+
+		p1 = plt.bar(ind, amount, width)
+
+		plt.ylabel('Amount (Rs)')
+		plt.title('Expenses Report for' + d)
+		plt.xticks(ind, title)
+		plt.yticks(range(0, 150, 10))
+
+		file_name = "bar" + d + ".png";
+
+		path = os.path.join(settings.MEDIA_ROOT, file_name)
+		# print(path)
+
+		# plt.show()
+		plt.savefig(path)
+		plt.close()
+
+	dictionary = make_dictionary(request)
+	dictionary.update({'view_as_json': str(request.build_absolute_uri()) + "?json=view" })
+	dictionary.update({'download_as_json': str(request.build_absolute_uri()) + "?json=download" })
+
+	if(request.GET.get('json') == 'view'):
+
+		response = HttpResponse(grouped_expenses_json, content_type = 'application/json')
+		response['Content-Disposition'] = 'inline; filename= "expense_list_json.json" '
+
+		return response
+
+	if(request.GET.get('json') == 'download'):
+
+		response = HttpResponse(grouped_expenses_json, content_type = 'application/json')
+		response['Content-Disposition'] = 'attachment; filename= "expense_list_json.json" '
+
+		return response
+
+	return render(request, 'main/bar_graph.html', context = dictionary)
+	# return response
 
 class ExpenseListView(LoginRequiredMixin, ListView):
 	# model = models.Expense
@@ -273,3 +396,4 @@ def send_email_confirmation(request):
 			return render(request, "main/confirm_email_code.html", context = {'confirmed': x.confirmed})
 		else:
 			return render(request, "main/confirm_email_code.html", context = {'incorrect_code': True})
+
