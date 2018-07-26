@@ -16,4 +16,14 @@
 			<input class="btn btn-primary" type="submit" value="Submit">
 		</form>		
 	</div>
-{% endblock %}
+
+	<script type="text/javascript">
+		var date_today = new Date()
+
+		date_today.setMinutes(date_today.getMinutes() - date_today.getTimezoneOffset());
+	    date_today = date_today.toJSON().slice(0,10);
+
+	    console.log(date_today)
+	    document.getElementById('id_date').value = date_today;
+	</script>
+{% endblock %}`

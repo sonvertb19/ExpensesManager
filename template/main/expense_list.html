@@ -206,6 +206,14 @@
 					<!-- </div> -->
 				</div>
 			</form>
+
+			<h4 style = "color: blue">
+				{% if grand_total and grand_total != 0 %}
+				GrandTotal is <strong> Rs {{ grand_total }} </strong>
+				{% else %}
+				{% endif %}
+			</h4>
+			
 			<h3>List of all expenses:</h3>
 				{% for date, expense_data in regrouped_expense_list %}
 				<div class="dropdown">

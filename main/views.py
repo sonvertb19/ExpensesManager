@@ -23,6 +23,7 @@ from django.core.mail import send_mail
 import random
 
 from django.contrib.auth.models import User
+import json
 
 import matplotlib.pyplot as plt
 from django.conf import settings
@@ -43,6 +44,99 @@ def make_dictionary(request):
 		dictionary.update({'confirmed': confirmed})
 
 	return dictionary
+
+def get_expenses_in_json(expenses):
+	# print(expenses)
+
+	prev_date = 0;
+
+	grouped_expenses = {}
+	list_of_dates = []
+
+	for e in expenses:
+		prev_date_str = str(prev_date)
+		current_date = e.date
+
+
+		if(str(current_date) in grouped_expenses):
+			# print(str(current_date) + " exists in grouped_expenses.")
+			pass
+		else:
+			# Updating dictionary with key as date_name and value as a dictionary an empty-array with its key as expenses.
+			grouped_expenses.update(	
+										{
+											str(current_date): 
+												{ 
+													'expenses': [] 
+												}  
+										}
+									)
+
+		if(prev_date_str != str(current_date)):
+			# print(current_date)
+			prev_date = current_date
+			list_of_dates.append(str(current_date))
+
+		# Creating dictionary of current expense.
+		current_expense_dictionary = { 'title': e.title, 'amount': e.amount}
+
+		# print(current_expense_dictionary)
+
+		# Updating the date dictionary with current expense dictionary.
+		grouped_expenses[str(current_date)]['expenses'].append( current_expense_dictionary )
+		# print("\n" + str(current_date) + ": " + str(grouped_expenses[str(current_date)]))
+
+
+
+	# print("\n")
+	# print(grouped_expenses)
+
+	# for date in grouped_expenses:
+		# print("\n" + date + ": ")
+
+		# print("Total: " + str(len(grouped_expenses[date]['expenses'])))
+
+		# print("{")
+		# for x in range(1, len(grouped_expenses[date]['expenses']) ):
+		# 	print("\t" + str(grouped_expenses[date]['expenses'][x]['title']) + " - " + str(grouped_expenses[date]['expenses'][x]['amount']) )
+		# print("}")
+
+
+
+	sum_dict = {}
+	grand_total = 0
+	for d in grouped_expenses:
+		# Indexing date wise
+		# print(d)
+
+		sum_e = 0
+		current_expense_list = grouped_expenses[d]['expenses']
+		for e in current_expense_list:
+			# Indexing expenses wise
+			sum_e = sum_e + e['amount']
+			grand_total = grand_total + e['amount']
+
+		# print("Sum = " + str(sum_e))
+		current_sum_dict = { str(d) : sum_e}
+
+		sum_dict.update(current_sum_dict)
+
+	sum_dict_json = json.dumps(sum_dict, sort_keys=True, indent=4)
+
+	# print(sum_dict_json)
+
+	grouped_expenses.update(
+								{
+									'date_wise_total': sum_dict,
+									'grand_total': grand_total
+								}
+							)
+	
+	grouped_expenses_json = json.dumps(grouped_expenses, sort_keys=True, indent=4)
+	
+	print(grouped_expenses_json)
+	
+	return grouped_expenses
 
 def Index(request):
 	dictionary = make_dictionary(request)
@@ -235,15 +329,24 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 	ordering = ['-date']
 
 	def get_queryset(self):
-		return models.Expense.objects.filter(user = self.request.user,).order_by('-date')
+		e = models.Expense.objects.filter(user = self.request.user,).order_by('-date')
+		# print(type(e))
+		return(e)
 
 
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
 		context = super().get_context_data(**kwargs)
+		expenses = models.Expense.objects.filter(user = self.request.user,).order_by('-date')
+
+		expenses_json = get_expenses_in_json(expenses)
+		
+		# sum_dict = {}
 		# Add in a QuerySet of the UserProfileModel
 		dictionary = make_dictionary(self.request)
 		context.update(dictionary)
+		print(type(expenses_json))
+		context.update(expenses_json)
 		return context
 
 class ExpensesSearchView(LoginRequiredMixin, ListView):
@@ -280,7 +383,7 @@ def filter_by_date(request):
 
 	if request.method == "POST":
 		formData = FilterForm(request.POST)
-		print(formData)
+		# print(formData)
 		if formData.is_valid():
 			start_date = formData.cleaned_data['start_date']
 			end_date = formData.cleaned_data['end_date']
@@ -297,6 +400,8 @@ def filter_by_date(request):
 
 		x = models.Expense.objects.filter(date__gte=start_date, date__lte=end_date, user = request.user).order_by('-date')
 
+		expenses_json = get_expenses_in_json(x)
+
 		dictionary = make_dictionary(request)
 		dictionary.update({'expenses': x, 'start_date': start_date, 'end_date': end_date})
 
@@ -312,8 +417,6 @@ def filter_by_date(request):
 
 			x = models.Expense.objects.filter(date__gte=start_date, date__lte=end_date, title__icontains = query, user = request.user).order_by('-date')
 
-			dictionary = make_dictionary(request)
-
 			start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
 			end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
 			dictionary.update({'expenses': x, 'start_date': start_date, 'end_date': end_date})
@@ -326,7 +429,7 @@ def filter_by_date(request):
 		# Else, noe search query, renser the simple form.
 		else:
 			dictionaryForm = { 'start_date': datetime.now(), 'end_date': datetime.now() }
-			print(dictionaryForm['start_date'])
+			# print(dictionaryForm['start_date'])
 			form = FilterForm(initial = dictionaryForm)
 
 			dictionary = make_dictionary(request)

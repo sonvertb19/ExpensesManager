@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import ModelForm
+from django.forms import ModelForm, Textarea
 from . import models
 
 from django.contrib.auth.models import User
@@ -10,10 +10,10 @@ import datetime
 class ExpenseCreateForm(ModelForm):
 	class Meta:
 		model = models.Expense
-		# fields = ['title', 'amount', 'date']
-		fields = ['title', 'amount', 'date']
+		fields = ['title', 'amount', 'date', 'description']
 		widgets = {
-			'date': forms.DateInput(attrs = {'type': 'date', 'class': 'date_field'})
+			'date': forms.DateInput(attrs = {'type': 'date', 'class': 'date_field', 'value': '2018-11-09'}),
+			'description': forms.Textarea(attrs = {'cols': 40, 'rows': 3})
 		}
 
 class FilterForm(forms.Form):
