@@ -23,11 +23,6 @@ from django.core.mail import send_mail
 import random
 
 from django.contrib.auth.models import User
-import json
-
-import matplotlib.pyplot as plt
-from django.conf import settings
-import os
 
 import json
 
@@ -134,7 +129,7 @@ def get_expenses_in_json(expenses):
 	
 	grouped_expenses_json = json.dumps(grouped_expenses, sort_keys=True, indent=4)
 	
-	print(grouped_expenses_json)
+	# print(grouped_expenses_json)
 	
 	return grouped_expenses
 
@@ -345,7 +340,7 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 		# Add in a QuerySet of the UserProfileModel
 		dictionary = make_dictionary(self.request)
 		context.update(dictionary)
-		print(type(expenses_json))
+		# print(type(expenses_json))
 		context.update(expenses_json)
 		return context
 
