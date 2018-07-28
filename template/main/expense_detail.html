@@ -2,30 +2,49 @@
 
 {% block title_block %}
 	<title>Expense Detail</title>
+	<style type="text/css">
+	</style>
 {% endblock %}
 
 
 {% block body_block %}
-	<div class="jumbotron">
-		<h5>Detail of expense titled <em>{{ expense.title }}</em>:</h5>
-		<div style="border: solid black 2px; padding: 5px; border-radius: 5px">
-			<table>
-				<tr>
-					<td style="padding-right: 5px"><strong>Date:</strong></td>
-					<td style="padding-right: 5px"><span>{{ expense.date }}</span></td>
-				</tr>
-				<tr>
-					<td style="padding-right: 5px"><strong>Title:</strong></td>
-					<td style="padding-right: 5px"><span>{{ expense.title }}</span></td>
-				</tr>
-				<tr>
-					<td style="padding-right: 5px"><strong>Amount:</strong></td>
-					<td style="padding-right: 5px"><span>Rs {{ expense.amount }}</span></td>
-				</tr>
-			</table>
-		</div>
-		<br>
-		<a class="btn btn-danger" href="{% url 'main:expense_delete' pk=expense.pk %}">Delete</a>
-	</div>
 
+	{% if user.is_staff %}
+		<!--<a href="{% url "main:expense_list" %}">< Back to List</a>
+			<hr style="margin-top: 6px"> -->
+			<h4 style="margin-top: 10px">{{ expense.title }}:</h4>
+			<div style="padding-top: 15px">
+				<!-- <div style="border: solid black 2px; padding: 5px; border-radius: 5px"> -->
+					<div>
+						<!-- <div class="row"> -->
+							<div class="col-lg-3"><span><strong>Date:</span></strong></div>
+							<div class="col-lg-3"><span>{{ expense.date }}</span></div>
+						<!-- </div> -->
+						<hr style="margin-top: 0; margin-bottom: 5px">
+						<!-- <div class="row"> -->
+							<div class="col-lg-3"><strong>Title:</strong></div>
+							<div class="col-lg-3"><span>{{ expense.title }}</span></div>
+						<!-- </div> -->
+						<hr style="margin-top: 0; margin-bottom: 5px">
+						<!-- <div class="row"> -->
+							<div class="col-lg-3"><strong>Amount:</strong></div>
+							<div class="col-lg-3"><span>Rs {{ expense.amount }}</span></div>
+						<!-- </div> -->
+	
+						<hr style="margin-top: 0; margin-bottom: 5px">
+						{% if expense.description %}
+							<!-- <div class="row"> -->
+								<div  class="col-lg-3"><strong>Description:</strong></div>
+								<div  class="col-lg-3"><textarea disabled rows = 5 cols = 40 style="color: rgba(0, 0, 0, 0.6);">{{ expense.description }}</textarea></div>
+							<!-- </div> -->
+						<hr style="margin-top: 0; margin-bottom: 5px">
+						{% endif %}
+				</div>
+				<br>
+				<a class="btn btn-danger" href="{% url 'main:expense_delete' pk=expense.pk %}">Delete</a>
+				<a class="btn btn-primary" href="{% url 'main:expense_update' pk=expense.pk %}">Change</a>
+			</div>
+		{% else %}
+			<p>You are not authorised to view this page.</p>
+		{% endif %}
 {% endblock %}

@@ -190,31 +190,47 @@
 				doc.save("ExpensesList_" + startDate + "_to_" + endDate + ".pdf");
 			}
 	    </script>
-
-		<div class="jumbotron" style="padding-top: 30px">
-
 			{% if expense_list %}
-			<button class="container-fluid btn btn-primary" style="height: 30px; padding: 0" onClick ="generate()">Download list as PDF</button>
 
-			<hr>
+			<!-- TODO -->
+			{# {% if messages %} #}
+				<!-- <div class="messages">
+					<div class="alert alert-success alert-dismissable alert-link">
+						<button class="close" type="button" data-dismiss="alert" aria-hidden="true">×</button>
+						z
+					</div>
+				</div> -->
+			{# {% endif %} #}
+
+			{% if user.is_staff %}
+				<!-- <p style="margin-left: 0"> > Click on any expense to get its details.</p> -->
+			{% else %}
+				<br>
 			{% endif %}
+
+			<!-- Uncomment to get PDF functionality -->
+			<!-- <button class="container-fluid btn btn-primary" style="height: 30px; padding: 0" onClick ="generate()">Download list as PDF</button> -->
+
+			<!-- <hr> -->
+
+			<p style="font-size: 20px">Expense List</p>
+
 			<form action="{% url 'main:search' %}" method="GET">
 				<div class="input-group input-group-sm mb-3">
-					<input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query">
+					<input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query" required>
 					<!-- <div class="input-group-append"> -->
 						<input type = "submit" class=" btn input-group-text" style="background-color: rgba(21, 21, 21, 0.3)" id="inputGroup-sizing-sm" value = "Search">
 					<!-- </div> -->
 				</div>
 			</form>
+			{% endif %}
 
-			<h4 style = "color: blue">
+			<p style = "font-size: 17px">
 				{% if grand_total and grand_total != 0 %}
 				GrandTotal is <strong> Rs {{ grand_total }} </strong>
 				{% else %}
 				{% endif %}
-			</h4>
-			
-			<h3>List of all expenses:</h3>
+			</p>
 				{% for date, expense_data in regrouped_expense_list %}
 				<div class="dropdown">
 					<!-- <p> -->
@@ -227,7 +243,23 @@
 								</tr>
 							{% for e in expense_data %}
 								<tr>
-									<th>{{ e.title }}</th>
+									{% if user.is_staff %}
+									<th><a href="{% url "main:expense_detail" pk=e.pk %}" style="color: blue; text-decoration: ">{{ e.title }}</a>
+										{% if e.description %}
+											<ul>
+												<li>{{ e.description }}</li>
+											</ul>
+										{% endif %}
+									</th>
+									{% else %}
+										<th>{{ e.title }}
+											{% if e.description %}
+											<ul>
+												<li>{{ e.description }}</li>
+											</ul>
+											{% endif %}
+										</th>
+									{% endif %}
 									<td>Rs {{ e.amount }}</td>
 								</tr>
 							{% endfor %}
@@ -240,6 +272,5 @@
 					<p>No expenses yet!</p>
 					<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
 				{% endfor %}
-		</div>
 	{% endif %}
 {% endblock %}

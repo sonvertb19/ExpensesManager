@@ -1,29 +1,82 @@
 {% extends 'main/base.html' %}
+{% load bootstrap4 %}
 
 {% block title_block %}
-	<title>Add Expense</title>
+
+	{% if ref == 'update' %}
+		<title>Update Expense</title>
+	{% else %}
+		<title>Add Expense</title>
+	{% endif %}
+
+	<style type="text/css">
+	input, textarea{/*
+		border-radius: 3px;
+		border-width: 1px;*/
+		padding-right: 10px;
+	}
+		#id_title, #id_amount
+		{
+			width: 100%
+		}
+
+	@media screen and (max-width: 992px){
+		th, td
+		{
+			display: block;
+			min-width: 100%;
+			padding-top: 0;
+		}
+
+		td
+		{
+			padding-bottom: 10px
+		}
+	}
+
+	/*@media screen and (max-width: 992px){
+		#id_title, #id_amount
+		{
+			width: 100%
+		}
+	}*/
+	</style>
 {% endblock %}
 
 
 {% block body_block %}
-	<div class="jumbotron">
-		<h3>Enter New Expense: </h3>
+
+	{% if ref == 'new' or ref == 'update' and user.is_staff %}
+		{% if ref == 'update' %}
+			<p style="font-size: 25px">Update Your Expense: </p>
+		{% else %}
+			<p style="font-size: 25px">Enter New Expense: </p>
+		{% endif %}
+
+
 		<form method = "POST">
 			{% csrf_token %}
 			<table>
-				{{ form.as_table }}
+				{% bootstrap_form form %}
 			</table>
 			<input class="btn btn-primary" type="submit" value="Submit">
-		</form>		
-	</div>
+		</form>
 
-	<script type="text/javascript">
-		var date_today = new Date()
+		<script type="text/javascript">
+			var date_today = new Date()
 
-		date_today.setMinutes(date_today.getMinutes() - date_today.getTimezoneOffset());
-	    date_today = date_today.toJSON().slice(0,10);
+			date_today.setMinutes(date_today.getMinutes() - date_today.getTimezoneOffset());
+		    date_today = date_today.toJSON().slice(0,10);
 
-	    console.log(date_today)
-	    document.getElementById('id_date').value = date_today;
-	</script>
+		    console.log(date_today)
+		    document.getElementById('id_date').value = date_today;
+
+
+		</script>
+
+		<br>
+
+	{% else %}
+		<p>You are not authorised to view this page.</p>
+	{% endif %}
 {% endblock %}`

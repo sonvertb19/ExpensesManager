@@ -10,7 +10,9 @@ import datetime
 class ExpenseCreateForm(ModelForm):
 	class Meta:
 		model = models.Expense
+
 		fields = ['title', 'amount', 'date', 'description']
+
 		widgets = {
 			'date': forms.DateInput(attrs = {'type': 'date', 'class': 'date_field', 'value': '2018-11-09'}),
 			'description': forms.Textarea(attrs = {'cols': 40, 'rows': 3})
@@ -37,5 +39,5 @@ class UserRegistrationForm(UserCreationForm):
 		email = self.cleaned_data.get('email')
 		username = self.cleaned_data.get('username')
 		if email and User.objects.filter(email=email).count() > 0:
-			raise forms.ValidationError(u'This email address is already registered.')
+			raise forms.ValidationError('This email address is already registered.')
 		return email

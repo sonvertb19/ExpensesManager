@@ -46,46 +46,44 @@
 					{% endfor %}
 				})
 		</script>
-		<div class="jumbotron" >
-			<a href="{% url 'main:expense_list' %}"><-CompleteList</a>
-			<hr>
-			<form action="{% url 'main:search' %}" method="GET">
-				<div class="input-group input-group-sm mb-3">
-					<input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query">
-					<!-- <div class="input-group-append"> -->
-						<input type = "submit" class=" btn input-group-text" style="background-color: rgba(21, 21, 21, 0.3)" id="inputGroup-sizing-sm" value = "Search">
-					<!-- </div> -->
-				</div>
-			</form>
-				{% for date, expense_data in regrouped_expense_list %}
-					{% if forloop.counter0 == 0 %}
-						<h5>Expenses containing the word <span style="color: green"><strong>'{{ query }}'</strong></span>:</h5>
-						<br>
-					{% endif %}
+		<a href="{% url 'main:expense_list' %}"><-CompleteList</a>
+		<hr>
+		<form action="{% url 'main:search' %}" method="GET">
+			<div class="input-group input-group-sm mb-3">
+				<input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query">
+				<!-- <div class="input-group-append"> -->
+					<input type = "submit" class=" btn input-group-text" style="background-color: rgba(21, 21, 21, 0.3)" id="inputGroup-sizing-sm" value = "Search">
+				<!-- </div> -->
+			</div>
+		</form>
+			{% for date, expense_data in regrouped_expense_list %}
+				{% if forloop.counter0 == 0 %}
+					<h5>Expenses containing the word <span style="color: green"><strong>'{{ query }}'</strong></span>:</h5>
+					<br>
+				{% endif %}
 
-				<div class="dropdown">
-					<!-- <p> -->
-					<button id="{{ date|date:"U" }}" class="btn btn-block dropdown-toggle" style=" background-color: rgb(210, 210, 210);  color: black;">{{ date }}</button>
-						<div id="{{ date|date:"U" }}_div" style="width: 100%">
-							<table id="{{ date|date:"U" }}_table" style="width: 100%">
-								<tr style="color: green;">
-									<th>Title</th>
-									<td>Amount</td>
-								</tr>
-							{% for e in expense_data %}
-								<tr>
-									<th >{{ e.title }}</th>
-									<td>Rs {{ e.amount }}</td>
-								</tr>
-							{% endfor %}
-							</table>
-						</div>
-					<!-- </p> -->
-				</div>
-				<br>
-				{% empty %}
-					<p style = "color: red">No matching results for your query: <strong>{{ query }}</strong></p>
-				{% endfor %}
-		</div>
+			<div class="dropdown">
+				<!-- <p> -->
+				<button id="{{ date|date:"U" }}" class="btn btn-block dropdown-toggle" style=" background-color: rgb(210, 210, 210);  color: black;">{{ date }}</button>
+					<div id="{{ date|date:"U" }}_div" style="width: 100%">
+						<table id="{{ date|date:"U" }}_table" style="width: 100%">
+							<tr style="color: green;">
+								<th>Title</th>
+								<td>Amount</td>
+							</tr>
+						{% for e in expense_data %}
+							<tr>
+								<th >{{ e.title }}</th>
+								<td>Rs {{ e.amount }}</td>
+							</tr>
+						{% endfor %}
+						</table>
+					</div>
+				<!-- </p> -->
+			</div>
+			<br>
+			{% empty %}
+				<p style = "color: red">No matching results for your query: <strong>{{ query }}</strong></p>
+			{% endfor %}
 	{% endif %}
 {% endblock %}

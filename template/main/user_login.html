@@ -17,7 +17,7 @@
 	<form id="login" action="{% url 'main:user_login' %}" method="POST">
 		{% csrf_token %}
 		<div class="form-group">
-				<input type="username" class="form-control" id="email" placeholder="Enter username" name="username" required autocomplete="off" style="border-bottom: none;">
+				<input type="username" class="form-control" id="email" placeholder="Enter username" name="username" required autocomplete="off" style="border-bottom: none;" autofocus="true">
 				<input type="password" class="form-control" id="password" placeholder="Enter password" name="password">
 		</div>
 		

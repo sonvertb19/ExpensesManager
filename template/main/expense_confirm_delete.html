@@ -6,14 +6,10 @@
 
 
 {% block body_block %}
-	<div class="jumbotron">
-		<!-- <form method="POST">
-			{% csrf_token %}
-			<p>Are you sure you want to delete "{{ expense }}"?</p>
-			<input type="submit" class="btn btn-danger" value="Confirm">
-			<a class="btn btn-primary" href="{% url 'main:expense_list' %}">Cancel</a>
-		</form> -->
-
-		<h4 style="color: red">Delete function disable temporarily</h4>
-	</div>
+	<form method="POST">
+		{% csrf_token %}
+		<p>Are you sure you want to delete "<a href="{% url "main:expense_detail" pk=expense.pk %}">{{ expense }}"</a>?</p>
+		<input type="submit" class="btn btn-danger" value="Confirm">
+		<a class="btn btn-primary" href="{% url 'main:expense_list' %}">Cancel</a>
+	</form>
 {% endblock %}
