@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,10 +16,15 @@
 </head>
 <body>
 	<style type="text/css">
-/*		.navbar-custom {
-		    background-color: rgba(50, 50, 50, 1);
-		    opacity: 0.8;
-		}*/
+		body{
+			/*background-image: url({% static 'back3.png' %});*/
+		}
+		.navbar-custom {
+		    background-color: #087e8b!important;
+		    opacity: 1;
+		    color: white!important;
+		    border-bottom: 1px black solid;
+		}
 		body{
 			background-color: whitesmoke;
 		}
@@ -25,6 +32,9 @@
 	<style>
 .dropbtn {
     border: none;
+}
+.nav-link{
+	color: white!important;
 }
 /*
 .dropdown {
@@ -57,18 +67,18 @@
 	{% if confirmed == False %}
 		<div class="container-fluid btn btn-danger" style="border-radius: 0px"><a href="{% url 'send_email_confirmation' %}" style="color: white">Confirm Your Email!</a></div>
 	{% endif %}
-	<nav class="navbar nav-default navbar-expand-lg navbar-dark bg-dark">
+	<nav class="navbar nav-default navbar-expand-lg navbar-dark navbar-custom">
 		<div class="container">
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
 				<span class="navbar-toggler-icon"></span>
 			</button>
 
-			<a class="navbar-brand ml-auto" href="{% url 'index' %}">Home</a>
+			<a class="navbar-brand ml-auto" href="{% url 'index' %}" style="color: white!important">Home</a>
 
 			<div class="collapse navbar-collapse" id="collapsibleNavbar">
-				<ul class="navbar-nav">
+				<ul class="navbar-nav" style="color: white;">
 					<li class="nav-item">
-						<a href="{% url 'main:expense_list' %}" class="nav-link">List</a>
+						<a href="{% url 'main:expense_list' %}" class="nav-link" >List</a>
 					</li>
 					<li class="nav-item">
 						<a href="{% url 'main:add_expense' %}" class="nav-link">New</a>

@@ -9,6 +9,7 @@ urlpatterns = [
 	path('register/',  views.UserRegistration.as_view(), name = "user_registration"),
 	path('logout/', views.user_logout, name = "user_logout"),
 	path('add/', views.ExpenseCreateView.as_view(), name = "add_expense"),
+	path('add/<int:date>', views.ExpenseCreateViewWithDate.as_view(), name = "add_expense"),
 	path('details/<int:pk>', views.ExpenseDetailView.as_view(), name = "expense_detail"),
 	path('update/<int:pk>', views.ExpenseUpdateView.as_view(), name = "expense_update"),
 	path('list/', views.ExpenseListView.as_view(), name = "expense_list"),

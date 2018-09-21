@@ -6,7 +6,7 @@
 
 
 {% block body_block %}
-	<div class="jumbotron">
+	<div class="jumbotron" style="background-color: #e1ebf5">
 		<h3>Welcome to the ExpensesManager</h3>
 		{% if user.is_authenticated %}
 			<p>Logged in as <strong style="color: blue">{{ user.first_name|title }} {{ user.last_name|title }}</strong></p>

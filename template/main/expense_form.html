@@ -2,19 +2,22 @@
 {% load bootstrap4 %}
 
 {% block title_block %}
-
+	
 	{% if ref == 'update' %}
 		<title>Update Expense</title>
 	{% else %}
 		<title>Add Expense</title>
 	{% endif %}
+	
+	
+
 
 	<style type="text/css">
-	input, textarea{/*
-		border-radius: 3px;
-		border-width: 1px;*/
-		padding-right: 10px;
-	}
+		input, textarea{/*
+			border-radius: 3px;
+			border-width: 1px;*/
+			padding-right: 10px;
+		}
 		#id_title, #id_amount
 		{
 			width: 100%
@@ -46,6 +49,11 @@
 
 {% block body_block %}
 
+	
+	{% if date %}
+		<a href="javascript:history.back(1)"><button class="btn">Go Back</a></button>
+	{% endif %}
+
 	{% if ref == 'new' or ref == 'update' and user.is_staff %}
 		{% if ref == 'update' %}
 			<p style="font-size: 25px">Update Your Expense: </p>
@@ -59,24 +67,203 @@
 			<table>
 				{% bootstrap_form form %}
 			</table>
-			<input class="btn btn-primary" type="submit" value="Submit">
-		</form>
+			<input style="display: inline-block;" class="btn btn-primary" type="submit" value="Submit">
+
+
+    {% if ref == 'new' %}
 
 		<script type="text/javascript">
-			var date_today = new Date()
+			var date = new Date()
 
-			date_today.setMinutes(date_today.getMinutes() - date_today.getTimezoneOffset());
-		    date_today = date_today.toJSON().slice(0,10);
+			date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+		    date = date.toJSON().slice(0,10);
 
-		    console.log(date_today)
-		    document.getElementById('id_date').value = date_today;
-
-
+		    console.log(date)
+		    document.getElementById('id_date').value = date;
 		</script>
+	{% else %}
+		<a style="display: inline-block; color: white;"  class="btn btn-danger" onclick="displayDetailedInfo()">Delete</a>
+			<!-- The modal_custom -->
+	<div id="mymodal_custom" class="modal_custom">
+
+		<!-- modal_custom content -->
+		<div class="modal_custom-content">
+			<div class="modal_custom-header">
+				<div class="modal_custom-header-line">
+						<h2 id="modal_title" style="margin: 0; color: blue; display:inline-block;">Title</h2>
+						<h5 id="modal_amount" style="margin: 0; color: black; display:inline-block;">Amount</h5>
+				</div>
+				<!-- <div class="modal_custom-header-close close"> -->
+					<!-- <h2 style="margin: 0;">&times;</h2> -->
+				<!-- </div> -->
+			</div>
+			<div class="modal_custom-body">
+				<p id="modal_content_date"></p>
+				<p id="modal_content_description">"#Add Code to get description using JSON";</p>
+			</div>
+			<div style="display: flex; justify-content: center; align-items: center;" class="modal_custom-footer">
+				
+				<button id="modal_delete_button" style="display: inline-block;" class="btn btn-danger"><a style="color: white;" href="{% url 'main:expense_delete' pk=expense.pk %}">Confirm Deletion?</a></button>
+				
+				<button id="modal_cancel_button" class="btn btn-primary">Cancel</button>
+			</div>
+		</div>
+
+	</div>
+
+<!-- modal_custom -->
+	<style type="text/css">
+
+		/* The modal_custom (background) */
+		.modal_custom {
+		    display: none;
+		    position: fixed; /* Stay in place */
+		    z-index: 1; /* Sit on top */
+		    left: 0;
+		    top: 0;
+		    width: 100%; /* Full width */
+		    height: 100%; /* Full height */
+		    overflow: auto; /* Enable scroll if needed */
+		    background-color: rgb(0,0,0); /* Fallback color */
+		    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+			justify-content: center;
+			align-items: center; 
+		}
+
+		/* modal_custom Content/Box */
+		.modal_custom-content {
+		    background-color: #a6d0cd;
+		    margin: 20% auto; /* 15% from the top and centered */
+		    padding: 20px;
+		    border: 1px solid #888;
+		    /*max-width: 80%;  Could be more or less, depending on screen size */
+		    /*min-width: 60%;*/
+		}
+		.modal_custom-header-line {
+			/*width: */
+			display: inline-block;
+		}
+		/* The Close Button */
+		.modal_custom-header-close {
+		    color: #730edc;
+		    float: right;
+		    /*display: inline;*/
+		    font-size: 28px;
+		    font-weight: bold;
+		}
+
+		/*Close button hidden.*/
+		/*.close:hover,
+		.close:focus {
+		    color: black;
+		    text-decoration: none;
+		    cursor: pointer;
+		}*/
+
+
+		.modal_custom-header {
+		    padding: 2px 16px;
+		    /*background-color: #5cb85c;*/
+		    color: white;
+		}
+
+		.modal_custom-body {padding: 2px 16px;}
+
+		.modal_custom-footer {
+		    padding: 2px 16px;
+		    /*background-color: #5cb85c;*/
+		    color: white;
+		}
+	</style>
+
+	<!-- JavaScript for modal_custom -->
+	<script type="text/javascript">
+		function displayDetailedInfo(){
+
+			var month_names = new Array("January", "February", "March", 
+			"April", "May", "June", "July", "August", "September", 
+			"October", "November", "December");
+
+			//Required in JavaScript
+			s = {{ expense.date|date:"U" }} + "000";
+
+			//Getting date from unixEpoh
+			date = new Date(parseInt(s))
+			date = date.getDate().toString() + "-" + month_names[date.getMonth()] + "-" + date.getFullYear()
+
+			
+			title = "{{ expense.title }}"
+
+			// console.log(title);
+
+			amount = {{ expense.amount }}
+
+			// console.log(amount);
+
+			// Get the modal_custom.
+			var modal_custom = document.getElementById('mymodal_custom');
+
+				modal_custom.style.display = "flex";
+
+			var modal_title = document.getElementById('modal_title');
+			modal_title.innerHTML = title;
+
+			var modal_amount = document.getElementById('modal_amount');
+			modal_amount.innerHTML = amount;
+
+
+			var modal_content_date = document.getElementById('modal_content_date');
+			modal_content_date.innerHTML = "<hr/> <strong>Date: </strong>" + date;
+										
+
+			var modal_cancel_button = document.getElementById('modal_cancel_button');
+			modal_cancel_button.onclick = function() {
+				modal_custom.style.display = "none";
+			}
+
+			// When the user clicks anywhere outside of the modal_custom, close it
+			window.onclick = function(event) {
+				// console.log(event);
+			    if (event.target == modal_custom) {
+			        modal_custom.style.display = "none";
+			    }
+			}
+		}
+
+
+		$(document).ready(function(){
+			$("button").click(function(){
+				$.ajax({url: "demo_ajax_load.txt", async: false, success: function(result){
+					$("div").html(result);
+				}});
+			});
+		});
+
+	</script>
+    {% endif %}
+
+		</form>
 
 		<br>
 
 	{% else %}
 		<p>You are not authorised to view this page.</p>
 	{% endif %}
+
+	<!-- Updating the date from URL into the form. -->
+	<!-- Should be kept in last when the form is -->
+    {% if date %}
+    	<script type="text/javascript">
+
+			var date = "{{ date_in_str }}";
+
+			console.log(date)
+		    
+		    date = date.slice(0,10);
+			console.log(date)
+
+		    document.getElementById('id_date').value = date;
+		</script>
+	{% endif %}
+
 {% endblock %}`

@@ -6,7 +6,29 @@
 
 
 {% block body_block %}
-<div class="continer col-md-4 mx-auto" id="loginOrDisc" style="padding-top: 50px; max-width: 350px">
+
+
+<style type="text/css">
+	input:focus{
+		outline: none!important;
+		box-shadow: none!important;
+		border-color: blue!important;
+	}
+	.inputs{
+		border: 0.5px #80bdff solid;
+		border-radius: 0;
+		background-color: ;
+	}
+	#email{
+		border-bottom: 0;
+	}
+	#loginOrDesc
+	{
+		/*border: 2px black solid;*/
+	}
+</style>
+
+<div class="continer col-md-4 mx-auto jumbotron" id="loginOrDesc" style="padding-top: 50px; max-width: 350px; background-color: #e1ebf5;">
 
 	<h4 id="heading">Login</h4>
 
@@ -16,9 +38,9 @@
 
 	<form id="login" action="{% url 'main:user_login' %}" method="POST">
 		{% csrf_token %}
-		<div class="form-group">
-				<input type="username" class="form-control" id="email" placeholder="Enter username" name="username" required autocomplete="off" style="border-bottom: none;" autofocus="true">
-				<input type="password" class="form-control" id="password" placeholder="Enter password" name="password">
+		<div class="form-group" autocomplete="off">
+				<input type="username" class="form-control inputs" id="email" placeholder="Enter username" name="username" required autocomplete="false" autofocus="true">
+				<input type="password" class="form-control inputs" id="password" placeholder="Enter password" name="password">
 		</div>
 		
 		<div class="form-group">
@@ -26,6 +48,7 @@
 		</div>
 	</form>
 			<a style="color: white" href="{% url 'main:user_registration' %}"><button class="btn btn-sm btn-info btn-block">New User?</button></a>
+			<br>
 
 </div>
 {% endblock %}

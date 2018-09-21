@@ -45,6 +45,7 @@ def get_expenses_in_json(expenses):
 
 	prev_date = 0;
 
+	date_wise_expenses = {}
 	grouped_expenses = {}
 	list_of_dates = []
 
@@ -52,13 +53,15 @@ def get_expenses_in_json(expenses):
 		prev_date_str = str(prev_date)
 		current_date = e.date
 
+		print(e)
 
-		if(str(current_date) in grouped_expenses):
+
+		if(str(current_date) in date_wise_expenses):
 			# print(str(current_date) + " exists in grouped_expenses.")
 			pass
 		else:
 			# Updating dictionary with key as date_name and value as a dictionary an empty-array with its key as expenses.
-			grouped_expenses.update(	
+			date_wise_expenses.update(	
 										{
 											str(current_date): 
 												{ 
@@ -78,7 +81,7 @@ def get_expenses_in_json(expenses):
 		# print(current_expense_dictionary)
 
 		# Updating the date dictionary with current expense dictionary.
-		grouped_expenses[str(current_date)]['expenses'].append( current_expense_dictionary )
+		date_wise_expenses[str(current_date)]['expenses'].append( current_expense_dictionary )
 		# print("\n" + str(current_date) + ": " + str(grouped_expenses[str(current_date)]))
 
 
@@ -100,12 +103,12 @@ def get_expenses_in_json(expenses):
 
 	sum_dict = {}
 	grand_total = 0
-	for d in grouped_expenses:
+	for d in date_wise_expenses:
 		# Indexing date wise
 		# print(d)
 
 		sum_e = 0
-		current_expense_list = grouped_expenses[d]['expenses']
+		current_expense_list = date_wise_expenses[d]['expenses']
 		for e in current_expense_list:
 			# Indexing expenses wise
 			sum_e = sum_e + e['amount']
@@ -122,6 +125,7 @@ def get_expenses_in_json(expenses):
 
 	grouped_expenses.update(
 								{
+									'date_wise_expenses': date_wise_expenses,
 									'date_wise_total': sum_dict,
 									'grand_total': grand_total
 								}
@@ -129,9 +133,10 @@ def get_expenses_in_json(expenses):
 	
 	grouped_expenses_json = json.dumps(grouped_expenses, sort_keys=True, indent=4)
 	
-	# print(grouped_expenses_json)
+	print(grouped_expenses_json)
 	
 	return grouped_expenses
+
 
 def Index(request):
 	dictionary = make_dictionary(request)
@@ -167,7 +172,6 @@ def user_login(request):
 
 				return render(request, "main/user_login.html", context = user_info)
 
-
 @login_required
 def user_logout(request):
 	logout(request)
@@ -184,6 +188,7 @@ class ExpenseCreateView(LoginRequiredMixin, CreateView):
 	model = models.Expense
 	form_class = ExpenseCreateForm
 
+
 	dictionary = { 'date': datetime.now() }
 	initial = dictionary
 
@@ -198,6 +203,38 @@ class ExpenseCreateView(LoginRequiredMixin, CreateView):
 		dictionary = make_dictionary(self.request)
 		context.update(dictionary)
 		context.update({'ref': 'new'})
+		return context
+
+class ExpenseCreateViewWithDate(LoginRequiredMixin, CreateView):
+	model = models.Expense
+	form_class = ExpenseCreateForm
+
+
+	dictionary = { 'date': datetime.now() }
+	initial = dictionary
+
+	def form_valid(self, form):
+		form.instance.user = self.request.user
+		return super().form_valid(form)
+
+	def get_context_data(self, **kwargs):
+		# Call the base implementation first to get a context
+		context = super().get_context_data(**kwargs)
+		
+		date = self.kwargs.get('date')
+		# print(type(date))
+		datex = datetime.fromtimestamp(date)
+
+		print(datex)
+
+		date_str = datetime.strptime(str(datex), "%Y-%m-%d %H:%M:%S")
+
+		print(date_str)
+
+		# Add in a QuerySet of the UserProfileModel
+		dictionary = make_dictionary(self.request)
+		context.update(dictionary)
+		context.update({'ref': 'new', 'date': date, 'date_in_str': str(date_str) })
 		return context
 
 class ExpenseDetailView(LoginRequiredMixin, DetailView):
@@ -223,8 +260,9 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 		# sum_dict = {}
 		# Add in a QuerySet of the UserProfileModel
 		dictionary = make_dictionary(self.request)
+		
 		context.update(dictionary)
-		# print(type(expenses_json))
+
 		context.update(expenses_json)
 		return context
 
@@ -267,6 +305,11 @@ class ExpensesSearchView(LoginRequiredMixin, ListView):
 class ExpenseDeleteView(LoginRequiredMixin, DeleteView):
 	model = models.Expense
 	success_url = reverse_lazy('main:expense_list')
+
+
+	# Added to avoid confirmation page.
+	def get(self, request, *args, **kwargs):
+		return self.post(request, *args, **kwargs)
 
 @login_required
 def filter_by_date(request):
@@ -316,7 +359,7 @@ def filter_by_date(request):
 
 			return render(request, "main/filter_by_date.html", context = dictionary)
 
-		# Else, noe search query, renser the simple form.
+		# Else, noe search query, render the simple form.
 		else:
 			dictionaryForm = { 'start_date': datetime.now(), 'end_date': datetime.now() }
 			# print(dictionaryForm['start_date'])

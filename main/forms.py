@@ -14,7 +14,7 @@ class ExpenseCreateForm(ModelForm):
 		fields = ['title', 'amount', 'date', 'description']
 
 		widgets = {
-			'date': forms.DateInput(attrs = {'type': 'date', 'class': 'date_field', 'value': '2018-11-09'}),
+			'date': forms.DateInput(attrs = {'type': 'date', 'class': 'date_field'}),
 			'description': forms.Textarea(attrs = {'cols': 40, 'rows': 3})
 		}
 
