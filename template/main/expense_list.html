@@ -10,10 +10,7 @@
 	{% if confirmed == False %}
 		<p style="color: red;">Your email is not confirmed.You can only add expenses but can not view them.</p>
 	{% else %}
-		<script
-	src="https://code.jquery.com/jquery-2.2.4.min.js"
-	integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
-	crossorigin="anonymous"></script> 
+		<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="crossorigin="anonymous"></script> 
 
 	<!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
 
@@ -66,6 +63,30 @@
 				border-left: none;
 				background-color: rgb(152, 197, 194);
 			}
+
+			{% if query %}
+				#main_heading{
+					font-size: 20px;
+					color: #000000;
+				}
+				#search_query_tagline{
+					display: block;
+					margin-top: 5px;
+				}
+				#search_div{
+					margin: 0;
+					padding: 0;
+				}
+			{% else %}
+				#main_heading{
+					font-size: 30px;
+					color: #000000;
+					text-align: center;
+				}
+				#search_query_tagline{
+					display: none;
+				}
+	    	{% endif %}
 		</style>
 
 		<script id = "json_data" type="text/javascript">{as: 'asas'}</script>
@@ -79,7 +100,6 @@
 				{% regroup expense_list by date as regrouped_expense_list %}
 
 					{% for date, expense_data in regrouped_expense_list %}
-						
 
 						$("#{{ date|date:"U" }}_p_container").click(function(){
 							//Toogling the '-' or '+' sign.
@@ -112,15 +132,26 @@
 							{% endfor %}
 									a = "<tr><th style = 'text-align:right'>Total: </th><td><strong>Rs " + t + "</strong></td></tr>"
 									$("#{{ date|date:"U" }}_table").append(a);
-						{% if forloop.counter0 == 0 %}
-						$("#{{ date|date:"U" }}_div").slideToggle("slow");
-						$("#{{ date|date:"U" }}_p").html('-');
-						$("#{{ date|date:"U" }}_p").css("margin-right", "8.5px");
-						$("#{{ date|date:"U" }}_p").css("margin-left", "8.5px");
-						$("#{{ date|date:"U" }}_p_container").css("background-color", "rgba(255, 255, 255, 0.8)");
 
-						{% endif %}
-						
+						//In case of a search, the code will execute for all, but in case of not query, it will execute only for counter0.	
+							{% if query %}
+
+								$("#{{ date|date:"U" }}_div").slideToggle("slow");
+								$("#{{ date|date:"U" }}_p").html('-');
+								$("#{{ date|date:"U" }}_p").css("margin-right", "8.5px");
+								$("#{{ date|date:"U" }}_p").css("margin-left", "8.5px");
+								$("#{{ date|date:"U" }}_p_container").css("background-color", "rgba(255, 255, 255, 0.8)");
+							{% else %}
+								//No Query, general list.
+								{% if forloop.counter0 == 0 %}
+								$("#{{ date|date:"U" }}_div").slideToggle("slow");
+								$("#{{ date|date:"U" }}_p").html('-');
+								$("#{{ date|date:"U" }}_p").css("margin-right", "8.5px");
+								$("#{{ date|date:"U" }}_p").css("margin-left", "8.5px");
+								$("#{{ date|date:"U" }}_p_container").css("background-color", "rgba(255, 255, 255, 0.8)");
+								{% endif %}
+
+							{% endif %}						
 					{% endfor %}
 			})
 		</script>
@@ -268,42 +299,66 @@
 				console.log(address);
 				window.location.assign(address);
 			}
+			function showMonthlyTotal(){
+				document.getElementById('monthly_total').style.display = "inline";
+				document.getElementById('monthly_total_header').innerHTML = "Monthly Total: ";
+			}
 	    </script>
-			{% if expense_list %}
 
+	    	<p id="main_heading">EXPENSES LIST</p>
+
+			<form id="search_form" action="{% url 'main:search' %}" method="GET">
+				<div id="search_div" class="input-group input-group-sm mb-3">
+					<input type="text" id="search_bar" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query" required>
+					<input type = "submit" id="search_button" class=" btn input-group-text"id="inputGroup-sizing-sm" value = "Search">
+				</div>
+			</form>
 			<!-- Uncomment to get PDF functionality -->
 			<!-- <button class="container-fluid btn btn-primary" style="height: 30px; padding: 0" onClick ="generate()">Download list as PDF</button> -->
 
 			<!-- <hr> -->
 
-			<p style="font-size: 30px; color: #000000; text-align: center;">EXPENSES LIST</p>
 
-			<form action="{% url 'main:search' %}" method="GET">
-				<div class="input-group input-group-sm mb-3">
-					<input type="text" id="search_bar" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query" required>
-					<input type = "submit" id="search_button" class=" btn input-group-text"id="inputGroup-sizing-sm" value = "Search">
-				</div>
-			</form>
+			<!--Only shown when query exists.-->
+			<p style="color: green;" id="search_query_tagline">Expenses containing "{{ query }}"</p>
+
+			{% if not regrouped_expense_list %}
+			{% if query %}
+				<p style="color: red;">0 match found.</p>
+				<a href="javascript:history.back(1)"><button class="btn">Go Back</a></button>
 			{% endif %}
+			{% endif %}
+
 
 			<p style = "font-size: 17px">
 				{% if grand_total and grand_total != 0 %}
-				GrandTotal is <strong> Rs {{ grand_total }} </strong>
+				<p>GrandTotal is <strong> Rs {{ grand_total }} </strong></p>
+			    <p id="monthly_total_header">Click <span style="color: blue;" onclick='showMonthlyTotal()'>here </span> to view monthly total.</p>
+		    	<div id="monthly_total" style="display: none;">
+		    		<ol>
+			    		{% for x in month_wise_total %}
+			    			<li><strong>{{ x.month }}</strong> : Rs <strong>{{ x.amount }}</strong></li>
+			    		{% endfor %}
+		    		</ol>
+		    	</div>
 				{% else %}
 				{% endif %}
 			</p>
-				{% for date, expense_data in regrouped_expense_list %}
-				
+
+			{% for date, expense_data in regrouped_expense_list %}
+
 				<div class="btn btn-block dropdown_button" id = "{{ date|date:'U' }}_dropdown_button" style="background-color: #98c5c2; color: black; border-radius: 0; cursor: default;">    
 					<span class="new_add" id="{{ date|date:"U" }}" style="border: 1px solid black; float:left; background-color: #b3f1d2;" onclick="add_for_date(this)">
-						<p style="margin-right: 6px; margin-left: 6px;display:inline">Add</p>
+							<p style="margin-right: 6px; margin-left: 6px;display:inline">Add</p>
 					</span>
+
 					<div style="display: inline;" id="{{ date|date:"U" }}">
 						{{ date }}
-						<div id="{{ date|date:"U" }}_p_container" class="plus_icon hover_cursor" style="border: 1px solid black; float:right; display: inline;">
-	    					<p id="{{ date|date:"U" }}_p" style="margin-right: 6px; margin-left: 6px;display:inline">+</p>
-						</div>
 					</div>
+					<div id="{{ date|date:"U" }}_p_container" class="plus_icon hover_cursor" style="border: 1px solid black; float:right; display: inline;">
+	    					<p id="{{ date|date:"U" }}_p" style="margin-right: 6px; margin-left: 6px;display:inline">+</p>
+					</div>
+					
 					
 				</div>
 				<div id="{{ date|date:"U" }}_div" style="display: none; width: 100%; overflow-x: auto;">
@@ -322,10 +377,12 @@
 				</div>
 				<br>
 				{% empty %}
-					<p>No expenses yet!</p>
-					<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
+					{% if not query %}
+						<p>No expenses yet!</p>
+						<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
+					{% endif %}
 				{% endfor %}
-	{% endif %}
+			{% endif %}
 				<br>
 
 	<!-- The modal_custom -->

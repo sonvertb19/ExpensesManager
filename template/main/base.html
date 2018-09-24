@@ -83,9 +83,6 @@
 					<li class="nav-item">
 						<a href="{% url 'main:add_expense' %}" class="nav-link">New</a>
 					</li>
-					<li class="nav-item">
-						<a href="{% url 'main:filter_by_date' %}" class="nav-link">FilterByDate</a>
-					</li>
 					{% if not user.is_authenticated %}
 					<li class="nav-item">
 						<a href="{% url 'main:user_registration' %}" class="nav-link">Sign Up</a>

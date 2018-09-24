@@ -26,6 +26,8 @@ from django.contrib.auth.models import User
 
 import json
 
+from django.db.models import Q
+
 def make_dictionary(request):
 
 	dictionary = {}
@@ -42,19 +44,85 @@ def make_dictionary(request):
 
 def get_expenses_in_json(expenses):
 	# print(expenses)
+	# Expenses here are already sorted.
+
+	month_names = ["January", "February", "March", 
+			"April", "May", "June", "July", "August", "September", 
+			"October", "November", "December"]
 
 	prev_date = 0;
+	prev_month = 0;
+	current_month = 0;
+
+	current_month_total = 0
+
 
 	date_wise_expenses = {}
 	grouped_expenses = {}
 	list_of_dates = []
+	list_of_months = []
+	date_wise_total = {}
+	month_wise_total = []
+	
+	index = -1
+	
+	# Creating list of months.
+	for e in expenses:
+
+		# Usng index so that the first 'new_month' : 0 is not added to month_wise_total.
+		index = index  + 1
+		prev_month_str = str(prev_month)
+		current_month = e.date.month
+
+		if(str(current_month) in list_of_months):
+			current_month_total = current_month_total + e.amount
+			# print( str(e.date) + " - " + str(e.amount) )
+			# print("current_month_total = " + str(current_month_total))
+			pass
+		else:
+			#New month Found.
+			# print("#######New Month Found.########")
+
+			#Add it to the list of months.
+			list_of_months.append(str(current_month))
+			# print(list_of_months)
+
+			#Update the monthly total dictionary.
+			if index == 0:
+				pass
+			else:
+				month_wise_total.append(
+											{
+				#Current month will not work here because this code executes...
+				# ...when the month have changed.
+												'month': str(month_names[current_month]),
+												'amount': current_month_total
+											}
+										)
+
+			# print(month_wise_total)
+
+			#Reset current_month_total variable
+			current_month_total = 0
+
+			#Update Previous month
+			prev_month = current_month
+
+	#Updating the last month's expenses.
+	month_wise_total.append(
+								{
+	#here the current month is same, hrnce no +1.
+								'month': str(month_names[current_month - 1]),
+								'amount': current_month_total
+								}
+							)
+
+	# print(list_of_months)
+	# print(month_wise_total)
 
 	for e in expenses:
 		prev_date_str = str(prev_date)
 		current_date = e.date
-
-		print(e)
-
 
 		if(str(current_date) in date_wise_expenses):
 			# print(str(current_date) + " exists in grouped_expenses.")
@@ -76,7 +144,7 @@ def get_expenses_in_json(expenses):
 			list_of_dates.append(str(current_date))
 
 		# Creating dictionary of current expense.
-		current_expense_dictionary = { 'title': e.title, 'amount': e.amount}
+		current_expense_dictionary = { 'title': e.title, 'amount': e.amount, 'description': e.description}
 
 		# print(current_expense_dictionary)
 
@@ -99,9 +167,10 @@ def get_expenses_in_json(expenses):
 		# 	print("\t" + str(grouped_expenses[date]['expenses'][x]['title']) + " - " + str(grouped_expenses[date]['expenses'][x]['amount']) )
 		# print("}")
 
+	# print(date_wise_expenses)
 
 
-	sum_dict = {}
+
 	grand_total = 0
 	for d in date_wise_expenses:
 		# Indexing date wise
@@ -117,24 +186,28 @@ def get_expenses_in_json(expenses):
 		# print("Sum = " + str(sum_e))
 		current_sum_dict = { str(d) : sum_e}
 
-		sum_dict.update(current_sum_dict)
+		date_wise_total.update(current_sum_dict)
 
-	sum_dict_json = json.dumps(sum_dict, sort_keys=True, indent=4)
+	sum_dict_json = json.dumps(date_wise_total, sort_keys=True, indent=4)
 
 	# print(sum_dict_json)
 
 	grouped_expenses.update(
 								{
 									'date_wise_expenses': date_wise_expenses,
-									'date_wise_total': sum_dict,
-									'grand_total': grand_total
+									'date_wise_total': date_wise_total,
+									'grand_total': grand_total,
+									'month_wise_total': month_wise_total,
+									'list_of_months': list_of_months,
+									'list_of_dates': list_of_dates
 								}
 							)
 	
 	grouped_expenses_json = json.dumps(grouped_expenses, sort_keys=True, indent=4)
 	
 	print(grouped_expenses_json)
-	
+	print(month_names)
+
 	return grouped_expenses
 
 
@@ -240,20 +313,51 @@ class ExpenseCreateViewWithDate(LoginRequiredMixin, CreateView):
 class ExpenseDetailView(LoginRequiredMixin, DetailView):
 	model = models.Expense
 
+class ExpenseUpdateView(LoginRequiredMixin, UpdateView):
+	form_class = ExpenseCreateForm
+	model = models.Expense
+
+	def get_context_data(self, **kwargs):
+		# Call the base implementation first to get a context
+		context = super().get_context_data(**kwargs)
+
+		context.update({'ref': 'update'})
+		return context
+
 class ExpenseListView(LoginRequiredMixin, ListView):
 	# model = models.Expense
 	ordering = ['-date']
 
 	def get_queryset(self):
-		e = models.Expense.objects.filter(user = self.request.user,).order_by('-date')
-		# print(type(e))
-		return(e)
+
+		query = self.request.GET.get('query')
+
+		if query:
+			print("Query: " + query)
+			print("Request: " + str(self.request))
+			return models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), user = self.request.user).order_by('-date')
+
+		else:
+
+			e = models.Expense.objects.filter(user = self.request.user,).order_by('-date')
+			# print(type(e))
+			return(e)
 
 
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
 		context = super().get_context_data(**kwargs)
-		expenses = models.Expense.objects.filter(user = self.request.user,).order_by('-date')
+
+		query = self.request.GET.get('query')
+
+		if query:
+			print("Query: " + query)
+			print("Request: " + str(self.request))
+			expenses = models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), user = self.request.user).order_by('-date')
+			context.update({'query': query})
+
+		else:
+			expenses = models.Expense.objects.filter(user = self.request.user,).order_by('-date')
 
 		expenses_json = get_expenses_in_json(expenses)
 		
@@ -266,42 +370,6 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 		context.update(expenses_json)
 		return context
 
-class ExpenseUpdateView(LoginRequiredMixin, UpdateView):
-	form_class = ExpenseCreateForm
-	model = models.Expense
-
-	def get_context_data(self, **kwargs):
-		# Call the base implementation first to get a context
-		context = super().get_context_data(**kwargs)
-
-		context.update({'ref': 'update'})
-		return context
-
-class ExpensesSearchView(LoginRequiredMixin, ListView):
-	# model = models.Expense
-	ordering = ['-date']
-	template_name = "main/search_result.html"
-
-	def get_queryset(self):
-		query = self.request.GET.get('query')
-		print("Query: " + query)
-		print("Request: " + str(self.request))
-
-		return models.Expense.objects.filter(user = self.request.user, title__contains = query).order_by('-date')
-
-
-	def get_context_data(self, **kwargs):
-		# Call the base implementation first to get a context
-		context = super().get_context_data(**kwargs)
-		# Add in a QuerySet of the UserProfileModel
-
-		query = self.request.GET.get('query')
-
-		dictionary = make_dictionary(self.request)
-		context.update(dictionary)
-		context.update({'query': query})
-		return context
-
 class ExpenseDeleteView(LoginRequiredMixin, DeleteView):
 	model = models.Expense
 	success_url = reverse_lazy('main:expense_list')
@@ -310,65 +378,6 @@ class ExpenseDeleteView(LoginRequiredMixin, DeleteView):
 	# Added to avoid confirmation page.
 	def get(self, request, *args, **kwargs):
 		return self.post(request, *args, **kwargs)
-
-@login_required
-def filter_by_date(request):
-
-	if request.method == "POST":
-		formData = FilterForm(request.POST)
-		# print(formData)
-		if formData.is_valid():
-			start_date = formData.cleaned_data['start_date']
-			end_date = formData.cleaned_data['end_date']
-
-			# If start_date is more than end_date
-			if end_date < start_date:
-				dictionaryForm = { 'start_date': datetime.now(), 'end_date': datetime.now() }
-				form = FilterForm(initial = dictionaryForm)
-
-				dictionary = make_dictionary(request)
-				dictionary.update({'form': form, 'error': "start_date can not be more than end_date"})
-				return render(request, 'main/filterForm.html', context=dictionary)
-
-
-		x = models.Expense.objects.filter(date__gte=start_date, date__lte=end_date, user = request.user).order_by('-date')
-
-		expenses_json = get_expenses_in_json(x)
-
-		dictionary = make_dictionary(request)
-		dictionary.update({'expenses': x, 'start_date': start_date, 'end_date': end_date})
-
-		return render(request, "main/filter_by_date.html", context = dictionary)
-
-	else:
-
-		# Making view searchable,search form requests GET with 3 args.
-		if request.GET.get('start_date') and request.GET.get('end_date') and request.GET.get('query'):
-			start_date = request.GET.get('start_date')
-			end_date = request.GET.get('end_date')
-			query = request.GET.get('query')
-
-			x = models.Expense.objects.filter(date__gte=start_date, date__lte=end_date, title__icontains = query, user = request.user).order_by('-date')
-
-			start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
-			end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
-			dictionary.update({'expenses': x, 'start_date': start_date, 'end_date': end_date})
-
-			if query:
-				dictionary.update({'query': query})
-
-			return render(request, "main/filter_by_date.html", context = dictionary)
-
-		# Else, noe search query, render the simple form.
-		else:
-			dictionaryForm = { 'start_date': datetime.now(), 'end_date': datetime.now() }
-			# print(dictionaryForm['start_date'])
-			form = FilterForm(initial = dictionaryForm)
-
-			dictionary = make_dictionary(request)
-			dictionary.update({'form': form})
-
-			return render(request, 'main/filterForm.html', context=dictionary)
 
 class UserRegistration(CreateView):
 	model = User
