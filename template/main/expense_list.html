@@ -299,10 +299,10 @@
 				console.log(address);
 				window.location.assign(address);
 			}
-			function showMonthlyTotal(){
-				document.getElementById('monthly_total').style.display = "inline";
-				document.getElementById('monthly_total_header').innerHTML = "Monthly Total: ";
-			}
+			// function showMonthlyTotal(){
+			// 	document.getElementById('monthly_total').style.display = "inline";
+			// 	document.getElementById('monthly_total_header').innerHTML = "Monthly Total: ";
+			// }
 	    </script>
 
 	    	<p id="main_heading">EXPENSES LIST</p>
@@ -333,14 +333,14 @@
 			<p style = "font-size: 17px">
 				{% if grand_total and grand_total != 0 %}
 				<p>GrandTotal is <strong> Rs {{ grand_total }} </strong></p>
-			    <p id="monthly_total_header">Click <span style="color: blue;" onclick='showMonthlyTotal()'>here </span> to view monthly total.</p>
-		    	<div id="monthly_total" style="display: none;">
-		    		<ol>
-			    		{% for x in month_wise_total %}
-			    			<li><strong>{{ x.month }}</strong> : Rs <strong>{{ x.amount }}</strong></li>
-			    		{% endfor %}
-		    		</ol>
-		    	</div>
+			    <!-- <p id="monthly_total_header">Click <span style="color: blue;" onclick='showMonthlyTotal()'>here </span> to view monthly total.</p> -->
+		    	<!-- <div id="monthly_total" style="display: none;"> -->
+		    		<!-- <ol> -->
+			    		<!-- {% for x in month_wise_total %} -->
+			    			<!-- <li><strong>{{ x.month }}</strong> : Rs <strong>{{ x.amount }}</strong></li> -->
+			    		<!-- {% endfor %} -->
+		    		<!-- </ol> -->
+		    	<!-- </div> -->
 				{% else %}
 				{% endif %}
 			</p>

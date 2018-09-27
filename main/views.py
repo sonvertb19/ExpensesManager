@@ -46,79 +46,79 @@ def get_expenses_in_json(expenses):
 	# print(expenses)
 	# Expenses here are already sorted.
 
-	month_names = ["January", "February", "March", 
-			"April", "May", "June", "July", "August", "September", 
-			"October", "November", "December"]
+	# month_names = ["January", "February", "March", 
+	# 		"April", "May", "June", "July", "August", "September", 
+	# 		"October", "November", "December"]
 
 	prev_date = 0;
-	prev_month = 0;
-	current_month = 0;
+	# prev_month = 0;
+	# current_month = 0;
 
-	current_month_total = 0
+	# current_month_total = 0
 
 
 	date_wise_expenses = {}
 	grouped_expenses = {}
 	list_of_dates = []
-	list_of_months = []
+	# list_of_months = []
 	date_wise_total = {}
-	month_wise_total = []
+	# month_wise_total = []
 	
 	index = -1
 	
 	# Creating list of months.
-	for e in expenses:
+	# for e in expenses:
 
-		# Usng index so that the first 'new_month' : 0 is not added to month_wise_total.
-		index = index  + 1
-		prev_month_str = str(prev_month)
-		current_month = e.date.month
+	# 	# Usng index so that the first 'new_month' : 0 is not added to month_wise_total.
+	# 	index = index  + 1
+	# 	prev_month_str = str(prev_month)
+	# 	current_month = e.date.month
 
-		if(str(current_month) in list_of_months):
-			current_month_total = current_month_total + e.amount
-			# print( str(e.date) + " - " + str(e.amount) )
-			# print("current_month_total = " + str(current_month_total))
-			pass
-		else:
-			#New month Found.
-			# print("#######New Month Found.########")
+	# 	if(str(current_month) in list_of_months):
+	# 		current_month_total = current_month_total + e.amount
+	# 		# print( str(e.date) + " - " + str(e.amount) )
+	# 		# print("current_month_total = " + str(current_month_total))
+	# 		pass
+	# 	else:
+	# 		#New month Found.
+	# 		# print("#######New Month Found.########")
 
-			#Add it to the list of months.
-			list_of_months.append(str(current_month))
-			# print(list_of_months)
+	# 		#Add it to the list of months.
+	# 		list_of_months.append(str(current_month))
+	# 		# print(list_of_months)
 
-			#Update the monthly total dictionary.
-			if index == 0:
-				pass
-			else:
-				month_wise_total.append(
-											{
-				#Current month will not work here because this code executes...
-				# ...when the month have changed.
-												'month': str(month_names[current_month]),
-												'amount': current_month_total
-											}
-										)
+	# 		#Update the monthly total dictionary.
+	# 		if index == 0:
+	# 			pass
+	# 		else:
+	# 			month_wise_total.append(
+	# 										{
+	# 			#Current month will not work here because this code executes...
+	# 			# ...when the month have changed.
+	# 											'month': str(month_names[current_month]),
+	# 											'amount': current_month_total
+	# 										}
+	# 									)
 
-			# print(month_wise_total)
+	# 		# print(month_wise_total)
 
-			#Reset current_month_total variable
-			current_month_total = 0
+	# 		#Reset current_month_total variable
+	# 		current_month_total = 0
 
-			#Update Previous month
-			prev_month = current_month
+	# 		#Update Previous month
+	# 		prev_month = current_month
 
-	#Updating the last month's expenses.
-	month_wise_total.append(
-								{
-	#here the current month is same, hrnce no +1.
-								'month': str(month_names[current_month - 1]),
-								'amount': current_month_total
-								}
-							)
+	# #Updating the last month's expenses.
+	# month_wise_total.append(
+	# 							{
+	# #here the current month is same, hrnce no +1.
+	# 							'month': str(month_names[current_month - 1]),
+	# 							'amount': current_month_total
+	# 							}
+	# 						)
 
-	# print(list_of_months)
-	# print(month_wise_total)
+	# # print(list_of_months)
+	# # print(month_wise_total)
 
 	for e in expenses:
 		prev_date_str = str(prev_date)
@@ -197,8 +197,8 @@ def get_expenses_in_json(expenses):
 									'date_wise_expenses': date_wise_expenses,
 									'date_wise_total': date_wise_total,
 									'grand_total': grand_total,
-									'month_wise_total': month_wise_total,
-									'list_of_months': list_of_months,
+									# 'month_wise_total': month_wise_total,
+									# 'list_of_months': list_of_months,
 									'list_of_dates': list_of_dates
 								}
 							)
@@ -206,7 +206,7 @@ def get_expenses_in_json(expenses):
 	grouped_expenses_json = json.dumps(grouped_expenses, sort_keys=True, indent=4)
 	
 	print(grouped_expenses_json)
-	print(month_names)
+	# print(month_names)
 
 	return grouped_expenses
 
