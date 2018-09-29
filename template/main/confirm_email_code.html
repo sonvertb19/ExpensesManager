@@ -11,18 +11,34 @@
 		<p style="color: green;">Your email is now verified.</p>
 		<p>You can use all the features of the website now!</p>
 	{% else %}
-		{% if incorrect_code == True %}
-			<p style="color: red;">Incorrect Code. Please try again</p>
-		{% endif %}
+		<div class="jumbotron">
+			{% if incorrect_code == True %}
+				<p style="color: red;">Incorrect Code. Please try again</p>
+			{% endif %}
 
-		
-		<p>Enter the code which you have recieved: </p>
-		<p><em>6-Digit Integer</em></p>
-		<form method="POST">
-			{% csrf_token %}
-			<input type="number" min="100000" max="999999" name="code_entered">
-			<input type="submit" class="btn btn-sm btn-success" value="Confirm">
-		</form>
+			<style type="text/css">
+				#headline{
+					color: navy;
+				}
+				/*#code_div{
+					border: 1px solid black;
+				}
+				@media only screen and (max-width: 786px)
+				{
+					#code_input{
+						width: 100%;
+					}
+				}*/
+			</style>
+
+			<h4 id="headline">Check Your Inbox!</h4>
+			<p>A code has been sent to your email: <strong>{{ user.email }}</strong></p>
+			<form method="POST">
+				{% csrf_token %}
+				<input class="container-fulid" id="code_input" type="number" min="100000" max="999999" name="code_entered">
+				<button type="submit" class="btn btn-sm btn-success">Confirm</button>
+			</form>
+		</div>
 	{% endif %}
 
 {% endblock %}

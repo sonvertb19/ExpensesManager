@@ -26,7 +26,8 @@ from django.contrib.auth.models import User
 
 import json
 
-from django.db.models import Q
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth import update_session_auth_hash
 
 def make_dictionary(request):
 
@@ -406,6 +407,7 @@ def create_code(user):
 def send_email_confirmation(request):
 
 	if request.method == "GET":
+		update_code(request.user)
 		x = models.UserEmailConfirmation.objects.get(user = request.user)
 
 		if(x.confirmed):
@@ -415,7 +417,9 @@ def send_email_confirmation(request):
 
 		ret = send_mail(
 			'Confirmation Email for ExpensesManager',
-			'Your email confirmation code is: ' + str(code),
+			'Thank you for trying out the website!' +
+			'<h5>Your email confirmation code is: ' + str(code) + "</h5>" + 
+			'<br>Regards, The ExpensesManager Team.',
 			'phasorx19@gmail.com',
 			[
 				# 'sonvertb19@gmail.com',
@@ -442,3 +446,48 @@ def send_email_confirmation(request):
 		else:
 			return render(request, "main/confirm_email_code.html", context = {'incorrect_code': True})
 
+def update_code(user):
+	x = random.randint(100000, 999999)
+	
+	s = models.UserEmailConfirmation.objects.get(user = user)
+	s.code = x
+	s.save()
+
+
+def ForgotPassword(request):
+
+	if request.method == "GET":
+		return render(request, "main/forgot_password.html")
+
+@login_required
+def ChangePassword(request):
+
+	if request.method == "GET":
+		a = request.GET.get('a')
+		return render(request, "main/change_password.html", context={'a': a})
+	
+	elif request.method == "POST":
+		current_password = request.POST.get('pass1')
+		new_password = request.POST.get('pass2')
+		confirm_new_password = request.POST.get('pass3')
+
+		print(request.POST)
+
+		print(current_password)
+		print(new_password)
+		print(confirm_new_password)
+
+		if new_password != confirm_new_password:
+			print("PASSWORDS DO NOT MATCH")
+			return render(request, "main/change_password.html",{'error': "New passwords do not match."})
+
+		elif check_password(current_password, request.user.password):
+			# If password matches succesfully.
+			request.user.set_password(new_password)
+			request.user.save()
+			# update_session_auth_hash(request, request.user.password)
+			return render(request, "main/user_login.html", {'password_changed': 'yes' })
+
+		else:
+			print("Else")
+			return render(request, "main/change_password.html", {'error': "Invalid Current Password"})

@@ -7,28 +7,50 @@
 
 {% block body_block %}
 
-
 <style type="text/css">
+	#card1{
+		/*border-radius: 7px;*/
+		padding-top: 3px;
+		box-shadow: 2px 4px #dbe8fc;
+		border: 1px solid /*#a4aebf*/ black;
+		background-color: #98c5c2;
+	}
+	#heading_div{
+		border-bottom:	1px solid /*#a4aebf*/ black;
+
+	}
+	#heading{
+		/*padding-left: 10px;*/
+		margin-top: 5px;
+		/*padding-right: 10px;
+		padding-top: 10px;*/
+		margin-bottom: 8px;
+		font-size: 1em;
+	}
+	#content{
+		/*border-bottom-right-radius: 7px;*/
+		/*border-bottom-left-radius: 7px;*/
+	}
+	#email{
+		border-bottom: 0!important;
+	}
 	input:focus{
 		outline: none!important;
 		box-shadow: none!important;
 		border-color: blue!important;
 	}
-	.inputs{
-		border: 0.5px #80bdff solid;
-		border-radius: 0;
+	input{
+		border: 0.5px #80bdff solid!important;
 		background-color: ;
-	}
-	#email{
-		border-bottom: 0;
-	}
-	#loginOrDesc
-	{
-		/*border: 2px black solid;*/
+		height: 36px;
+		padding-left: 5px;
+		border-radius: 0!important;
 	}
 </style>
 
-<div class="continer col-md-4 mx-auto jumbotron" id="loginOrDesc" style="padding-top: 50px; max-width: 350px; background-color: #e1ebf5;">
+
+<!-- Style One -->
+<!-- <div class="continer col-md-4 mx-auto jumbotron" id="loginOrDesc" style="padding-top: 50px; max-width: 350px; background-color: #e1ebf5;">
 
 	<h4 id="heading">Login</h4>
 
@@ -47,8 +69,50 @@
 			<button type="submit" class="btn btn-sm btn-block btn-success">Login</button>
 		</div>
 	</form>
+	
+	<a style="color: white" href="{% url 'main:user_registration' %}"><button class="btn btn-sm btn-info btn-block">New User?</button></a>
+	<br>
+</div> -->
+
+<!-- Style Two -->
+{% if password_changed %}
+	<p style="color: green">Password Changed Successfully</p>
+	<p>For security reasons, you have been logged out from all devices.</p>
+	<p>Please Login Again.</p>
+{% endif %}
+<div id="card1">
+	<div id="heading_div" class="container">
+		<p id="heading"><strong>Login</strong></p>
+	</div>
+
+	<div id="content" style="background-color: /*#c7daed*/ whitesmoke;">
+		
+		<br>
+
+
+		<div class="container">
+			{% if errors %}
+				<p style="color: red">{{ errors }}</p>	
+			{% endif %}
+			
+			<form id="login" action="{% url 'main:user_login' %}" method="POST">
+				{% csrf_token %}
+				<div class="form-group" autocomplete="off">
+						<input type="username" class="form-control inputs" id="email" placeholder="Enter username" name="username" required autocomplete="false" autofocus="true">
+						<input type="password" class="form-control inputs" id="password" placeholder="Enter password" name="password">
+				</div>
+				
+				<div class="form-group">
+					<button type="submit" class="btn btn-sm btn-block btn-success">Login</button>
+				</div>
+			</form>
+			
 			<a style="color: white" href="{% url 'main:user_registration' %}"><button class="btn btn-sm btn-info btn-block">New User?</button></a>
+
 			<br>
 
+		</div>
+	</div>
 </div>
+
 {% endblock %}

@@ -15,4 +15,6 @@ urlpatterns = [
 	path('delete/<int:pk>', views.ExpenseDeleteView.as_view(), name = "expense_delete"),
 	path('registration_success', views.registration_success, name = "registration_success"),
 	path('search/', views.ExpenseListView.as_view(), name="search"),
+	path('forgot_password/', views.ForgotPassword, name ="forgot_password"),
+	path('change_password/', views.ChangePassword, name ="change_password"),
 ]
