@@ -29,6 +29,10 @@ import json
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import update_session_auth_hash
 
+from django.db.models import Q
+
+from django.http import JsonResponse
+
 def make_dictionary(request):
 
 	dictionary = {}
@@ -44,173 +48,89 @@ def make_dictionary(request):
 	return dictionary
 
 def get_expenses_in_json(expenses):
-	# print(expenses)
-	# Expenses here are already sorted.
-
-	# month_names = ["January", "February", "March", 
-	# 		"April", "May", "June", "July", "August", "September", 
-	# 		"October", "November", "December"]
 
 	prev_date = 0;
-	# prev_month = 0;
-	# current_month = 0;
-
-	# current_month_total = 0
-
 
 	date_wise_expenses = {}
-	grouped_expenses = {}
+	present_date_expenses = {}
 	list_of_dates = []
-	# list_of_months = []
 	date_wise_total = {}
-	# month_wise_total = []
-	
-	index = -1
-	
-	# Creating list of months.
-	# for e in expenses:
 
-	# 	# Usng index so that the first 'new_month' : 0 is not added to month_wise_total.
-	# 	index = index  + 1
-	# 	prev_month_str = str(prev_month)
-	# 	current_month = e.date.month
-
-	# 	if(str(current_month) in list_of_months):
-	# 		current_month_total = current_month_total + e.amount
-	# 		# print( str(e.date) + " - " + str(e.amount) )
-	# 		# print("current_month_total = " + str(current_month_total))
-	# 		pass
-	# 	else:
-	# 		#New month Found.
-	# 		# print("#######New Month Found.########")
-
-	# 		#Add it to the list of months.
-	# 		list_of_months.append(str(current_month))
-	# 		# print(list_of_months)
-
-	# 		#Update the monthly total dictionary.
-	# 		if index == 0:
-	# 			pass
-	# 		else:
-	# 			month_wise_total.append(
-	# 										{
-	# 			#Current month will not work here because this code executes...
-	# 			# ...when the month have changed.
-	# 											'month': str(month_names[current_month]),
-	# 											'amount': current_month_total
-	# 										}
-	# 									)
-
-	# 		# print(month_wise_total)
-
-	# 		#Reset current_month_total variable
-	# 		current_month_total = 0
-
-	# 		#Update Previous month
-	# 		prev_month = current_month
-
-	# #Updating the last month's expenses.
-	# month_wise_total.append(
-	# 							{
-	# #here the current month is same, hrnce no +1.
-	# 							'month': str(month_names[current_month - 1]),
-	# 							'amount': current_month_total
-	# 							}
-	# 						)
-
-	# # print(list_of_months)
-	# # print(month_wise_total)
+	grand_total = 0
+	present_date_sum = 0
 
 	for e in expenses:
-		prev_date_str = str(prev_date)
-		current_date = e.date
+		if str(e.date) in list_of_dates:
+			# Date exists in list of dates, i.e. this is NOT the first expense of this date.
 
-		if(str(current_date) in date_wise_expenses):
-			# print(str(current_date) + " exists in grouped_expenses.")
-			pass
+			present_date_sum = present_date_sum + e.amount
+
+			grand_total = grand_total + e.amount
+
+			date_wise_total.update({ str(e.date): present_date_sum })
+
+			present_date_expenses.update(
+											{
+												e.pk: {
+														'title': e.title,
+														'amount': e.amount,
+														'description': e.description
+													}
+											}
+										)
+
+			date_wise_expenses[str(e.date)]['expenses'].update(present_date_expenses)
+
 		else:
-			# Updating dictionary with key as date_name and value as a dictionary an empty-array with its key as expenses.
-			date_wise_expenses.update(	
+			# Date exists in list of dates, i.e. this is the first expense of this date.
+			# It also means that a previous date's expenses ended.
+
+
+
+			list_of_dates.append(str(e.date))
+
+
+			# Initializing the present_date_sum and adding the amount of first expense.
+			present_date_sum = 0
+			present_date_sum = present_date_sum + e.amount
+
+			# Adding to the grand total
+			grand_total = grand_total + e.amount
+
+			date_wise_total.update({ str(e.date): present_date_sum })
+
+			# Creating new object to record all the expenses of the new date and populating it with the first expense.
+			present_date_expenses = {}
+
+			present_date_expenses.update(
+											{
+												e.pk: {
+														'title': e.title,
+														'amount': e.amount,
+														'description': e.description
+													}
+											}
+										)
+			date_wise_expenses.update(
 										{
-											str(current_date): 
-												{ 
-													'expenses': [] 
-												}  
+											str(e.date): {
+												'expenses' : {}
+											}
 										}
 									)
 
-		if(prev_date_str != str(current_date)):
-			# print(current_date)
-			prev_date = current_date
-			list_of_dates.append(str(current_date))
+			date_wise_expenses[str(e.date)]['expenses'].update(present_date_expenses)
 
-		# Creating dictionary of current expense.
-		current_expense_dictionary = { 'title': e.title, 'amount': e.amount, 'description': e.description}
-
-		# print(current_expense_dictionary)
-
-		# Updating the date dictionary with current expense dictionary.
-		date_wise_expenses[str(current_date)]['expenses'].append( current_expense_dictionary )
-		# print("\n" + str(current_date) + ": " + str(grouped_expenses[str(current_date)]))
-
-
-
-	# print("\n")
-	# print(grouped_expenses)
-
-	# for date in grouped_expenses:
-		# print("\n" + date + ": ")
-
-		# print("Total: " + str(len(grouped_expenses[date]['expenses'])))
-
-		# print("{")
-		# for x in range(1, len(grouped_expenses[date]['expenses']) ):
-		# 	print("\t" + str(grouped_expenses[date]['expenses'][x]['title']) + " - " + str(grouped_expenses[date]['expenses'][x]['amount']) )
-		# print("}")
-
-	# print(date_wise_expenses)
-
-
-
-	grand_total = 0
-	for d in date_wise_expenses:
-		# Indexing date wise
-		# print(d)
-
-		sum_e = 0
-		current_expense_list = date_wise_expenses[d]['expenses']
-		for e in current_expense_list:
-			# Indexing expenses wise
-			sum_e = sum_e + e['amount']
-			grand_total = grand_total + e['amount']
-
-		# print("Sum = " + str(sum_e))
-		current_sum_dict = { str(d) : sum_e}
-
-		date_wise_total.update(current_sum_dict)
-
-	sum_dict_json = json.dumps(date_wise_total, sort_keys=True, indent=4)
-
-	# print(sum_dict_json)
-
-	grouped_expenses.update(
-								{
-									'date_wise_expenses': date_wise_expenses,
-									'date_wise_total': date_wise_total,
-									'grand_total': grand_total,
-									# 'month_wise_total': month_wise_total,
-									# 'list_of_months': list_of_months,
-									'list_of_dates': list_of_dates
-								}
-							)
+	# date_wise_expenses = json.dumps(date_wise_expenses, sort_keys=True, indent=4)
+	# date_wise_total = json.dumps(date_wise_total, sort_keys=True, indent=4)
 	
-	grouped_expenses_json = json.dumps(grouped_expenses, sort_keys=True, indent=4)
-	
-	print(grouped_expenses_json)
-	# print(month_names)
+	grouped_expenses_json = {
+								'date_wise_expenses': date_wise_expenses,
+								'date_wise_total': date_wise_total,
+								'grand_total': grand_total
+							}
 
-	return grouped_expenses
-
+	return grouped_expenses_json
 
 def Index(request):
 	dictionary = make_dictionary(request)
@@ -218,7 +138,6 @@ def Index(request):
 	return render(request, "main/index.html", context = dictionary)
 
 def user_login(request):
-
 	if request.user.is_authenticated:
 		return HttpResponseRedirect(reverse('index'))
 	else:
@@ -246,6 +165,7 @@ def user_login(request):
 
 				return render(request, "main/user_login.html", context = user_info)
 
+
 @login_required
 def user_logout(request):
 	logout(request)
@@ -258,13 +178,18 @@ def logout_thanks(request):
 	else:
 		return render(request, "main/logout_thanks.html")
 
+# ref == 'new'
 class ExpenseCreateView(LoginRequiredMixin, CreateView):
 	model = models.Expense
 	form_class = ExpenseCreateForm
 
+	# dictionary = { 'date': datetime.now() }
+	# initial = dictionary
 
-	dictionary = { 'date': datetime.now() }
-	initial = dictionary
+	def get_initial(self):
+		initial = super().get_initial()
+		initial.update({ 'date': datetime.now() })
+		return initial
 
 	def form_valid(self, form):
 		form.instance.user = self.request.user
@@ -279,13 +204,26 @@ class ExpenseCreateView(LoginRequiredMixin, CreateView):
 		context.update({'ref': 'new'})
 		return context
 
+# ref == 'new' and 'date'
 class ExpenseCreateViewWithDate(LoginRequiredMixin, CreateView):
 	model = models.Expense
 	form_class = ExpenseCreateForm
 
+	# dictionary = { 'date': date }
+	# initial = dictionary
 
-	dictionary = { 'date': datetime.now() }
-	initial = dictionary
+	def get_initial(self):
+		initial = super().get_initial()
+
+		date = self.kwargs.get('date')
+
+		print(datetime.now())
+		date = datetime.fromtimestamp(date).strftime('%Y-%m-%d')
+
+		print(date)
+
+		initial.update({ 'date': date })
+		return initial
 
 	def form_valid(self, form):
 		form.instance.user = self.request.user
@@ -299,21 +237,19 @@ class ExpenseCreateViewWithDate(LoginRequiredMixin, CreateView):
 		# print(type(date))
 		datex = datetime.fromtimestamp(date)
 
-		print(datex)
+		# print(datex)
 
 		date_str = datetime.strptime(str(datex), "%Y-%m-%d %H:%M:%S")
 
-		print(date_str)
+		# print(date_str)
 
 		# Add in a QuerySet of the UserProfileModel
 		dictionary = make_dictionary(self.request)
 		context.update(dictionary)
-		context.update({'ref': 'new', 'date': date, 'date_in_str': str(date_str) })
+		context.update({'ref': 'new', 'date': datex, 'date_in_str': str(date_str) })
 		return context
 
-class ExpenseDetailView(LoginRequiredMixin, DetailView):
-	model = models.Expense
-
+# ref == 'update'
 class ExpenseUpdateView(LoginRequiredMixin, UpdateView):
 	form_class = ExpenseCreateForm
 	model = models.Expense
@@ -321,6 +257,9 @@ class ExpenseUpdateView(LoginRequiredMixin, UpdateView):
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
 		context = super().get_context_data(**kwargs)
+
+		dictionary = make_dictionary(self.request)
+		context.update(dictionary)
 
 		context.update({'ref': 'update'})
 		return context
@@ -334,14 +273,11 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 		query = self.request.GET.get('query')
 
 		if query:
-			print("Query: " + query)
-			print("Request: " + str(self.request))
 			return models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), user = self.request.user).order_by('-date')
 
 		else:
 
 			e = models.Expense.objects.filter(user = self.request.user,).order_by('-date')
-			# print(type(e))
 			return(e)
 
 
@@ -352,33 +288,115 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 		query = self.request.GET.get('query')
 
 		if query:
-			print("Query: " + query)
-			print("Request: " + str(self.request))
 			expenses = models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), user = self.request.user).order_by('-date')
 			context.update({'query': query})
 
+			# context.update(expenses_json)
 		else:
 			expenses = models.Expense.objects.filter(user = self.request.user,).order_by('-date')
 
 		expenses_json = get_expenses_in_json(expenses)
-		
-		# sum_dict = {}
-		# Add in a QuerySet of the UserProfileModel
+
+		grand_total = expenses_json['grand_total']
+
+		expenses_json = json.dumps(expenses_json, sort_keys=True, indent=4)
+
+		context.update({'expenses_json': expenses_json, 'grand_total': grand_total})
+
 		dictionary = make_dictionary(self.request)
-		
+
 		context.update(dictionary)
 
-		context.update(expenses_json)
 		return context
 
 class ExpenseDeleteView(LoginRequiredMixin, DeleteView):
 	model = models.Expense
 	success_url = reverse_lazy('main:expense_list')
 
+	def get_context_data(self, **kwargs):
+		# Call the base implementation first to get a context
+		context = super().get_context_data(**kwargs)
+
+		dictionary = make_dictionary(self.request)
+
+		context.update(dictionary)
+
+		return context
 
 	# Added to avoid confirmation page.
 	def get(self, request, *args, **kwargs):
 		return self.post(request, *args, **kwargs)
+
+@login_required
+def filter_by_date(request):
+
+	if request.GET.get('start_date') and request.GET.get('end_date'):
+		# If start_date and end_date exists
+		formData = FilterForm(request.GET)
+		print(formData)
+		if formData.is_valid():
+			start_date = formData.cleaned_data['start_date']
+			end_date = formData.cleaned_data['end_date']
+
+			print("data cleaned")
+
+			# If start_date is more than end_date
+			if end_date < start_date:
+				dictionaryForm = { 'start_date': datetime.now(), 'end_date': datetime.now() }
+				form = FilterForm(initial = dictionaryForm)
+
+				print("start date greater error")
+
+
+				dictionary = make_dictionary(request)
+				dictionary.update({'form': form, 'error': "'Start Date' can not be more than 'End Date"})
+				return render(request, 'main/filter_by_date_form.html', context=dictionary)
+
+			else:
+			# Start and End Date OK.
+				print("Start and End Date OK.")
+				# Now check if query exists
+				if request.GET.get('query'):
+					# Filter using query also.
+					
+					query = request.GET.get('query')
+					print("query exists")
+
+					dictionary = make_dictionary(request)
+					x = models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), date__gte=start_date, date__lte=end_date, user = request.user).order_by('-date')
+					dictionary.update({'query': request.GET.get('query')})
+				else:
+					# i.e. no query
+					# Filter without query.
+					print("query does not exist")
+					dictionary = make_dictionary(request)
+					x = models.Expense.objects.filter(date__gte=start_date, date__lte=end_date, user = request.user).order_by('-date')
+
+		print(start_date)
+		print(end_date)
+		dictionary.update({'expense_list': x, 'start_date': start_date, 'end_date': end_date})
+
+		expenses_json = get_expenses_in_json(x)
+
+		grand_total = expenses_json['grand_total']
+
+		expenses_json = json.dumps(expenses_json, sort_keys=True, indent=4)
+
+		dictionary.update({'expenses_json': expenses_json, 'grand_total': grand_total})
+
+		return render(request, "main/filter_by_date_result.html", context = dictionary)
+
+
+	else:
+		# No start_date and end_date exists.
+		# i.e. Page opened to see form.
+		dictionaryForm = { 'start_date': datetime.now(), 'end_date': datetime.now() }
+		form = FilterForm(initial = dictionaryForm)
+
+		dictionary = make_dictionary(request)
+		dictionary.update({'form': form})
+
+		return render(request, 'main/filter_by_date_form.html', context=dictionary)
 
 class UserRegistration(CreateView):
 	model = User
@@ -401,13 +419,18 @@ def registration_success(request):
 def create_code(user):
 	x = random.randint(100000, 999999)
 	
-	models.UserEmailConfirmation.objects.create(user = user, code = x)
+	print(user)
+	print(type(user))
+
+	s = models.UserEmailConfirmation.objects.get(user = user)
+	s.code = x
+	s.save()
 
 @login_required
 def send_email_confirmation(request):
 
 	if request.method == "GET":
-		update_code(request.user)
+		create_code(request.user)
 		x = models.UserEmailConfirmation.objects.get(user = request.user)
 
 		if(x.confirmed):
@@ -417,9 +440,9 @@ def send_email_confirmation(request):
 
 		ret = send_mail(
 			'Confirmation Email for ExpensesManager',
-			'Thank you for trying out the website!' +
-			'<h5>Your email confirmation code is: ' + str(code) + "</h5>" + 
-			'<br>Regards, The ExpensesManager Team.',
+			'Hi, ' + request.user.first_name + ' ' +
+			'Thank you for trying out the website! ' +
+			'Your email confirmation code is: ' + str(code),
 			'phasorx19@gmail.com',
 			[
 				# 'sonvertb19@gmail.com',
@@ -446,48 +469,232 @@ def send_email_confirmation(request):
 		else:
 			return render(request, "main/confirm_email_code.html", context = {'incorrect_code': True})
 
-def update_code(user):
+def create_code_password_reset(user):
 	x = random.randint(100000, 999999)
 	
+	print(user)
+	print(type(user))
+
 	s = models.UserEmailConfirmation.objects.get(user = user)
 	s.code = x
 	s.save()
-
 
 def ForgotPassword(request):
 
 	if request.method == "GET":
 		return render(request, "main/forgot_password.html")
 
+	if request.method == "POST":
+		email_or_username = request.POST.get('email_or_username')
+
+		email_match = models.User.objects.filter(email = email_or_username)
+		for x in email_match:
+			email_match = x
+
+		if email_match:
+			# Email Match Found
+			print("email match")
+			print(email_match)
+
+			create_code_password_reset(email_match)
+
+			x = models.UserEmailConfirmation.objects.get(user = email_match)
+			code = x.code
+
+			ret = send_mail(
+				'Password Reset Code Expenses Manager',
+				'Hi, ' + email_match.first_name + ' ' +
+				'We have recieved a request for resetting your password.' +
+				'Your password reset code is: ' + str(code) + "",
+				'phasorx19@gmail.com',
+				[
+					# 'sonvertb19@gmail.com',
+					email_match.email,
+				],
+				fail_silently = False,
+				)
+
+			email = email_match.email
+			print("Email found in email match: " + str(email))
+
+			return render(request, "main/forgot_password_email_or_username_match.html", context={'message': "Hurray, we found a matching account!", 'message_color': 'green', 'email_code_sent': 'true', 'email': email})
+		else:
+			# Email match not found
+			username_match = models.User.objects.filter(username = email_or_username)
+			for x in username_match:
+				username_match = x
+
+			if username_match:
+				# Username Match Found
+				print("username match")
+				print(username_match)
+
+				create_code_password_reset(username_match)
+
+				x = models.UserEmailConfirmation.objects.get(user = username_match)
+				code = x.code
+
+				ret = send_mail(
+					'Password Reset Code Expenses Manager',
+					'Hi, ' + username_match.first_name + ' ' +
+					'We have recieved a request for resetting your password.' +
+					'Your password reset code is: ' + str(code) + "",
+					'phasorx19@gmail.com',
+					[
+						# 'sonvertb19@gmail.com',
+						username_match.email,
+					],
+					fail_silently = False,
+					)
+
+				email = username_match.email
+				print("Email found in username match: " + str(email))
+
+				return render(request, "main/forgot_password_email_or_username_match.html", context={'message': "Hurray, we found a matching account!", 'message_color': 'green', 'email_code_sent': 'true', 'email': email})
+			else:
+				# Username match not Found
+				# No match found
+				return render(request, "main/forgot_password.html", context={'message': "Oops! We cound not find any email or username in our records. Please try again!", 'message_color': 'red'})
+
+# Carried from def ForgotPassword
+def confirm_password_reset_code(request):
+
+	# Only POST is method is accepted.
+	if request.method == "POST":
+
+		email = request.POST.get('email')
+		print("Email catched in confirm_password_reset_code: " + str(email))
+
+		print(type(email))
+		print(email)
+
+		code_entered = request.POST.get('code_entered')
+		
+		print("Code recieved from POST: " + str(code_entered))
+
+		u = models.User.objects.get(email = email)
+
+		print("User found from email: " + str(u))
+		
+		email = str(u.email)
+
+		print("Email found from user: " + str(email))
+
+		x = models.UserEmailConfirmation.objects.get(user = u)
+
+		print("Confirmation Code from database: " + str(x.code))
+
+		print("type of x.code = " + str(type(x.code)))
+
+
+
+		if x.code == int(code_entered):
+			# Show password Reset Page.
+			return render(request, "main/reset_password.html", context = {'email': email})
+		else:
+			# Invalid Password reset code.
+			return render(request, "main/forgot_password_email_or_username_match.html", context = {'incorrect_code': True, 'email': email})	
+		# return HttpResponse("Test OK")
+
+	else:
+		# If method is not POST
+		return HttpResponse("<h3>Invalid request method, Only POST accepted.</h3>")
+
+# Carried from def confirm_password_reset_code
+def reset_password(request):
+
+	context = {}
+
+	# Only POST is method is accepted.
+	if request.method == "POST":
+
+		email = request.POST.get('email')
+
+		u = models.User.objects.get(email = email)
+		
+		new_password = request.POST.get('pass1')
+		confirm_new_password = request.POST.get('pass2')
+		
+		if new_password != confirm_new_password:
+			print("PASSWORDS DO NOT MATCH")
+
+			context.update({'error': "Entered passwords do not match.", 'email': email})
+
+			return render(request, "main/reset_password.html", context=context)
+
+		else:
+			# If password matches succesfully.
+
+			u.set_password(new_password)
+			u.save()
+			# update_session_auth_hash(request, request.user.password)
+
+			return HttpResponseRedirect(reverse('main:password_changed'))
+
+	else:
+		# If method is not POST
+		return HttpResponse("<h3>Invalid request method, Only POST accepted.</h3>")	
+
 @login_required
 def ChangePassword(request):
 
 	if request.method == "GET":
 		a = request.GET.get('a')
-		return render(request, "main/change_password.html", context={'a': a})
+		context={'a': a}
+
+		dictionary = make_dictionary(request)
+		context.update(dictionary)
+
+		return render(request, "main/change_password.html", context)
 	
 	elif request.method == "POST":
+
+		context = {}
+
+		dictionary = make_dictionary(request)
+		context.update(dictionary)
+
 		current_password = request.POST.get('pass1')
 		new_password = request.POST.get('pass2')
 		confirm_new_password = request.POST.get('pass3')
 
-		print(request.POST)
-
-		print(current_password)
-		print(new_password)
-		print(confirm_new_password)
-
 		if new_password != confirm_new_password:
 			print("PASSWORDS DO NOT MATCH")
-			return render(request, "main/change_password.html",{'error': "New passwords do not match."})
+
+			context.update({'error': "New passwords do not match."})
+
+			return render(request, "main/change_password.html", context)
 
 		elif check_password(current_password, request.user.password):
 			# If password matches succesfully.
 			request.user.set_password(new_password)
 			request.user.save()
 			# update_session_auth_hash(request, request.user.password)
-			return render(request, "main/user_login.html", {'password_changed': 'yes' })
+
+			return HttpResponseRedirect(reverse('main:password_changed'))
 
 		else:
 			print("Else")
-			return render(request, "main/change_password.html", {'error': "Invalid Current Password"})
+
+			context.update({'error': "Invalid Current Password"})
+
+			return render(request, "main/change_password.html", context)
+
+@login_required
+def description_api(request, **kwargs):
+
+	pk = kwargs.get('pk')
+
+	e = models.Expense.objects.get(pk = pk)
+
+	d = e.description
+
+	d = d.replace("\n", "<br/>")
+
+	if e.user == request.user:
+		return JsonResponse({"pk": pk, "description": d})
+	else:
+		return JsonResponse({"error_code": "Error 403", "error_descrition": "Unauthorised User"})
+
+def password_changed(request):
+	return render(request, 'main/password_changed.html')

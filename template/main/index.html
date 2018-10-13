@@ -6,8 +6,17 @@
 
 
 {% block body_block %}
-	<div class="jumbotron" style="background-color: #e1ebf5">
-		<h3>Welcome to the ExpensesManager</h3>
+	<style type="text/css">
+	#card{
+		background-color: #e1ebf5;
+		box-shadow: 2px 1px 2px 1px #dbe8fc;
+		border-radius: 7px;
+		border: 0.5px solid #a4aebf;
+		/*padding: 20px 15px 20px 15px;*/
+	}
+	</style>
+	<div id="card" class="jumbotron">
+		<h3>Welcome to the <span style="font-family: 'Concert One', cursive;">ExpensesManager</span></h3>
 		{% if user.is_authenticated %}
 			<p>Logged in as <strong style="color: blue">{{ user.first_name|title }} {{ user.last_name|title }}</strong></p>
 			<p>Click <a href="{% url 'main:expense_list' %}">here</a> to see list of all expenses.</p>

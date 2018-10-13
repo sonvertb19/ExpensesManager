@@ -7,61 +7,70 @@
 
 
 {% block body_block %}
+
 	{% if confirmed == False %}
 		<p style="color: red;">Your email is not confirmed.You can only add expenses but can not view them.</p>
 	{% else %}
 		<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="crossorigin="anonymous"></script> 
 
-	<!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
-
-	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script> -->
-	<!-- <script src="https://unpkg.com/jspdf-autotable@2.3.1/dist/jspdf.plugin.autotable.js"></script> -->
-		<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
 		<style type="text/css">
 			table, th, td{
-				border:solid black 1px;
+				/*border:solid black 1px;*/
 				padding-left: 5px;
 				padding-right: 5px;
+				/*border-top: 1px #0850b6 solid;*/
 			}
 			td{
 				width: 100%;
+				border-top: 1px solid black;
 			}
 			th{
 				width: 70%;
+				border-top: 1px solid black;
+			}
+			thead>tr{
+				border:none!important;
 			}
 			.hover_cursor:hover{
 				cursor: pointer;
 			}
-			.dropdown_button{
-				border:1px solid black;
-			}
-			.dropdown_button:focus{
-				box-shadow: none;
+			.main_table_div{
+				/*background-color: #e1ebf5;*/
+				box-shadow: 3px 3px 3px #dbe8fc;
+				border-radius: 7px;
+				border: 1px solid black;
+				border-top-left-radius: 0px;
+				border-top-right-radius: 0px;
+				background-color: #d7e8f9;
+				border-top: none;
 			}
 			.main_table{
 				/*border-top: 0;*/
 				width: 100%;
-				background-color: #e1ebf5;
+				/*background-color: white;*/
+				/*background-color: #e1ebf5;*/
+				background-color: #d7e8f9;
 			}
 			.new_add:hover{
-				background-color: blue;
+				background-color: whitesmoke;
 				cursor: pointer;
 			}
 			#search_bar{
-				border-radius: 0;
-				border-right: 0;
+				border-top-left-radius: 7px;
+				border-bottom-left-radius: 7px;
 				border: 1px solid black;
 			}
 			#search_bar:focus{
-				border-radius: 0;
 				box-shadow: none;
 				outline: 0;
 			}
 			#search_button{
 				border-radius: 0;
+				border-top-right-radius: 7px;
+				border-bottom-right-radius: 7px;
 				border: 1px solid black;
 				border-left: none;
-				background-color: rgb(152, 197, 194);
+				background-color: rgb(164, 197, 243);
 			}
 
 			{% if query %}
@@ -70,8 +79,9 @@
 					color: #000000;
 				}
 				#search_query_tagline{
-					display: block;
+					display: inline-block;
 					margin-top: 5px;
+					color: green;
 				}
 				#search_div{
 					margin: 0;
@@ -82,49 +92,22 @@
 					font-size: 30px;
 					color: #000000;
 					text-align: center;
-				}
+					}
 				#search_query_tagline{
 					display: none;
 				}
 	    	{% endif %}
 		</style>
 
-		<script id = "json_data" type="text/javascript">{as: 'asas'}</script>
 		<script type="text/javascript">
 			$(document).ready(function(){
-
-				// var grouped_expenses_json = JSON.parse('{{date_wise_expenses}}');
-				var a = document.getElementById('json_data').innerHTML;
-				// console.log(a);
 
 				{% regroup expense_list by date as regrouped_expense_list %}
 
 					{% for date, expense_data in regrouped_expense_list %}
 
-						$("#{{ date|date:"U" }}_p_container").click(function(){
-							//Toogling the '-' or '+' sign.
-							var val = $("#{{ date|date:"U" }}_p").html();
-							if(val == '+')
-							{
-								$("#{{ date|date:"U" }}_p").html('-');
-								$("#{{ date|date:"U" }}_p").css("margin-right", "8.5px");
-								$("#{{ date|date:"U" }}_p").css("margin-left", "8.5px");
-								$("#{{ date|date:"U" }}_p_container").css("background-color", "rgba(255, 255, 255, 0.8)");
-							}
-
-							if(val == '-')
-							{
-								$("#{{ date|date:"U" }}_p").html('+');
-								$("#{{ date|date:"U" }}_p").css("margin-right", "6px");
-								$("#{{ date|date:"U" }}_p").css("margin-left", "6px");
-								$("#{{ date|date:"U" }}_p_container").css("background-color", "#98c5c2");
-
-							}
-							
-							$("#{{ date|date:"U" }}_div").slideToggle("slow")
-						});
-
-						var t = 0;
+							// Totalling All the Dayily Expenses and Appending it to the last table row.
+							var t = 0;
 							{% for e in expense_data %}
 								{% if forloop.counter0 == 0 %}
 								{% endif %}
@@ -133,22 +116,20 @@
 									a = "<tr><th style = 'text-align:right'>Total: </th><td><strong>Rs " + t + "</strong></td></tr>"
 									$("#{{ date|date:"U" }}_table").append(a);
 
-						//In case of a search, the code will execute for all, but in case of not query, it will execute only for counter0.	
+							// Hiding/Unhiding the tables as per the page type.
 							{% if query %}
+								//In case of a search, the code will execute for all, but in case of not query, it will execute only for counter0.	
+								$("#{{ date|date:"U" }}_div").slideToggle();
+								$("#{{ date|date:"U" }}_p").html('-');
+
+							{% else %}
+								//No Query, general list.
+								//Showing the first table only.
+								{% if forloop.counter0 == 0 %}
 
 								$("#{{ date|date:"U" }}_div").slideToggle("slow");
 								$("#{{ date|date:"U" }}_p").html('-');
-								$("#{{ date|date:"U" }}_p").css("margin-right", "8.5px");
-								$("#{{ date|date:"U" }}_p").css("margin-left", "8.5px");
-								$("#{{ date|date:"U" }}_p_container").css("background-color", "rgba(255, 255, 255, 0.8)");
-							{% else %}
-								//No Query, general list.
-								{% if forloop.counter0 == 0 %}
-								$("#{{ date|date:"U" }}_div").slideToggle("slow");
-								$("#{{ date|date:"U" }}_p").html('-');
-								$("#{{ date|date:"U" }}_p").css("margin-right", "8.5px");
-								$("#{{ date|date:"U" }}_p").css("margin-left", "8.5px");
-								$("#{{ date|date:"U" }}_p_container").css("background-color", "rgba(255, 255, 255, 0.8)");
+
 								{% endif %}
 
 							{% endif %}						
@@ -156,142 +137,10 @@
 			})
 		</script>
 
-		<!-- PDF creation Script using jsPDF-autoTable-plugin -->
-	    <!-- <script type="text/javascript">
-			function generate() {
-
-				var month_names = new Array("January", "February", "March", 
-				"April", "May", "June", "July", "August", "September", 
-				"October", "November", "December");
-
-				tableObjects = document.getElementsByTagName('table');
-
-				var tableIdArray = []
-				var previousY = 0
-				var doc = new jsPDF('p', 'pt');
-
-				//Creating array of table ID's.
-				for (var i = 0 ; i < tableObjects.length ; i++)
-				{
-					xx = i+1
-					indexOfUnderscore = tableObjects[i].id.indexOf("_");
-					tableIdArray[i] = tableObjects[i].id.toString().slice(0, indexOfUnderscore);
-
-					//Required in JavaScript
-					s = tableIdArray[i] + "000";
-					x = tableIdArray[i];
-
-					//Getting date from unixEpoh
-					date = new Date(parseInt(s))
-					s = date.getDate().toString() + "-" + month_names[date.getMonth()] + "-" + date.getFullYear()
-
-					if (i == 0)
-					{
-						endDate = s;
-					}
-
-					if(i == tableObjects.length - 1)
-					{
-						startDate = s;
-					}
-				}
-
-				doc.setFontSize(12);
-				doc.setTextColor(40);
-
-				d = new Date()
-				userDetails = " Downloaded by {{ user.first_name }} {{ user.last_name }} on " + d.getDate().toString() + "-" + month_names[d.getMonth()] + "-" + d.getFullYear() + " at " + d.toLocaleTimeString()
-
-				doc.text(userDetails , 40, 30);
-
-
-				doc.setFontSize(17);
-				doc.setTextColor(40);
-				message = "Expenses Report from " + startDate + " to " + endDate
-				doc.text(message , 40, 55);
-
-
-				for (var i = 0 ; i < tableObjects.length ; i++)
-				{
-					doc.setFontSize(5);
-					//Required in JavaScript
-					s = tableIdArray[i] + "000";
-					x = tableIdArray[i];
-
-					//Getting date from unixEpoh
-					date = new Date(parseInt(s))
-					s = date.getDate().toString() + "-" + month_names[date.getMonth()] + "-" + date.getFullYear()
-
-					id = x + "_table"
-
-					pageNumberBeforeTablePrinting = doc.internal.getCurrentPageInfo().pageNumber
-
-
-					var header = function(data) {
-						doc.setFontSize(13);
-						doc.setTextColor(40);
-						doc.setFontStyle('normal');
-
-						if (i == 0){
-							doc.text(s , data.settings.margin.left, previousY + 80);
-						}
-
-						else{
-							if(doc.internal.getCurrentPageInfo().pageNumber != pageNumberBeforeTablePrinting)
-							{
-								previousY = 0
-								doc.text(s , data.settings.margin.left, previousY + 50);
-							}
-							else
-							{
-								doc.text(s , data.settings.margin.left, previousY + 50);
-							}
-						}
-					};
-
-
-
-					var options = {
-						theme: 'grid', 
-
-						//Auto paggination makes header text print twice on the same and the following page.
-						margin: { top: 60 },
-						
-						//startY overrides margin top, startY is used when auto paggination does not occur.
-						startY: previousY + 60,
-						pageBreak: "avoid",
-
-						addPageContent: header,
-						//WRAP CELLS ACCORDING TO TEST LENGTH.
-						// styles: {overflow: 'hidden', columnWidth: 'wrap'},
-						// columnStyles: {text: {columnWidth: 'auto'}}
-
-						drawCell: function(cell, data) {
-							var rows = data.table.rows;
-							if (data.row.index == rows.length - 1) {
-								doc.setTextColor("green");
-								doc.setFillColor(220, 220, 220);
-							}
-						}
-					};
-
-					if (i == 0)
-					{
-						options.startY = previousY + 90;
-					}
-					
-					var res = doc.autoTableHtmlToJson(document.getElementById(id));
-
-					doc.autoTable(res.columns, res.data, options);
-
-					previousY = doc.autoTable.previous.finalY;
-				}
-				doc.save("ExpensesList_" + startDate + "_to_" + endDate + ".pdf");
-			}
-	    </script> -->
-
 	    <script type="text/javascript">
-			function add_for_date(a){
+			function add_for_date(event, a){
+				event.stopPropagation();
+
 				date = a.id;
 				console.log(date);
 
@@ -303,36 +152,72 @@
 			// 	document.getElementById('monthly_total').style.display = "inline";
 			// 	document.getElementById('monthly_total_header').innerHTML = "Monthly Total: ";
 			// }
+
+			function toggle_table(event, a) {
+				// event.stopPropagation();
+
+				// alert(event.target.id); 
+
+				// alert(a.id);
+				var id = a.id;
+				var s = id.indexOf("_");
+
+				id = id.slice(0, s);
+
+				var symbol = document.getElementById(id + "_p").innerHTML;
+				symbol = symbol.toString();
+				// alert(symbol);
+
+				$("#" + id + "_div").slideToggle("slow");
+				if(symbol == '+')	
+				{
+					$("#" + id + "_p").html('-');
+				}
+				else if(symbol == '-')
+				{
+					$("#" + id + "_p").html('+');
+				}
+			}
 	    </script>
 
-	    	<p id="main_heading">EXPENSES LIST</p>
-
-			<form id="search_form" action="{% url 'main:search' %}" method="GET">
-				<div id="search_div" class="input-group input-group-sm mb-3">
-					<input type="text" id="search_bar" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query" required>
-					<input type = "submit" id="search_button" class=" btn input-group-text"id="inputGroup-sizing-sm" value = "Search">
-				</div>
-			</form>
-			<!-- Uncomment to get PDF functionality -->
-			<!-- <button class="container-fluid btn btn-primary" style="height: 30px; padding: 0" onClick ="generate()">Download list as PDF</button> -->
-
-			<!-- <hr> -->
-
-
+			
+    	<p id="main_heading">
+    		EXPENSES LIST
 			<!--Only shown when query exists.-->
-			<p style="color: green;" id="search_query_tagline">Expenses containing "{{ query }}"</p>
+    		<span id="search_query_tagline" class="small">
+	    		( Expenses containing "{{ query }}" )
+	    	</span>
+    	</p>
 
-			{% if not regrouped_expense_list %}
+		<form id="search_form" action="{% url 'main:search' %}" method="GET">
+			<div id="search_div" class="input-group input-group-sm mb-3">
+				<input type="text" id="search_bar" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query" required>
+				<input type = "submit" id="search_button" class=" btn input-group-text"id="inputGroup-sizing-sm" value = "Search">
+			</div>
+		</form>
+
+		<!-- Uncomment to get PDF functionality -->
+		<!-- <button class="container-fluid btn btn-primary" style="height: 30px; padding: 0" onClick ="generate()">Download list as PDF</button> -->
+
+		<!-- <hr> -->
+
+
+
+		{% if not regrouped_expense_list %}
+			<!-- If query exists and no regrouped list formed -->
 			{% if query %}
 				<p style="color: red;">0 match found.</p>
-				<a href="javascript:history.back(1)"><button class="btn">Go Back</a></button>
+				<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
+				<a href="javascript:history.back(1)"><button class="btn btn-info">Go Back</button></a>
 			{% endif %}
-			{% endif %}
+		{% endif %}
 
 
-			<p style = "font-size: 17px">
-				{% if grand_total and grand_total != 0 %}
+		<p style = "font-size: 17px">
+			{% if grand_total and grand_total != 0 %}
 				<p>GrandTotal is <strong> Rs {{ grand_total }} </strong></p>
+			{% else %}
+			    
 			    <!-- <p id="monthly_total_header">Click <span style="color: blue;" onclick='showMonthlyTotal()'>here </span> to view monthly total.</p> -->
 		    	<!-- <div id="monthly_total" style="display: none;"> -->
 		    		<!-- <ol> -->
@@ -341,49 +226,51 @@
 			    		<!-- {% endfor %} -->
 		    		<!-- </ol> -->
 		    	<!-- </div> -->
-				{% else %}
-				{% endif %}
-			</p>
 
-			{% for date, expense_data in regrouped_expense_list %}
-
-				<div class="btn btn-block dropdown_button" id = "{{ date|date:'U' }}_dropdown_button" style="background-color: #98c5c2; color: black; border-radius: 0; cursor: default;">    
-					<span class="new_add" id="{{ date|date:"U" }}" style="border: 1px solid black; float:left; background-color: #b3f1d2;" onclick="add_for_date(this)">
-							<p style="margin-right: 6px; margin-left: 6px;display:inline">Add</p>
-					</span>
-
-					<div style="display: inline;" id="{{ date|date:"U" }}">
-						{{ date }}
-					</div>
-					<div id="{{ date|date:"U" }}_p_container" class="plus_icon hover_cursor" style="border: 1px solid black; float:right; display: inline;">
-	    					<p id="{{ date|date:"U" }}_p" style="margin-right: 6px; margin-left: 6px;display:inline">+</p>
-					</div>
-					
-					
-				</div>
-				<div id="{{ date|date:"U" }}_div" style="display: none; width: 100%; overflow-x: auto;">
-					<table id="{{ date|date:"U" }}_table" class="main_table">
-						<thead style="color: green;">
-							<th>Title</th>
-							<td>Amount</td>
-						</thead>
-						{% for e in expense_data %}
-						<tr style="color: blue; cursor: pointer;" onclick="displayDetailedInfo({{date|date:'U'}}, '{{e.pk}}', this)">
-							<th>{{e.title}}</th>
-							<td>Rs {{ e.amount }}</td>
-						</tr>
-						{% endfor %}
-					</table>
-				</div>
-				<br>
-				{% empty %}
-					{% if not query %}
-						<p>No expenses yet!</p>
-						<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
-					{% endif %}
-				{% endfor %}
 			{% endif %}
-				<br>
+		</p>
+
+		{% for date, expense_data in regrouped_expense_list %}
+			<div class="btn btn-block" id = "{{ date|date:'U' }}_dropdown_button" style="background-color: #d7e8f9; color: black; cursor: pointer; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border: 1px solid black; box-shadow: 3px 3px 3px #dbe8fc;" onclick="toggle_table(event, this)">
+				<span class="new_add" id="{{ date|date:"U" }}" style="border: 1px solid black; float:left;background-color: #d7e8f9; color: black; border-radius: 10px;" onclick="add_for_date(event, this)">
+						<span style="padding-left: 6px; padding-right: 6px;">Add</span>
+				</span>
+
+				<div style="display: inline;" id="{{ date|date:"U" }}">
+					{{ date }}
+				</div>
+
+				<span id="{{ date|date:"U" }}_p" style="padding-left: 10px;">+</span>
+												
+			</div>
+
+
+
+			<div id="{{ date|date:"U" }}_div" class="main_table_div" style="display: none; width: 100%; overflow-x: auto;">
+				<table id="{{ date|date:"U" }}_table" class="main_table">
+					<thead style="color: green;">
+						<th>Title</th>
+						<td>Amount</td>
+					</thead>
+					{% for e in expense_data %}
+					<tr style="color: blue; cursor: pointer;" onclick="displayDetailedInfo({{date|date:'U'}}, '{{e.pk}}', this)">
+						<th>{{e.title}}</th>
+						<td>Rs {{ e.amount }}</td>
+					</tr>
+					{% endfor %}
+				</table>
+			</div>
+			
+			<br>
+			{% empty %}
+				{% if not query %}
+					<p>No expenses yet!</p>
+					<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+		
+		<br>
 
 	<!-- The modal_custom -->
 	<div id="mymodal_custom" class="modal_custom">
@@ -395,17 +282,14 @@
 						<h2 id="modal_title" style="margin: 0; color: blue; display:inline-block;">Title</h2>
 						<h5 id="modal_amount" style="margin: 0; color: black; display:inline-block;">Amount</h5>
 				</div>
-				<!-- <div class="modal_custom-header-close close"> -->
-					<!-- <h2 style="margin: 0;">&times;</h2> -->
-				<!-- </div> -->
 			</div>
 			<div class="modal_custom-body">
 				<p id="modal_content_date"></p>
-				<p id="modal_content_description">"#Add Code to get description using JSON";</p>
+				<p id="modal_content_description"></p>
 			</div>
-			<div style="display: flex; justify-content: center; align-items: center;" class="modal_custom-footer">
-				<div id="modal_update_button" style="display: inline-block;">Update</div>
-				<button id="modal_cancel_button" style="display: inline-block;"  class="btn">Cancel</button>
+			<div class="modal_custom-footer">
+				<div id="modal_update_button" style="display: inline-block; float: right;">Update</div>
+				<button id="modal_cancel_button" style="display: inline-block; float: right; background-color: #645fd2; color: white; margin-right: 5px;"  class="btn">Cancel</button>
 			</div>
 		</div>
 
@@ -423,7 +307,7 @@
 		    top: 0;
 		    width: 100%; /* Full width */
 		    height: 100%; /* Full height */
-		    overflow: auto; /* Enable scroll if needed */
+		    overflow: none; /* Enable scroll if needed */
 		    background-color: rgb(0,0,0); /* Fallback color */
 		    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 			justify-content: center;
@@ -438,6 +322,11 @@
 		    border: 1px solid #888;
 		    /*max-width: 80%;  Could be more or less, depending on screen size */
 		    /*min-width: 60%;*/
+			background-color: #e1ebf5;
+			box-shadow: 2px 1px #dbe8fc;
+			border-radius: 7px;
+			border: 0.5px solid #a4aebf;
+			/*padding: 20px 15px 20px 15px;*/
 		}
 		.modal_custom-header-line {
 			/*width: */
@@ -499,17 +388,11 @@
 			amount_node = element.childNodes[3];
 			amount = amount_node.innerHTML;
 
-			// console.log(amoun);
-
 			var modal_update_button = document.getElementById('modal_update_button');
 			modal_update_button.innerHTML = 
 							//Using ard link and not url reverse_lazy
 							"<a class='btn btn-primary' href = '/main/update/" + pk + "'> Update</a>"
 
-			// Get the modal_custom.
-			var modal_custom = document.getElementById('mymodal_custom');
-
-				modal_custom.style.display = "flex";
 
 			var modal_title = document.getElementById('modal_title');
 			modal_title.innerHTML = title;
@@ -520,12 +403,104 @@
 
 			var modal_content_date = document.getElementById('modal_content_date');
 			modal_content_date.innerHTML = "<hr/> <strong>Date: </strong>" + date;
-										
+
+			// var xhttp = new XMLHttpRequest();
+			// 	xhttp.onreadystatechange = function() {
+			// 		if (this.readyState == 4 && this.status == 200) {
+			// 			description_result = this.responseText;
+
+			// 			change_description(description_result);
+			// 		}
+			// 	};
+			// xhttp.open("GET", 
+			// 			window.location.protocol + "//" + window.location.host + "/main/description/" + pk,
+			// 			true);
+			// xhttp.send();
+
+			// function change_description(description_result){
+			// 	description_result = JSON.parse(description_result)
+			// 	// console.log(description_result.description);
+
+			// 	if(description_result.description == "")
+			// 	{
+			// 		document.getElementById('modal_content_description').innerHTML = 
+			// 				"<strong>Description: </strong><br>" + "No Description";
+			// 	}
+			// 	else{
+			// 		document.getElementById('modal_content_description').innerHTML = 
+			// 				"<strong>Description: </strong><br>" + description_result.description;
+			// 	}
+
+			// };
+
+
+			//Storing JSON from special JSON object passed using context
+			//Getting date from unixEpoh
+			//Required in JavaScript
+			s = epoh_date.toString() + "000";
+
+			date = new Date(parseInt(s))
+
+		    day = date.getDate();
+		    month = date.getMonth() + 1;
+		    year = date.getFullYear();
+
+		    //month returns 3 not 03
+		    if(month < 10)
+		    {
+		    	month = "0" + month.toString();
+		    }
+
+		    //day returns 3 not 03
+		    if(day < 10)
+		    {
+		    	day = "0" + day.toString();
+		    }
+
+		    date = year.toString()  + "-" + month + "-" + day;
+
+		    {% if expenses_json %}
+				expenses_array = JSON.parse('{{ expenses_json|escapejs }}')
+
+				console.log(expenses_array);
+
+				console.log(date);
+
+				s = expenses_array["date_wise_expenses"][date];
+
+				x = s['expenses'][pk];
+				description = x.description;
+
+
+				description = description.replace(/(?:\r\n|\r|\n)/g, '<br>');	
+
+				console.log(description)
+				
+				if(description == "")
+				{
+					document.getElementById('modal_content_description').innerHTML = 
+							"<strong>Description: </strong><br>" + "No Description";
+				}
+				else{
+					document.getElementById('modal_content_description').innerHTML = 
+							"<strong>Description: </strong><br>" + description;
+				}
+			{% endif %}
+
+
+
+
+
 
 			var modal_cancel_button = document.getElementById('modal_cancel_button');
 			modal_cancel_button.onclick = function() {
 				modal_custom.style.display = "none";
 			}
+
+			// Get the modal_custom.
+			var modal_custom = document.getElementById('mymodal_custom');
+
+				modal_custom.style.display = "flex";
 
 			// When the user clicks anywhere outside of the modal_custom, close it
 			window.onclick = function(event) {
@@ -534,6 +509,12 @@
 			        modal_custom.style.display = "none";
 			    }
 			}
+
+			$(document).keydown(function(event) { 
+				if (event.keyCode == 27) { 
+					$('#mymodal_custom').hide();
+				}
+			});
 		}
 	</script>
 

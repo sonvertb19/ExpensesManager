@@ -8,9 +8,10 @@
 {% block body_block %}
 
 <style type="text/css">
+
 	body{
 		/*border: 1px solid black;*/
-		background-color: whitesmoke;
+		background-color: white;
 	}
 	*{
 		/*border: 1px solid black;*/
@@ -24,7 +25,8 @@
 		/*background-color: #032e72;*/
 		/*background-color: #f9c8c2;*/
 		/*background-color: whitesmoke;*/
-		width: 340px;
+		max-width: 340px;
+		margin: auto;
 	}
 	#heading_div{
 		/*border-bottom:	1px solid #a4aebf;*/
@@ -61,21 +63,28 @@
 		/*border: 0.5px #80bdff solid!important;*/
 		background-color: ;
 		height: 36px;
-		padding-left: 5px;
+		padding-left: 0!important;
 		border-radius: 0!important;
 		border: none!important;
-		border-bottom: 1px solid #dbe8fc!important;
-		background-color: whitesmoke!important;
+		border-bottom: 1px solid #dfe8ff!important;
+		background-color: white!important;
 		/*background-color: #f7ccbe!important;*/
-
 	}
+
+	@media only screen and (min-width: 600px) {
+	    #card1 {
+	        max-width: 450px;
+	        margin-top: 60px;
+	    }
+	}
+
 </style>
 
-<div id="card1" class="mx-auto">
+
+<div id="card1">
 	<div id="heading_div" class="container">
 		<h4 id="heading">Login</h4>
 	</div>
-
 	<div id="content">
 		
 		<br>
@@ -91,19 +100,21 @@
 			<form id="login" action="{% url 'main:user_login' %}" method="POST">
 				{% csrf_token %}
 				<div class="form-group" autocomplete="off">
-						<input type="username" class="form-control inputs" id="email" placeholder="Enter username" name="username" required autocomplete="false" autofocus="true">
-						<input type="password" class="form-control inputs" id="password" placeholder="Enter password" name="password" required>
-						<p style="margin-top: 10px;">
-							<a href="{% url 'main:forgot_password' %}" style="font-size: 15px; color: black;">Forgot Password?</a>
-						</p>
+						<input type="username" class="form-control inputs" id="email" placeholder="Enter username" name="username" required autocomplete="off" autofocus="true">
 				</div>
 				
-				<div class="form-group">
-					<button type="submit" class="btn btn-sm btn-block btn-success">Login</button>
-				</div>
+				<br>
+				<!-- <div style="border: 1px solid black"> -->
+					<div style="display: inline;">
+						<button style="background-color: whitesmoke;" class="btn" href=""><a href="{% url 'main:user_registration' %}">Create Account</a></button>
+					</div>
+					<div style="display: inline; float: right">
+						<button style="background-color: #0850b6; color: white;" type="submit"  class="btn">Next</button>
+					</div>
+				<!-- </div> -->
 			</form>
 			
-			<a style="color: white" href="{% url 'main:user_registration' %}"><button class="btn btn-sm btn-info btn-block">New User?</button></a>
+			<!-- <a style="color: white" href="{% url 'main:user_registration' %}"><button class="btn btn-sm btn-info btn-block">New User?</button></a> -->
 
 			<br>
 

@@ -1,0 +1,526 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title_block %}
+	<title>Expense List</title>
+{% endblock %}
+
+
+{% block body_block %}
+	{% if confirmed == False %}
+		<p style="color: red;">Your email is not confirmed.You can only add expenses but can not view them.</p>
+	{% else %}
+		<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="crossorigin="anonymous"></script> 
+
+		<style type="text/css">
+			table, th, td{
+				/*border:solid black 1px;*/
+				padding-left: 5px;
+				padding-right: 5px;
+				border-bottom: 1px #0850b6 solid;
+			}
+			td{
+				width: 100%;
+			}
+			th{
+				width: 70%;
+			}
+			.hover_cursor:hover{
+				cursor: pointer;
+			}
+			.main_table_div{
+				background-color: #e1ebf5;
+				box-shadow: 2px 1px #dbe8fc;
+				border-radius: 7px;
+				border: 0.5px solid #a4aebf;
+				border-top-left-radius: 0px;
+				border-top-right-radius: 0px;
+			}
+			.main_table{
+				/*border-top: 0;*/
+				width: 100%;
+				/*background-color: #e1ebf5;*/
+				background-color: #d7e8f9;
+			}
+			.new_add:hover{
+				background-color: blue;
+				cursor: pointer;
+			}
+			#search_bar{
+				border-top-left-radius: 7px;
+				border-bottom-left-radius: 7px;
+				border: 1px solid black;
+			}
+			#search_bar:focus{
+				box-shadow: none;
+				outline: 0;
+			}
+			#search_button{
+				border-radius: 0;
+				border-top-right-radius: 7px;
+				border-bottom-right-radius: 7px;
+				border: 1px solid black;
+				border-left: none;
+				background-color: rgb(152, 197, 194);
+			}
+
+			{% if query or start_date %}
+				#main_heading{
+					font-size: 20px;
+					color: #000000;
+				}
+				#search_query_tagline{
+					display: inline-block;
+					margin-top: 5px;
+					color: green;
+				}
+				#search_div{
+					margin: 0;
+					padding: 0;
+				}
+			{% else %}
+				#main_heading{
+					font-size: 30px;
+					color: #000000;
+					text-align: center;
+					}
+				#search_query_tagline{
+					display: none;
+				}
+	    	{% endif %}
+		</style>
+
+		<script type="text/javascript">
+			$(document).ready(function(){
+
+				{% regroup expense_list by date as regrouped_expense_list %}
+
+					{% for date, expense_data in regrouped_expense_list %}
+
+							// Totalling All the Dayily Expenses and Appending it to the last table row.
+							var t = 0;
+							{% for e in expense_data %}
+								{% if forloop.counter0 == 0 %}
+								{% endif %}
+								t += {{ e.amount }};
+							{% endfor %}
+									a = "<tr><th style = 'text-align:right'>Total: </th><td><strong>Rs " + t + "</strong></td></tr>"
+									$("#{{ date|date:"U" }}_table").append(a);
+
+							// Hiding/Unhiding the tables as per the page type.
+							{% if query %}
+								//In case of a search, the code will execute for all, but in case of not query, it will execute only for counter0.	
+								$("#{{ date|date:"U" }}_div").slideToggle();
+								$("#{{ date|date:"U" }}_p").html('-');
+
+							{% else %}
+								//No Query, general list.
+								//Showing the first table only.
+								{% if forloop.counter0 == 0 %}
+
+								$("#{{ date|date:"U" }}_div").slideToggle("slow");
+								$("#{{ date|date:"U" }}_p").html('-');
+
+								{% endif %}
+
+							{% endif %}						
+					{% endfor %}
+			})
+		</script>
+
+	    <script type="text/javascript">
+			function add_for_date(event, a){
+				event.stopPropagation();
+
+				date = a.id;
+				console.log(date);
+
+				var address = window.location.protocol + "//" + window.location.host + "/main/add/" + date;
+				console.log(address);
+				window.location.assign(address);
+			}
+			// function showMonthlyTotal(){
+			// 	document.getElementById('monthly_total').style.display = "inline";
+			// 	document.getElementById('monthly_total_header').innerHTML = "Monthly Total: ";
+			// }
+
+			function toggle_table(event, a) {
+				// event.stopPropagation();
+
+				// alert(event.target.id); 
+
+				// alert(a.id);
+				var id = a.id;
+				var s = id.indexOf("_");
+
+				id = id.slice(0, s);
+
+				var symbol = document.getElementById(id + "_p").innerHTML;
+				symbol = symbol.toString();
+				// alert(symbol);
+
+				$("#" + id + "_div").slideToggle("slow");
+				if(symbol == '+')	
+				{
+					$("#" + id + "_p").html('-');
+				}
+				else if(symbol == '-')
+				{
+					$("#" + id + "_p").html('+');
+				}
+			}
+	    </script>
+
+			
+    	<p id="main_heading">
+    		EXPENSES LIST
+			<!--Only shown when query exists.-->
+    		<span id="search_query_tagline" class="small">
+	    		( 
+	    			Expenses 
+
+	    			{% if start_date %} 
+	    				from <span style="color: blue">{{ start_date }} to {{ end_date }} </span>
+	    			{% endif %}
+	    			
+	    			{% if query %} 
+	    				containing <span style="color: blue">"{{ query }}" </span>
+    				{% endif %}
+    			)
+	    	</span>
+    	</p>
+
+		<form id="search_form" action="{% url 'main:filter_by_date' %}" method="GET">
+			<div id="search_div" class="input-group input-group-sm mb-3">
+				{% csrf_token %}
+				<input type="hidden" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+				<input type="hidden" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+				<input type="text" id="search_bar" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query" required>
+				<input type = "submit" id="search_button" class=" btn input-group-text"id="inputGroup-sizing-sm" value = "Search">
+			</div>
+		</form>
+
+		<!-- Uncomment to get PDF functionality -->
+		<!-- <button class="container-fluid btn btn-primary" style="height: 30px; padding: 0" onClick ="generate()">Download list as PDF</button> -->
+
+		<!-- <hr> -->
+
+
+
+		{% if not regrouped_expense_list %}
+			<!-- If query exists and no regrouped list formed -->
+			{% if query %}
+				<p style="color: red;">0 match found.</p>
+				<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
+				<a href="javascript:history.back(1)"><button class="btn btn-info">Go Back</button></a>
+			{% endif %}
+		{% endif %}
+
+
+		<p style = "font-size: 17px">
+			{% if grand_total and grand_total != 0 %}
+				<p>GrandTotal is <strong> Rs {{ grand_total }} </strong></p>
+			{% else %}
+			    
+			    <!-- <p id="monthly_total_header">Click <span style="color: blue;" onclick='showMonthlyTotal()'>here </span> to view monthly total.</p> -->
+		    	<!-- <div id="monthly_total" style="display: none;"> -->
+		    		<!-- <ol> -->
+			    		<!-- {% for x in month_wise_total %} -->
+			    			<!-- <li><strong>{{ x.month }}</strong> : Rs <strong>{{ x.amount }}</strong></li> -->
+			    		<!-- {% endfor %} -->
+		    		<!-- </ol> -->
+		    	<!-- </div> -->
+
+			{% endif %}
+		</p>
+
+		{% for date, expense_data in regrouped_expense_list %}
+			<div class="btn btn-block" id = "{{ date|date:'U' }}_dropdown_button" style="background-color: #0850b6; color: white; cursor: pointer; border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; box-shadow: 2px 1px #dbe8fc;" onclick="toggle_table(event, this)">
+				<span class="new_add" id="{{ date|date:"U" }}" style="border: 1px solid white; float:left;background-color: #0850b6; border-radius: 10px;" onclick="add_for_date(event, this)">
+						<span style="padding-left: 6px; padding-right: 6px;">Add</span>
+				</span>
+
+				<div style="display: inline;" id="{{ date|date:"U" }}">
+					{{ date }}
+				</div>
+
+				<span id="{{ date|date:"U" }}_p" style="padding-left: 10px;">+</span>
+												
+			</div>
+
+
+
+			<div id="{{ date|date:"U" }}_div" class="main_table_div" style="display: none; width: 100%; overflow-x: auto;">
+				<table id="{{ date|date:"U" }}_table" class="main_table">
+					<thead style="color: green; border-bottom: 1px solid black;">
+						<th>Title</th>
+						<td>Amount</td>
+					</thead>
+					{% for e in expense_data %}
+					<tr style="color: blue; cursor: pointer;" onclick="displayDetailedInfo({{date|date:'U'}}, '{{e.pk}}', this)">
+						<th>{{e.title}}</th>
+						<td>Rs {{ e.amount }}</td>
+					</tr>
+					{% endfor %}
+				</table>
+			</div>
+			
+			<br>
+			{% empty %}
+				{% if not query %}
+					<p>No expenses yet!</p>
+					<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+		
+		<br>
+
+	<!-- The modal_custom -->
+	<div id="mymodal_custom" class="modal_custom">
+
+		<!-- modal_custom content -->
+		<div class="modal_custom-content">
+			<div class="modal_custom-header">
+				<div class="modal_custom-header-line">
+						<h2 id="modal_title" style="margin: 0; color: blue; display:inline-block;">Title</h2>
+						<h5 id="modal_amount" style="margin: 0; color: black; display:inline-block;">Amount</h5>
+				</div>
+			</div>
+			<div class="modal_custom-body">
+				<p id="modal_content_date"></p>
+				<p id="modal_content_description"></p>
+			</div>
+			<div class="modal_custom-footer">
+				<div id="modal_update_button" style="display: inline-block; float: right;">Update</div>
+				<button id="modal_cancel_button" style="display: inline-block; float: right;"  class="btn">Cancel</button>
+			</div>
+		</div>
+
+	</div>
+
+	<!-- modal_custom Styling -->
+	<style type="text/css">
+
+		/* The modal_custom (background) */
+		.modal_custom {
+		    display: none;
+		    position: fixed; /* Stay in place */
+		    z-index: 1; /* Sit on top */
+		    left: 0;
+		    top: 0;
+		    width: 100%; /* Full width */
+		    height: 100%; /* Full height */
+		    overflow: none; /* Enable scroll if needed */
+		    background-color: rgb(0,0,0); /* Fallback color */
+		    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+			justify-content: center;
+			align-items: center; 
+		}
+
+		/* modal_custom Content/Box */
+		.modal_custom-content {
+		    background-color: #a6d0cd;
+		    margin: 20% auto; /* 15% from the top and centered */
+		    padding: 20px;
+		    border: 1px solid #888;
+		    /*max-width: 80%;  Could be more or less, depending on screen size */
+		    /*min-width: 60%;*/
+			background-color: #e1ebf5;
+			box-shadow: 2px 1px #dbe8fc;
+			border-radius: 7px;
+			border: 0.5px solid #a4aebf;
+			/*padding: 20px 15px 20px 15px;*/
+		}
+		.modal_custom-header-line {
+			/*width: */
+			display: inline-block;
+		}
+		/* The Close Button */
+		.modal_custom-header-close {
+		    color: #730edc;
+		    float: right;
+		    /*display: inline;*/
+		    font-size: 28px;
+		    font-weight: bold;
+		}
+
+		/*Close button hidden.*/
+		/*.close:hover,
+		.close:focus {
+		    color: black;
+		    text-decoration: none;
+		    cursor: pointer;
+		}*/
+
+
+		.modal_custom-header {
+		    padding: 2px 16px;
+		    /*background-color: #5cb85c;*/
+		    color: white;
+		}
+
+		.modal_custom-body {padding: 2px 16px;}
+
+		.modal_custom-footer {
+		    padding: 2px 16px;
+		    /*background-color: #5cb85c;*/
+		    color: white;
+		}
+	</style>
+
+	<!-- JavaScript for modal_custom -->
+	<script type="text/javascript">
+		function displayDetailedInfo(epoh_date, pk, element){
+
+			var month_names = new Array("January", "February", "March", 
+			"April", "May", "June", "July", "August", "September", 
+			"October", "November", "December");
+
+			//Required in JavaScript
+			s = epoh_date.toString() + "000";
+
+			//Getting date from unixEpoh
+			date = new Date(parseInt(s))
+			date = date.getDate().toString() + "-" + month_names[date.getMonth()] + "-" + date.getFullYear()
+
+			title_node = element.childNodes[1]
+			title = title_node.innerHTML;
+
+			// console.log(title);
+
+			amount_node = element.childNodes[3];
+			amount = amount_node.innerHTML;
+
+			var modal_update_button = document.getElementById('modal_update_button');
+			modal_update_button.innerHTML = 
+							//Using ard link and not url reverse_lazy
+							"<a class='btn btn-primary' href = '/main/update/" + pk + "'> Update</a>"
+
+
+			var modal_title = document.getElementById('modal_title');
+			modal_title.innerHTML = title;
+
+			var modal_amount = document.getElementById('modal_amount');
+			modal_amount.innerHTML = amount;
+
+
+			var modal_content_date = document.getElementById('modal_content_date');
+			modal_content_date.innerHTML = "<hr/> <strong>Date: </strong>" + date;
+
+			// var xhttp = new XMLHttpRequest();
+			// 	xhttp.onreadystatechange = function() {
+			// 		if (this.readyState == 4 && this.status == 200) {
+			// 			description_result = this.responseText;
+
+			// 			change_description(description_result);
+			// 		}
+			// 	};
+			// xhttp.open("GET", 
+			// 			window.location.protocol + "//" + window.location.host + "/main/description/" + pk,
+			// 			true);
+			// xhttp.send();
+
+			// function change_description(description_result){
+			// 	description_result = JSON.parse(description_result)
+			// 	// console.log(description_result.description);
+
+			// 	if(description_result.description == "")
+			// 	{
+			// 		document.getElementById('modal_content_description').innerHTML = 
+			// 				"<strong>Description: </strong><br>" + "No Description";
+			// 	}
+			// 	else{
+			// 		document.getElementById('modal_content_description').innerHTML = 
+			// 				"<strong>Description: </strong><br>" + description_result.description;
+			// 	}
+
+			// };
+
+
+			//Storing JSON from special JSON object passed using context
+			//Getting date from unixEpoh
+			//Required in JavaScript
+			s = epoh_date.toString() + "000";
+
+			date = new Date(parseInt(s))
+
+		    day = date.getDate();
+		    month = date.getMonth() + 1;
+		    year = date.getFullYear();
+
+		    //month returns 3 not 03
+		    if(month < 10)
+		    {
+		    	month = "0" + month.toString();
+		    }
+
+		    //day returns 3 not 03
+		    if(day < 10)
+		    {
+		    	day = "0" + day.toString();
+		    }
+
+		    date = year.toString()  + "-" + month + "-" + day;
+		    
+		    {% if expenses_json %}
+				expenses_array = JSON.parse('{{ expenses_json|escapejs }}')
+
+				console.log(expenses_array);
+
+				console.log(date);
+
+				s = expenses_array["date_wise_expenses"][date];
+
+				x = s['expenses'][pk];
+				description = x.description;
+
+
+				description = description.replace(/(?:\r\n|\r|\n)/g, '<br>');	
+
+				console.log(description)
+				
+				if(description == "")
+				{
+					document.getElementById('modal_content_description').innerHTML = 
+							"<strong>Description: </strong><br>" + "No Description";
+				}
+				else{
+					document.getElementById('modal_content_description').innerHTML = 
+							"<strong>Description: </strong><br>" + description;
+				}
+			{% endif %}
+
+
+
+
+
+
+
+			var modal_cancel_button = document.getElementById('modal_cancel_button');
+			modal_cancel_button.onclick = function() {
+				modal_custom.style.display = "none";
+			}
+
+			// Get the modal_custom.
+			var modal_custom = document.getElementById('mymodal_custom');
+
+				modal_custom.style.display = "flex";
+
+			// When the user clicks anywhere outside of the modal_custom, close it
+			window.onclick = function(event) {
+				// console.log(event);
+			    if (event.target == modal_custom) {
+			        modal_custom.style.display = "none";
+			    }
+			}
+
+			$(document).keydown(function(event) { 
+				if (event.keyCode == 27) { 
+					$('#mymodal_custom').hide();
+				}
+			});
+		}
+	</script>
+
+{% endblock %}

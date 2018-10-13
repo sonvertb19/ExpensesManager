@@ -19,8 +19,8 @@ class ExpenseCreateForm(ModelForm):
 		}
 
 class FilterForm(forms.Form):
-	start_date = forms.DateField(widget = forms.DateInput(attrs = {'type': 'date', 'class': 'date_field'}))
-	end_date = forms.DateField(widget = forms.DateInput(attrs = {'type': 'date', 'class': 'date_field'}))
+	start_date = forms.DateField(label='Start Date', widget = forms.DateInput(attrs = {'type': 'date', 'class': 'date_field'}))
+	end_date = forms.DateField(label='End Date', widget = forms.DateInput(attrs = {'type': 'date', 'class': 'date_field'}))
 
 
 class userBasicForm(forms.ModelForm):
