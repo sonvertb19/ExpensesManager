@@ -418,13 +418,8 @@ def registration_success(request):
 
 def create_code(user):
 	x = random.randint(100000, 999999)
-	
-	print(user)
-	print(type(user))
 
-	s = models.UserEmailConfirmation.objects.get(user = user)
-	s.code = x
-	s.save()
+	s = models.UserEmailConfirmation.objects.create(user = user, code = x)
 
 @login_required
 def send_email_confirmation(request):
