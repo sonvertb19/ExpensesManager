@@ -10,7 +10,7 @@
 	{% if confirmed == False %}
 		<p style="color: red;">Your email is not confirmed.You can only add expenses but can not view them.</p>
 	{% else %}
-		<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="crossorigin="anonymous"></script> 
+		<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="crossorigin="anonymous"></script>
 
 		<style type="text/css">
 			table, th, td{
@@ -109,7 +109,7 @@
 
 							// Hiding/Unhiding the tables as per the page type.
 							{% if query %}
-								//In case of a search, the code will execute for all, but in case of not query, it will execute only for counter0.	
+								//In case of a search, the code will execute for all, but in case of not query, it will execute only for counter0.
 								$("#{{ date|date:"U" }}_div").slideToggle();
 								$("#{{ date|date:"U" }}_p").html('-');
 
@@ -123,7 +123,7 @@
 
 								{% endif %}
 
-							{% endif %}						
+							{% endif %}
 					{% endfor %}
 			})
 		</script>
@@ -147,7 +147,7 @@
 			function toggle_table(event, a) {
 				// event.stopPropagation();
 
-				// alert(event.target.id); 
+				// alert(event.target.id);
 
 				// alert(a.id);
 				var id = a.id;
@@ -160,7 +160,7 @@
 				// alert(symbol);
 
 				$("#" + id + "_div").slideToggle("slow");
-				if(symbol == '+')	
+				if(symbol == '+')
 				{
 					$("#" + id + "_p").html('-');
 				}
@@ -171,22 +171,20 @@
 			}
 	    </script>
 
-			
+
     	<p id="main_heading">
     		EXPENSES LIST
 			<!--Only shown when query exists.-->
     		<span id="search_query_tagline" class="small">
-	    		( 
-	    			Expenses 
+	    			Expenses
 
-	    			{% if start_date %} 
+	    			{% if start_date %}
 	    				from <span style="color: blue">{{ start_date }} to {{ end_date }} </span>
 	    			{% endif %}
-	    			
-	    			{% if query %} 
+
+	    			{% if query %}
 	    				containing <span style="color: blue">"{{ query }}" </span>
     				{% endif %}
-    			)
 	    	</span>
     	</p>
 
@@ -221,7 +219,7 @@
 			{% if grand_total and grand_total != 0 %}
 				<p>GrandTotal is <strong> Rs {{ grand_total }} </strong></p>
 			{% else %}
-			    
+
 			    <!-- <p id="monthly_total_header">Click <span style="color: blue;" onclick='showMonthlyTotal()'>here </span> to view monthly total.</p> -->
 		    	<!-- <div id="monthly_total" style="display: none;"> -->
 		    		<!-- <ol> -->
@@ -245,7 +243,7 @@
 				</div>
 
 				<span id="{{ date|date:"U" }}_p" style="padding-left: 10px;">+</span>
-												
+
 			</div>
 
 
@@ -264,7 +262,7 @@
 					{% endfor %}
 				</table>
 			</div>
-			
+
 			<br>
 			{% empty %}
 				{% if not query %}
@@ -273,7 +271,7 @@
 				{% endif %}
 			{% endfor %}
 		{% endif %}
-		
+
 		<br>
 
 	<!-- The modal_custom -->
@@ -315,7 +313,7 @@
 		    background-color: rgb(0,0,0); /* Fallback color */
 		    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 			justify-content: center;
-			align-items: center; 
+			align-items: center;
 		}
 
 		/* modal_custom Content/Box */
@@ -373,8 +371,8 @@
 	<script type="text/javascript">
 		function displayDetailedInfo(epoh_date, pk, element){
 
-			var month_names = new Array("January", "February", "March", 
-			"April", "May", "June", "July", "August", "September", 
+			var month_names = new Array("January", "February", "March",
+			"April", "May", "June", "July", "August", "September",
 			"October", "November", "December");
 
 			//Required in JavaScript
@@ -393,7 +391,7 @@
 			amount = amount_node.innerHTML;
 
 			var modal_update_button = document.getElementById('modal_update_button');
-			modal_update_button.innerHTML = 
+			modal_update_button.innerHTML =
 							//Using ard link and not url reverse_lazy
 							"<a class='btn btn-primary' href = '/main/update/" + pk + "'> Update</a>"
 
@@ -416,7 +414,7 @@
 			// 			change_description(description_result);
 			// 		}
 			// 	};
-			// xhttp.open("GET", 
+			// xhttp.open("GET",
 			// 			window.location.protocol + "//" + window.location.host + "/main/description/" + pk,
 			// 			true);
 			// xhttp.send();
@@ -427,11 +425,11 @@
 
 			// 	if(description_result.description == "")
 			// 	{
-			// 		document.getElementById('modal_content_description').innerHTML = 
+			// 		document.getElementById('modal_content_description').innerHTML =
 			// 				"<strong>Description: </strong><br>" + "No Description";
 			// 	}
 			// 	else{
-			// 		document.getElementById('modal_content_description').innerHTML = 
+			// 		document.getElementById('modal_content_description').innerHTML =
 			// 				"<strong>Description: </strong><br>" + description_result.description;
 			// 	}
 
@@ -462,7 +460,7 @@
 		    }
 
 		    date = year.toString()  + "-" + month + "-" + day;
-		    
+
 		    {% if expenses_json %}
 				expenses_array = JSON.parse('{{ expenses_json|escapejs }}')
 
@@ -476,17 +474,17 @@
 				description = x.description;
 
 
-				description = description.replace(/(?:\r\n|\r|\n)/g, '<br>');	
+				description = description.replace(/(?:\r\n|\r|\n)/g, '<br>');
 
 				console.log(description)
-				
+
 				if(description == "")
 				{
-					document.getElementById('modal_content_description').innerHTML = 
+					document.getElementById('modal_content_description').innerHTML =
 							"<strong>Description: </strong><br>" + "No Description";
 				}
 				else{
-					document.getElementById('modal_content_description').innerHTML = 
+					document.getElementById('modal_content_description').innerHTML =
 							"<strong>Description: </strong><br>" + description;
 				}
 			{% endif %}
@@ -515,8 +513,8 @@
 			    }
 			}
 
-			$(document).keydown(function(event) { 
-				if (event.keyCode == 27) { 
+			$(document).keydown(function(event) {
+				if (event.keyCode == 27) {
 					$('#mymodal_custom').hide();
 				}
 			});

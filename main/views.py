@@ -33,6 +33,8 @@ from django.db.models import Q
 
 from django.http import JsonResponse
 
+from django.core.exceptions import ObjectDoesNotExist
+
 def make_dictionary(request):
 
 	dictionary = {}
@@ -409,23 +411,32 @@ class UserRegistration(CreateView):
 		username = form.cleaned_data.get('username')
 		print(username)
 		user = User.objects.get(username = username)
-		create_code(user)
+		create_or_update_code(user)
 
 		return HttpResponseRedirect(reverse('main:registration_success'))
 
 def registration_success(request):
 	return render(request, "main/registration_success.html",)
 
-def create_code(user):
+def create_or_update_code(user):
 	x = random.randint(100000, 999999)
 
-	s = models.UserEmailConfirmation.objects.create(user = user, code = x)
+	try:
+		user_email_confirmation = models.UserEmailConfirmation.objects.get(user = user)
+
+		# if object exists, update the code.
+		user_email_confirmation.code = x
+		user_email_confirmation.save()
+
+	except ObjectDoesNotExist:
+		print("ObjectDoesNotExist")
+		models.UserEmailConfirmation.objects.create(user = user, code = x, confirmed = False)
 
 @login_required
 def send_email_confirmation(request):
 
 	if request.method == "GET":
-		create_code(request.user)
+		create_or_update_code(request.user)
 		x = models.UserEmailConfirmation.objects.get(user = request.user)
 
 		if(x.confirmed):
@@ -464,16 +475,6 @@ def send_email_confirmation(request):
 		else:
 			return render(request, "main/confirm_email_code.html", context = {'incorrect_code': True})
 
-def create_code_password_reset(user):
-	x = random.randint(100000, 999999)
-	
-	print(user)
-	print(type(user))
-
-	s = models.UserEmailConfirmation.objects.get(user = user)
-	s.code = x
-	s.save()
-
 def ForgotPassword(request):
 
 	if request.method == "GET":
@@ -491,7 +492,7 @@ def ForgotPassword(request):
 			print("email match")
 			print(email_match)
 
-			create_code_password_reset(email_match)
+			create_or_update_code(email_match)
 
 			x = models.UserEmailConfirmation.objects.get(user = email_match)
 			code = x.code
@@ -524,7 +525,7 @@ def ForgotPassword(request):
 				print("username match")
 				print(username_match)
 
-				create_code_password_reset(username_match)
+				create_or_update_code(username_match)
 
 				x = models.UserEmailConfirmation.objects.get(user = username_match)
 				code = x.code
@@ -559,9 +560,6 @@ def confirm_password_reset_code(request):
 
 		email = request.POST.get('email')
 		print("Email catched in confirm_password_reset_code: " + str(email))
-
-		print(type(email))
-		print(email)
 
 		code_entered = request.POST.get('code_entered')
 		
