@@ -17,7 +17,7 @@
 	<!-- Fonts -->
 	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 </head>
-<body>
+<body >
 	<style type="text/css">
 		body{
 			font-family: 'Roboto', serif;
@@ -26,8 +26,9 @@
 		    /*background-color: #087e8b!important;*/
 		    /*background-color: #032e72!important;*/
 		    /*background-color: #dd8980!important;*/
-		    background-color: #0850b6!important;
+		    /*background-color: #0850b6!important;*/
 		    /*background-color: #a4ae00!important;*/
+		    background-color: black!important;
 
 
 		    opacity: 1;
@@ -35,7 +36,8 @@
 		    /*border-bottom: 1px black solid;*/
 		}
 		body{
-			background-color: whitesmoke;
+			background-color: black!important;
+			color: white!important;
 		}
 		.nav-link{
 			color: white!important;
@@ -71,12 +73,18 @@
 			cursor: pointer;
 		}
 		#navbar_menu_button{
-			background-color: #0850b6;
+			/*background-color: #0850b6;*/
+			background-color: black;
 			color: white;
 			border: none;
 			/*border: 1px solid white;*/
 			/*border-radius: 4px;*/
 			padding-top: 8px;
+		}
+		#navbar_menu_button:focus,
+		#navbar_menu_button:hover,
+		#navbar_menu_button:active{
+			outline: none;
 		}
 		#large_screen_logout{
 			display: none;
@@ -106,6 +114,7 @@
 				display: block;
 			}
 		}
+
 	</style>
 
 	{% if confirmed == False %}
@@ -114,8 +123,8 @@
 
 	<nav class="navbar nav-default navbar-expand-lg navbar-dark navbar-custom">
 		<div class="container">
-			<button id="navbar_menu_button" type="button" data-toggle="collapse" data-target="#small_screen_main_navbar">
-				<svg
+			<button id="navbar_menu_button">
+				<svg id="menu_three_bars"
 				   xmlns:dc
 				   xmlns:cc="http://creativecommons.org/ns#"
 				   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -128,7 +137,7 @@
 				  <g
 				     transform="translate(0,-289.06247)"
 				     id="layer1">
-				    <rect
+				    <rect id="top_rect"
 				       style="opacity:0.98000004;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.07513026;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
 				       id="rect3737"
 				       width="6.7723083"
@@ -137,16 +146,7 @@
 				       y="290.57959"
 				       rx="0.11693024"
 				       ry="1.5367998" />
-				    <rect
-				       ry="1.5367998"
-				       rx="0.11693024"
-				       y="294.81299"
-				       x="0.63959306"
-				       height="0.49147439"
-				       width="6.7723083"
-				       id="rect3759"
-				       style="opacity:0.98000004;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.07513026;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-				    <rect
+				    <rect id="middle_rect"
 				       style="opacity:0.98000004;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.07513026;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
 				       id="rect3761"
 				       width="6.7723083"
@@ -155,188 +155,21 @@
 				       y="292.69629"
 				       rx="0.11693024"
 				       ry="1.5367998" />
+				    <rect id="bottom_rect"
+				       ry="1.5367998"
+				       rx="0.11693024"
+				       y="294.81299"
+				       x="0.63959306"
+				       height="0.49147439"
+				       width="6.7723083"
+				       id="rect3759"
+				       style="opacity:0.98000004;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.07513026;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
 				  </g>
 				</svg>
 			</button>
 
-			<ul class="nav navbar-nav ml-auto">	
-				<svg
-				   xmlns:dc="http://purl.org/dc/elements/1.1/"
-				   xmlns:cc="http://creativecommons.org/ns#"
-				   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-				   xmlns:svg="http://www.w3.org/2000/svg"
-				   xmlns="http://www.w3.org/2000/svg"
-				   id="logo"
-				   version="1.1"
-				   viewBox="0 0 10.054167 7.6729173"
-				   height="40"
-				   width="50">
-				  <defs
-				     id="defs2367" />
-				  <metadata
-				     id="metadata2370">
-				    <rdf:RDF>
-				      <cc:Work
-				         rdf:about="">
-				        <dc:format>image/svg+xml</dc:format>
-				        <dc:type
-				           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-				        <dc:title></dc:title>
-				      </cc:Work>
-				    </rdf:RDF>
-				  </metadata>
-				  <g
-				     transform="translate(0,-289.32702)"
-				     style="display:inline"
-				     id="layer1">
-				    <path
-				       style="fill:#2900c8;fill-opacity:1;stroke:#0052c8;stroke-width:0.05864855;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-				       d="m 9.8045639,289.70561 0.020233,6.33273 c 0.017397,0.29128 -0.1472776,0.49613 -0.4981245,0.54702 l -8.69557863,0.0354 c -0.33898923,-0.01 -0.49511611,-0.25598 -0.50809689,-0.669 l -0.0133748,-6.2299 z"
-				       id="path2938" />
-				  </g>
-				  <g
-				     transform="translate(0,-289.32702)"
-				     style="display:inline"
-				     id="layer2">
-				    <path
-				       id="path2936"
-				       d="m 9.9719131,289.91294 0.020234,6.33276 c 0.017393,0.29125 -0.1472781,0.49614 -0.4981258,0.54703 l -8.69557602,0.0354 c -0.33898654,-0.01 -0.49511303,-0.25593 -0.50809424,-0.66896 l -0.0133746,-6.22988 z"
-				       style="fill:#fffffe;fill-opacity:1;stroke:#2900c8;stroke-width:0.05863607;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-				    <rect
-				       transform="rotate(0.27502743)"
-				       ry="0"
-				       rx="0"
-				       y="291.77557"
-				       x="3.1585004"
-				       height="3.9192977"
-				       width="0.91829103"
-				       id="rect4534"
-				       style="opacity:0.98000004;fill:#37abc8;fill-opacity:1;stroke:none;stroke-width:0.13229166;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-				    <rect
-				       transform="rotate(0.27502743)"
-				       style="opacity:0.98000004;fill:#217867;fill-opacity:1;stroke:none;stroke-width:0.11013871;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-				       id="rect4545"
-				       width="0.91829103"
-				       height="2.7165849"
-				       x="4.2168341"
-				       y="292.97827"
-				       rx="0"
-				       ry="0" />
-				    <rect
-				       transform="rotate(0.27502743)"
-				       ry="0"
-				       rx="0"
-				       y="292.41031"
-				       x="5.275167"
-				       height="3.2845328"
-				       width="0.91829103"
-				       id="rect4547"
-				       style="opacity:0.98000004;fill:#4d4455;fill-opacity:1;stroke:none;stroke-width:0.12110585;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-				  </g>
-				  <g
-				     transform="translate(0,-289.32702)"
-				     style="display:inline"
-				     id="layer3">
-				    <path
-				       style="fill:#00009a;fill-opacity:1;stroke:#2900c8;stroke-width:0.03549065;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-				       d="m 7.7875686,293.76818 -0.3621957,-0.007 c -0.014908,-0.0609 -0.039344,-0.11869 -0.071966,-0.1713 l 0.4379145,0.0101 c 0.087746,8.8e-4 0.1608214,-0.0654 0.1630224,-0.14527 0.0013,-0.0821 -0.068175,-0.15016 -0.1565327,-0.15183 l -1.7572762,-0.0353 c -0.087746,-8.8e-4 -0.1608154,0.0655 -0.1630111,0.14525 -0.00131,0.082 0.068173,0.1502 0.156533,0.15182 l 0.7531544,0.0154 c 0.1310144,0.004 0.2436504,0.0741 0.2989699,0.17593 l -1.0557996,-0.0214 c -0.087746,-8.8e-4 -0.1608152,0.0655 -0.163012,0.14527 -0.00131,0.0821 0.068172,0.15017 0.1565422,0.15183 l 1.0557896,0.0214 c -0.059607,0.0999 -0.1752836,0.16617 -0.306289,0.16387 l -0.7531095,-0.0148 c -0.064987,-0.004 -0.123441,0.035 -0.1495686,0.0887 -0.025872,0.0552 -0.013915,0.11934 0.031099,0.16264 l 1.2299232,1.19318 c 0.030661,0.0286 0.071223,0.0449 0.1121451,0.0457 0.041319,0.002 0.08205,-0.013 0.1136098,-0.0434 0.063308,-0.0591 0.065808,-0.15076 0.00446,-0.21022 l -0.9627095,-0.93403 0.3674429,0.007 c 0.3098537,0.006 0.5748243,-0.18795 0.6523136,-0.45435 l 0.3619489,0.007 c 0.087746,8.7e-4 0.1608254,-0.0655 0.1629705,-0.14525 0.00131,-0.082 -0.068173,-0.15018 -0.1565336,-0.15181 z"
-				       id="path9493-1-6" />
-				  </g>
-				  <g
-				     transform="translate(0,-289.32702)"
-				     id="layer4">
-				    <rect
-				       transform="matrix(0.00169707,0.99999856,-0.99999862,0.00165966,0,0)"
-				       ry="0.12849143"
-				       rx="0.25145605"
-				       y="-8.8599806"
-				       x="289.39285"
-				       height="0.32782507"
-				       width="1.1703738"
-				       id="rect1173"
-				       style="opacity:1;fill:#000095;fill-opacity:1;stroke:#2900c8;stroke-width:0.01787429;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-				    <rect
-				       style="opacity:1;fill:#000095;fill-opacity:1;stroke:#2900c8;stroke-width:0.01787429;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-				       id="rect4549"
-				       width="1.1703738"
-				       height="0.32782507"
-				       x="289.39108"
-				       y="-7.8016486"
-				       rx="0.25145605"
-				       ry="0.12849143"
-				       transform="matrix(0.00169707,0.99999856,-0.99999862,0.00165966,0,0)" />
-				    <rect
-				       style="opacity:1;fill:#000095;fill-opacity:1;stroke:#2900c8;stroke-width:0.01787429;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-				       id="rect4551"
-				       width="1.1703738"
-				       height="0.32782507"
-				       x="289.38931"
-				       y="-6.7433171"
-				       rx="0.25145605"
-				       ry="0.12849143"
-				       transform="matrix(0.00169707,0.99999856,-0.99999862,0.00165966,0,0)" />
-				    <rect
-				       transform="matrix(0.00169707,0.99999856,-0.99999862,0.00165966,0,0)"
-				       ry="0.12849143"
-				       rx="0.25145605"
-				       y="-5.6849856"
-				       x="289.38754"
-				       height="0.32782507"
-				       width="1.1703738"
-				       id="rect4553"
-				       style="opacity:1;fill:#000095;fill-opacity:1;stroke:#2900c8;stroke-width:0.01787429;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-				    <rect
-				       style="opacity:1;fill:#000095;fill-opacity:1;stroke:#2900c8;stroke-width:0.01787429;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-				       id="rect4555"
-				       width="1.1703738"
-				       height="0.32782507"
-				       x="289.38577"
-				       y="-4.6266541"
-				       rx="0.25145605"
-				       ry="0.12849143"
-				       transform="matrix(0.00169707,0.99999856,-0.99999862,0.00165966,0,0)" />
-				    <rect
-				       transform="matrix(0.00169707,0.99999856,-0.99999862,0.00165966,0,0)"
-				       ry="0.12849143"
-				       rx="0.25145605"
-				       y="-3.5683224"
-				       x="289.384"
-				       height="0.32782507"
-				       width="1.1703738"
-				       id="rect4557"
-				       style="opacity:1;fill:#000095;fill-opacity:1;stroke:#2900c8;stroke-width:0.01787429;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-				    <rect
-				       style="opacity:1;fill:#000095;fill-opacity:1;stroke:#2900c8;stroke-width:0.01787429;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-				       id="rect4559"
-				       width="1.1703738"
-				       height="0.32782507"
-				       x="289.38223"
-				       y="-2.5099905"
-				       rx="0.25145605"
-				       ry="0.12849143"
-				       transform="matrix(0.00169707,0.99999856,-0.99999862,0.00165966,0,0)" />
-				    <rect
-				       transform="matrix(0.00169707,0.99999856,-0.99999862,0.00165966,0,0)"
-				       ry="0.12849143"
-				       rx="0.25145605"
-				       y="-1.4516587"
-				       x="289.38046"
-				       height="0.32782507"
-				       width="1.1703738"
-				       id="rect4561"
-				       style="opacity:1;fill:#000095;fill-opacity:1;stroke:#2900c8;stroke-width:0.01787429;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-				    <rect
-				       style="opacity:1;fill:#000095;fill-opacity:1;stroke:#2900c8;stroke-width:0.01787429;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-				       id="rect4563"
-				       width="1.1703738"
-				       height="0.32782507"
-				       x="289.37869"
-				       y="-0.39332691"
-				       rx="0.25145605"
-				       ry="0.12849143"
-				       transform="matrix(0.00169707,0.99999856,-0.99999862,0.00165966,0,0)" />
-				  </g>
-				</svg>
+			<ul class="nav navbar-nav ml-auto" id="logo">	
+				<h4 style="padding-top: 12px;">EM</h4>
 			</ul>
 
 			<div class="collapse navbar-collapse" id="large_screen_main_navbar">
@@ -489,11 +322,37 @@
 	{% endif %}
 
 	<script>
-			document.querySelector('#logo').addEventListener('click', function(){
-				var address = window.location.protocol + "//" + window.location.host;
-				console.log(address);
-				window.location.assign(address);
-			});
+		$(document).ready(function(){
+			$('input').change(function(){
+					for (var i = $(this).length - 1; i >= 0; i--) {
+						
+						// var x = $(this)[i];
+						// var val = x.value;
+						// alert(val);
+						// x.value = val + "s"
+						// x.style.display = "none";
+						// x.style.backgroundColor = "green";
+						// alert(x.style.backgroundColor);
+					}
+			})
+		})
+
+		document.querySelector('#logo').addEventListener('click', function(){
+			var address = window.location.protocol + "//" + window.location.host;
+			console.log(address);
+			window.location.assign(address);
+		});
+
+		var menu = document.querySelector('#navbar_menu_button');
+
+		menu.addEventListener('click', function(){
+			var menu_three_bars = document.querySelector('#menu_three_bars');
+			// if(!menu_three_bars.style.display)
+			{
+				// menu_three_bars.style.display = "block";
+				$("#small_screen_main_navbar").slideToggle();
+			}
+		});
 	</script>
 
 </body>

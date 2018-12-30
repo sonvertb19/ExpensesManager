@@ -148,37 +148,64 @@ def user_login(request):
 
 		elif request.method == "POST":
 
-			username = request.POST.get('username')
-			password = request.POST.get('password')
+			username = request.POST.get('uname')
 
-			user = authenticate(username = username, password = password)
+			if username:
+				password = request.POST.get('pwd')
+				
+				if password:
 
-			user_info = {}
+					user = authenticate(username = username, password = password)
 
-			if user:
-				if user.is_active:
-					login(request, user)
-					return HttpResponseRedirect(reverse('index'))
+					user_info = {}
+
+					if user:
+						if user.is_active:
+							login(request, user)
+							return HttpResponseRedirect(reverse('index'))
+						else:
+							return HttpResponse("<h1>Account Not Active</h1>")
+					
+					else:
+						user_info.update({'errors': "Invalid Credentials"})
+
+						return render(request, "main/user_login.html", context = user_info)
+
 				else:
-					return HttpResponse("<h1>Account Not Active</h1>")
-			
-			else:
-				user_info.update({'errors': "Invalid Credentials"})
+					username_or_email = username
 
-				return render(request, "main/user_login.html", context = user_info)
+					email_match = models.User.objects.filter(email = username_or_email)
+					for x in email_match:
+						email_match = x
+						first_name = email_match.first_name
+						# print(first_name)
+
+
+					if email_match:
+						username = email_match.username
+
+					else:
+						# Email match not found
+						username_match = models.User.objects.filter(username = username_or_email)
+						for x in username_match:
+							username_match = x
+							first_name = username_match.first_name
+							# print(first_name)
+
+						if username_match:
+							username = username_match.username
+
+						else:
+							error = "No such email or username registered."
+							return render(request, "main/user_login.html", {'errors': error})
+
+					return render(request, "main/user_login_enter_password.html", {'username': username, 'first_name': first_name})
 
 
 @login_required
 def user_logout(request):
 	logout(request)
-	return HttpResponseRedirect(reverse('logout_thanks'))
-
-def logout_thanks(request):
-	if request.user.is_authenticated:
-		# return HttpResponse("You are logged in.")
-		return HttpResponseRedirect(reverse('index'))
-	else:
-		return render(request, "main/logout_thanks.html")
+	return HttpResponseRedirect(reverse('index'))
 
 # ref == 'new'
 class ExpenseCreateView(LoginRequiredMixin, CreateView):
