@@ -22,6 +22,8 @@
 		border-top-right-radius: 15px;
 		border-bottom-right-radius: 15px;
 
+		transition: border 3s;
+
 		padding: 10px;
 	}
 	.message_by_user{
@@ -137,11 +139,6 @@
 				</p>
 				<p style="margin-top: 25px;">
 					<span id="message_by_browser_2" class="message_by_browser">
-						I can help you manage all your expenses.
-					</span>
-				</p>
-				<p style="margin-top: 25px;">
-					<span id="message_by_browser_3" class="message_by_browser">
 						Are you a new user?
 					</span>
 				</p>
@@ -190,10 +187,6 @@
 				$('#message_by_browser_container').slideToggle(1000, function(){
 					document.querySelector('#message_by_browser_1').style.border = "1px solid whitesmoke";
 					document.querySelector('#message_by_browser_2').style.border = "1px solid whitesmoke";
-
-					{% if not user.is_authenticated %}
-					document.querySelector('#message_by_browser_3').style.border = "1px solid whitesmoke";
-					{% endif %}
 
 					document.querySelector('#reply_suggestions_container').style.display = "block";
 				})

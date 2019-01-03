@@ -718,3 +718,9 @@ def description_api(request, **kwargs):
 
 def password_changed(request):
 	return render(request, 'main/password_changed.html')
+
+def manifest(request):
+	return JsonResponse({"short_name": "ExpensesManager", "gcm_sender_id": "103953800507", "icon": [{"src": "https://floraofasia.com/wp-content/uploads/2018/04/cropped-FOA_flower_green_bk-192x192.png", "type": "image/png", "sizes": "192x192"}]})
+
+def firebaseMessaging(request):
+	return render(request, 'main/firebase-messaging-sw.js')

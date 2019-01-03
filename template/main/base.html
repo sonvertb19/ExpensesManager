@@ -8,6 +8,7 @@
 
 	{% block extra_head_content %}
 	{% endblock %}
+	<meta name="mobile-web-app-capable" content="yes">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -116,6 +117,31 @@
 		}
 
 	</style>
+
+	<script src="https://www.gstatic.com/firebasejs/5.7.0/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/5.7.0/firebase-messaging.js"></script>
+
+	<script type="text/javascript">
+	  // Initialize Firebase
+		var config = {
+			messagingSenderId: "156747095282"
+		};
+
+		firebase.initializeApp(config);
+
+		const messaging = firebase.messaging();
+	</script>
+	<script type="text/javascript" src="/firebase-messaging-sw.js"></script>
+	<script type="text/javascript">
+		messaging.usePublicVapidKey("BOPoscUJuqZq2NMsaDuK9XwR8u47sL0G5nlyil50VZR_PiwKon6yxBWq17U3l3xNzrwvYaVWU3Kfji3fEeGIawY");
+		messaging.requestPermission().then(function() {
+				console.log('Notification permission granted.');
+				// TODO(developer): Retrieve an Instance ID token for use with FCM.
+				// ...
+			}).catch(function(err) {
+				console.log('Unable to get permission to notify.', err);
+		});
+	</script>
 
 	{% if confirmed == False %}
 		<a href="{% url 'send_email_confirmation' %}" style="color: white"><div class="container-fluid btn btn-danger" style="border-radius: 0px">Confirm Your Email!</div></a>
