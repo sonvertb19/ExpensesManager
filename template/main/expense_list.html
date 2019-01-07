@@ -16,8 +16,33 @@
 		<style type="text/css">
 
 		body{
-			color: black!important;
-			background-color: whitesmoke!important;
+			color: white!important;
+			/*background-color: whitesmoke!important;*/
+		}
+
+		input,
+		textarea,
+		select{
+			/*border: 0.5px #80bdff solid!important;*/
+			color: white!important;
+			/*height: 36px;*/
+			padding-left: 0!important;
+			border-radius: 0!important;
+			border: none!important;
+			border-bottom: 1px solid grey!important;
+			box-shadow: none!important;
+			background-color: black!important;
+			/*background-color: #f7ccbe!important;*/
+		}
+
+		input:-webkit-autofill,
+		input:-webkit-autofill:hover,
+		input:-webkit-autofill:focus,
+		input:-webkit-autofill:active {
+		    transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s;
+		    color: white!important;
+		    outline: none;
+		    border: none;
 		}
 
 
@@ -29,14 +54,8 @@
 				/*border-top: 1px #0850b6 solid;*/
 			}
 			td{
-				width: 100%;
 				height: 35px!important;
-				border-top: 1px solid black;
-			}
-			th{
-				width: 70%;
-				height: 35px!important;
-				border-top: 1px solid black;
+				/*border-top: 1px solid black;*/
 			}
 			thead>tr{
 				border:none!important;
@@ -46,20 +65,20 @@
 			}
 			.main_table_div{
 				/*background-color: #e1ebf5;*/
-				box-shadow: 3px 3px 3px #dbe8fc;
-				border-radius: 0px;
-				border: 1px solid black;
-				border-top-left-radius: 0px;
-				border-top-right-radius: 0px;
-				background-color: #d7e8f9;
-				border-top: none;
+				/*box-shadow: 3px 3px 3px #dbe8fc;*/
+				/*border-radius: 0px;*/
+				/*border: 1px solid black;*/
+				/*border-top-left-radius: 0px;*/
+				/*border-top-right-radius: 0px;*/
+				/*background-color: #d7e8f9;*/
+				/*border-top: none;*/
 			}
 			.main_table{
 				/*border-top: 0;*/
 				width: 100%;
 				/*background-color: white;*/
 				/*background-color: #e1ebf5;*/
-				background-color: #d7e8f9;
+				/*background-color: #d7e8f9;*/
 			}
 			.new_add:hover{
 				background-color: whitesmoke;
@@ -68,7 +87,7 @@
 			#search_bar{
 				border-top-left-radius: 7px;
 				border-bottom-left-radius: 7px;
-				border: 1px solid black;
+				/*border: 1px solid black;*/
 			}
 			#search_bar:focus{
 				box-shadow: none;
@@ -78,16 +97,21 @@
 				border-radius: 0;
 				border-top-right-radius: 7px;
 				border-bottom-right-radius: 7px;
-				border: 1px solid black;
+				/*border: 1px solid black;*/
 				border-left: none;
-				background-color: rgb(164, 197, 243);
+				/*background-color: rgb(164, 197, 243);*/
+				background-color: grey;
 			}
 
+			#main_heading{
+				font-size: 20px;
+				color: white;
+			}
+
+			.date_div{
+				padding-top: 10px;
+			}
 			{% if query %}
-				#main_heading{
-					font-size: 20px;
-					color: #000000;
-				}
 				#search_query_tagline{
 					display: inline-block;
 					margin-top: 5px;
@@ -98,21 +122,16 @@
 					padding: 0;
 				}
 			{% else %}
-				#main_heading{
-					font-size: 30px;
-					color: #000000;
-					text-align: center;
-					}
 				#search_query_tagline{
 					display: none;
 				}
 	    	{% endif %}
 		</style>
+				{% regroup expense_list by date as regrouped_expense_list %}
 
 		<script type="text/javascript">
 			$(document).ready(function(){
 
-				{% regroup expense_list by date as regrouped_expense_list %}
 
 					{% for date, expense_data in regrouped_expense_list %}
 
@@ -123,8 +142,8 @@
 								{% endif %}
 								t += {{ e.amount }};
 							{% endfor %}
-									a = "<tr><th style = 'text-align:right'>Total: </th><td><strong>Rs " + t + "</strong></td></tr>"
-									$("#{{ date|date:"U" }}_table").append(a);
+									a = "<p style='text-align: right; padding: 5px;'>Rs " + t + "</p>"
+									$("#{{ date|date:"U" }}_table_footer").append(a)
 
 							// Hiding/Unhiding the tables as per the page type.
 							{% if query %}
@@ -198,12 +217,21 @@
 	    		( Expenses containing "{{ query }}" )
 	    	</span>
     	</p>
-		<p style="color: red; text-align: center;">Work in Progress. This page not updated yet.</p>
+		<!-- <p style="color: red; text-align: center;">Work in Progress. This page not updated yet.</p> -->
+
+<!-- 		<div>
+				<span>Filter by: </span> 
+				{% for x in payment_accounts %}
+					<a href="?filter={{ x | slugify }}" style="padding-left: 10px;"><button>{{ x }}</button></a>
+				{% endfor %}
+		</div> -->
+
+		<!-- <br> -->
 
 		<form id="search_form" action="{% url 'main:search' %}" method="GET">
 			<div id="search_div" class="input-group input-group-sm mb-3">
-				<input type="text" id="search_bar" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query" required>
-				<input type = "submit" id="search_button" class=" btn input-group-text"id="inputGroup-sizing-sm" value = "Search">
+				<input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query" placeholder="Enter a word/phrase" required>
+				<button type = "submit" id="search_button" class="btn btn-sm">-></button>
 			</div>
 		</form>
 
@@ -224,10 +252,10 @@
 		{% endif %}
 
 
-		<p style = "font-size: 17px">
+		<p style = "font-size: 17px"><!-- 
 			{% if grand_total and grand_total != 0 %}
-				<p>GrandTotal is <strong> Rs {{ grand_total }} </strong></p>
-			{% else %}
+				<p>GrandTotal is Rs {{ grand_total }} </p>
+			{% else %} -->
 
 			    <!-- <p id="monthly_total_header">Click <span style="color: blue;" onclick='showMonthlyTotal()'>here </span> to view monthly total.</p> -->
 		    	<!-- <div id="monthly_total" style="display: none;"> -->
@@ -242,14 +270,11 @@
 		</p>
 
 		{% for date, expense_data in regrouped_expense_list %}
-			<div class="btn btn-block" id = "{{ date|date:'U' }}_dropdown_button" style="background-color: rgb(164, 197, 243); color: black; cursor: pointer; border-radius:0px; border: 1px solid black; box-shadow: 3px 3px 3px #dbe8fc;" onclick="toggle_table(event, this)">
-				<span class="new_add" id="{{ date|date:"U" }}" style="border: 1px solid black; float:left;background-color: #d7e8f9; color: black; border-radius: 3px;" onclick="add_for_date(event, this)">
-						<span style="padding-left: 6px; padding-right: 6px;">Add</span>
-				</span>
-
-				<div style="display: inline;" id="{{ date|date:"U" }}">
+			<!-- <p>asd</p> -->
+			<div class="date_div" id = "{{ date|date:'U' }}_dropdown_button" style="border-bottom: 1px dotted grey" onclick="toggle_table(event, this)">
+				<h5 style="display: inline;" id="{{ date|date:"U" }}">
 					{{ date }}
-				</div>
+				</h5>
 
 				<span id="{{ date|date:"U" }}_p" style="padding-left: 10px;">+</span>
 
@@ -259,17 +284,18 @@
 
 			<div id="{{ date|date:"U" }}_div" class="main_table_div" style="display: none; width: 100%; overflow-x: auto;">
 				<table id="{{ date|date:"U" }}_table" class="main_table">
-					<thead style="color: green;">
-						<th>Title</th>
-						<td>Amount</td>
-					</thead>
 					{% for e in expense_data %}
-					<tr style="color: blue; cursor: pointer;" onclick="displayDetailedInfo({{date|date:'U'}}, '{{e.pk}}', this)">
-						<th>{{e.title}}</th>
-						<td>Rs {{ e.amount }}</td>
+					<tr style="cursor: pointer; border-bottom: 1px dotted grey" onclick="displayDetailedInfo({{date|date:'U'}}, '{{e.pk}}', this)">
+						<td style="text-align: left;">{{e.title}} </td>
+						
+						<td style="text-align: right;">
+							<small style="color: grey; padding-right: 10px;"> {{ e.account }}</small>
+							Rs {{ e.amount }}
+						</td>
 					</tr>
 					{% endfor %}
 				</table>
+				<div id="{{ date|date:"U" }}_table_footer"  style="text-align: right;"></div>
 			</div>
 
 			<br>
@@ -296,6 +322,7 @@
 			</div>
 			<div class="modal_custom-body">
 				<p id="modal_content_date"></p>
+				<p id="modal_content_account"></p>
 				<p id="modal_content_description"></p>
 			</div>
 			<div class="modal_custom-footer">
@@ -406,14 +433,13 @@
 
 
 			var modal_title = document.getElementById('modal_title');
-			modal_title.innerHTML = title;
 
 			var modal_amount = document.getElementById('modal_amount');
-			modal_amount.innerHTML = amount;
 
 
 			var modal_content_date = document.getElementById('modal_content_date');
-			modal_content_date.innerHTML = "<hr/> <strong>Date: </strong>" + date;
+
+			var modal_content_account = document.getElementById('modal_content_account');
 
 			// var xhttp = new XMLHttpRequest();
 			// 	xhttp.onreadystatechange = function() {
@@ -473,15 +499,29 @@
 		    {% if expenses_json %}
 				expenses_array = JSON.parse('{{ expenses_json|escapejs }}')
 
-				console.log(expenses_array);
+				// console.log(expenses_array);
 
-				console.log(date);
+				// console.log(date);
 
 				s = expenses_array["date_wise_expenses"][date];
 
+				console.log(s);
+
 				x = s['expenses'][pk];
 				description = x.description;
+				amount = x.amount;
+				console.log("Amount = " + amount)
 
+				account = x.account;
+				console.log("account = " + account)
+
+				modal_title.innerHTML = x.title;
+
+				modal_amount.innerHTML = x.amount;
+
+				modal_content_date.innerHTML = "<hr/> <strong>Date: </strong>" + x.date;
+
+				modal_content_account.innerHTML = "<strong>Account: </strong>" + x.account;
 
 				description = description.replace(/(?:\r\n|\r|\n)/g, '<br>');
 

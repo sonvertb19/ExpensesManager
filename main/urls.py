@@ -21,6 +21,7 @@ urlpatterns = [
 	path('update/<int:pk>/', views.ExpenseUpdateView.as_view(), name = "expense_update"),
 	path('delete/<int:pk>/', views.ExpenseDeleteView.as_view(), name = "expense_delete"),
 	path('search/', views.ExpenseListView.as_view(), name="search"),
+	# path('filter/', views.ExpenseListView.as_view(), name="filter"),
 	path('filter_by_date/', views.filter_by_date, name="filter_by_date"),
 	path('list/', views.ExpenseListView.as_view(), name = "expense_list"),
 	

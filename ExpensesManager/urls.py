@@ -26,6 +26,4 @@ urlpatterns = [
 	path('', views.Index, name = "index"),
     path('main/', include(mainURLS)),
     path('send_mail/', views.send_email_confirmation, name = "send_email_confirmation"),
-    path('manifest/', views.manifest, name="manifest"),
-    path('firebase-messaging-sw.js/', views.firebaseMessaging),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

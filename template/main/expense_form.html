@@ -129,6 +129,11 @@
 
 				<a id="cancel_button" href="javascript:history.back(1)" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn" ">Cancel</a>
 
+		</form>
+		    {% endif %}
+
+		    {% if ref == 'update' %}
+
 				<!-- The modal_custom -->
 				<div id="mymodal_custom" class="modal_custom">
 
@@ -147,12 +152,12 @@
 						</div>
 						<div>
 
-							<button id="modal_delete_button" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn">
-								<a href="{% url 'main:expense_delete' pk=expense.pk %}" style="color: white; ">		Confirm Deletion?
-								</a>
-							</button>
+							<a href="{% url 'main:expense_delete' pk=expense.pk %}" id="modal_delete_button"  style="color: white;color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn">
+									Confirm Deletion?
+								</button>
+							</a>
 
-							<button id="modal_cancel_button" style="margin-right: 5px!important; color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn" >Cancel</button>
+							<a id="modal_cancel_button" style="margin-right: 5px!important; color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn" >Cancel</a>
 						</div>
 					</div>
 				</div>
@@ -255,7 +260,6 @@
 				</script>
 		    {% endif %}
 
-		</form>
 
 			<br>
 	</div>

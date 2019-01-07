@@ -71,12 +71,19 @@ def get_expenses_in_json(expenses):
 
 			date_wise_total.update({ str(e.date): present_date_sum })
 
+			if e.account:
+				payment_account = e.account.title
+			else:
+				payment_account = ""
+
 			present_date_expenses.update(
 											{
 												e.pk: {
 														'title': e.title,
+														'date': e.date.strftime('%d-%b-%Y'),
 														'amount': e.amount,
-														'description': e.description
+														'description': e.description,
+														'account': payment_account
 													}
 											}
 										)
@@ -104,12 +111,19 @@ def get_expenses_in_json(expenses):
 			# Creating new object to record all the expenses of the new date and populating it with the first expense.
 			present_date_expenses = {}
 
+			if e.account:
+				payment_account = e.account.title
+			else:
+				payment_account = ""
+
 			present_date_expenses.update(
 											{
 												e.pk: {
 														'title': e.title,
+														'date': e.date.strftime('%d-%b-%Y'),
 														'amount': e.amount,
-														'description': e.description
+														'description': e.description,
+														'account': payment_account
 													}
 											}
 										)
@@ -222,6 +236,11 @@ class ExpenseCreateView(LoginRequiredMixin, CreateView):
 
 	def form_valid(self, form):
 		form.instance.user = self.request.user
+		# print(self.request.POST)
+		payment_account_id = self.request.POST.get('account')
+		account = models.Account.objects.get(id = payment_account_id)
+		form.instance.account = account
+		# print("Payment_Account_Id: " + str(payment_account_id))
 		return super().form_valid(form)
 
 	def get_context_data(self, **kwargs):
@@ -230,10 +249,7 @@ class ExpenseCreateView(LoginRequiredMixin, CreateView):
 		# Add in a QuerySet of the UserProfileModel
 		dictionary = make_dictionary(self.request)
 		context.update(dictionary)
-		print(self.request)
 		payment_accounts = models.Account.objects.filter(user = self.request.user)
-		for x in payment_accounts:
-			print(x)
 		context.update({'ref': 'new', 'payment_accounts': payment_accounts})
 		return context
 
@@ -260,6 +276,11 @@ class ExpenseCreateViewWithDate(LoginRequiredMixin, CreateView):
 
 	def form_valid(self, form):
 		form.instance.user = self.request.user
+		# print(self.request.POST)
+		payment_account_id = self.request.POST.get('account')
+		account = models.Account.objects.get(id = payment_account_id)
+		form.instance.account = account
+		# print("Payment_Account_Id: " + str(payment_account_id))
 		return super().form_valid(form)
 
 	def get_context_data(self, **kwargs):
@@ -277,8 +298,6 @@ class ExpenseCreateViewWithDate(LoginRequiredMixin, CreateView):
 		# print(date_str)
 		
 		payment_accounts = models.Account.objects.filter(user = self.request.user)
-		for x in payment_accounts:
-			print(x)
 
 		# Add in a QuerySet of the UserProfileModel
 		dictionary = make_dictionary(self.request)
@@ -291,6 +310,15 @@ class ExpenseUpdateView(LoginRequiredMixin, UpdateView):
 	form_class = ExpenseCreateForm
 	model = models.Expense
 
+
+	def form_valid(self, form):
+		# print(self.request.POST)
+		payment_account_id = self.request.POST.get('account')
+		account = models.Account.objects.get(id = payment_account_id)
+		form.instance.account = account
+		# print("Payment_Account_Id: " + str(payment_account_id))
+		return super().form_valid(form)
+
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
 		context = super().get_context_data(**kwargs)
@@ -299,8 +327,6 @@ class ExpenseUpdateView(LoginRequiredMixin, UpdateView):
 		context.update(dictionary)
 		
 		payment_accounts = models.Account.objects.filter(user = self.request.user)
-		for x in payment_accounts:
-			print(x)
 
 		context.update({'ref': 'update', 'payment_accounts': payment_accounts})
 		return context
@@ -321,7 +347,6 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 			e = models.Expense.objects.filter(user = self.request.user,).order_by('-date')
 			return(e)
 
-
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
 		context = super().get_context_data(**kwargs)
@@ -341,8 +366,9 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 		grand_total = expenses_json['grand_total']
 
 		expenses_json = json.dumps(expenses_json, sort_keys=True, indent=4)
+		payment_accounts = models.Account.objects.filter(user = self.request.user)
 
-		context.update({'expenses_json': expenses_json, 'grand_total': grand_total})
+		context.update({'expenses_json': expenses_json, 'grand_total': grand_total, 'payment_accounts': payment_accounts})
 
 		dictionary = make_dictionary(self.request)
 
@@ -733,9 +759,3 @@ def description_api(request, **kwargs):
 
 def password_changed(request):
 	return render(request, 'main/password_changed.html')
-
-def manifest(request):
-	return JsonResponse({"short_name": "ExpensesManager", "gcm_sender_id": "103953800507", "icon": [{"src": "https://floraofasia.com/wp-content/uploads/2018/04/cropped-FOA_flower_green_bk-192x192.png", "type": "image/png", "sizes": "192x192"}]})
-
-def firebaseMessaging(request):
-	return render(request, 'main/firebase-messaging-sw.js')
