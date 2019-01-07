@@ -309,31 +309,32 @@
 
 		<br>
 
-	<!-- The modal_custom -->
-	<div id="mymodal_custom" class="modal_custom">
+		<div id="mymodal_custom" class="modal_custom">
 
 		<!-- modal_custom content -->
 		<div class="modal_custom-content">
 			<div class="modal_custom-header">
 				<div class="modal_custom-header-line">
-						<h2 id="modal_title" style="margin: 0; color: blue; display:inline-block;">Title</h2>
-						<h5 id="modal_amount" style="margin: 0; color: black; display:inline-block;">Amount</h5>
+						<h2 id="modal_title" style="margin: 0; color: white; display:inline-block;">Title</h2>
+						<h5 id="modal_amount" style="margin: 0; color: white; display:inline-block;">Amount</h5>
 				</div>
 			</div>
 			<div class="modal_custom-body">
-				<p id="modal_content_date"></p>
-				<p id="modal_content_account"></p>
+				<span id="modal_content_date"></span>
+				<span id="modal_content_account"></span>
+				<hr>
 				<p id="modal_content_description"></p>
 			</div>
-			<div class="modal_custom-footer">
-				<div id="modal_update_button" style="display: inline-block; float: right;">Update</div>
-				<button id="modal_cancel_button" style="display: inline-block; float: right; background-color: #645fd2; color: white; margin-right: 5px;"  class="btn">Cancel</button>
+			<div>
+
+				<a style="color: white;color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn" id="modal_update_button">Update</a>
+
+				<a id="modal_cancel_button" style="margin-right: 5px!important; color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn" >Cancel</a>
 			</div>
 		</div>
-
 	</div>
 
-	<!-- modal_custom Styling -->
+	<!-- modal_custom -->
 	<style type="text/css">
 
 		/* The modal_custom (background) */
@@ -345,61 +346,25 @@
 		    top: 0;
 		    width: 100%; /* Full width */
 		    height: 100%; /* Full height */
-		    overflow: none; /* Enable scroll if needed */
+		    overflow: auto; /* Enable scroll if needed */
 		    background-color: rgb(0,0,0); /* Fallback color */
-		    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+		    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
 			justify-content: center;
 			align-items: center;
 		}
 
 		/* modal_custom Content/Box */
 		.modal_custom-content {
-		    background-color: #a6d0cd;
+		    background-color: black;
 		    margin: 20% auto; /* 15% from the top and centered */
-		    padding: 20px;
+		    padding: 40px;
 		    border: 1px solid #888;
 		    /*max-width: 80%;  Could be more or less, depending on screen size */
 		    /*min-width: 60%;*/
-			background-color: #e1ebf5;
-			box-shadow: 2px 1px #dbe8fc;
-			border-radius: 7px;
-			border: 0.5px solid #a4aebf;
-			/*padding: 20px 15px 20px 15px;*/
 		}
 		.modal_custom-header-line {
 			/*width: */
 			display: inline-block;
-		}
-		/* The Close Button */
-		.modal_custom-header-close {
-		    color: #730edc;
-		    float: right;
-		    /*display: inline;*/
-		    font-size: 28px;
-		    font-weight: bold;
-		}
-
-		/*Close button hidden.*/
-		/*.close:hover,
-		.close:focus {
-		    color: black;
-		    text-decoration: none;
-		    cursor: pointer;
-		}*/
-
-
-		.modal_custom-header {
-		    padding: 2px 16px;
-		    /*background-color: #5cb85c;*/
-		    color: white;
-		}
-
-		.modal_custom-body {padding: 2px 16px;}
-
-		.modal_custom-footer {
-		    padding: 2px 16px;
-		    /*background-color: #5cb85c;*/
-		    color: white;
 		}
 	</style>
 
@@ -429,7 +394,7 @@
 			var modal_update_button = document.getElementById('modal_update_button');
 			modal_update_button.innerHTML =
 							//Using ard link and not url reverse_lazy
-							"<a class='btn btn-primary' href = '/main/update/" + pk + "'> Update</a>"
+							"<a style='color:white;' href = '/main/update/" + pk + "'> Update</a>"
 
 
 			var modal_title = document.getElementById('modal_title');
@@ -517,11 +482,7 @@
 
 				modal_title.innerHTML = x.title;
 
-				modal_amount.innerHTML = x.amount;
-
-				modal_content_date.innerHTML = "<hr/> <strong>Date: </strong>" + x.date;
-
-				modal_content_account.innerHTML = "<strong>Account: </strong>" + x.account;
+				modal_amount.innerHTML = "(Rs "  + x.amount + ")";
 
 				description = description.replace(/(?:\r\n|\r|\n)/g, '<br>');
 
@@ -530,11 +491,11 @@
 				if(description == "")
 				{
 					document.getElementById('modal_content_description').innerHTML =
-							"<strong>Description: </strong><br>" + "No Description";
+							"No Description";
 				}
 				else{
 					document.getElementById('modal_content_description').innerHTML =
-							"<strong>Description: </strong><br>" + description;
+							description;
 				}
 			{% endif %}
 
