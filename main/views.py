@@ -40,7 +40,7 @@ def make_dictionary(request):
 	dictionary = {}
 
 	if request.user.is_authenticated:
-	
+
 		user = request.user
 		x = models.UserEmailConfirmation.objects.get(user = user)
 
@@ -125,7 +125,7 @@ def get_expenses_in_json(expenses):
 
 	# date_wise_expenses = json.dumps(date_wise_expenses, sort_keys=True, indent=4)
 	# date_wise_total = json.dumps(date_wise_total, sort_keys=True, indent=4)
-	
+
 	grouped_expenses_json = {
 								'date_wise_expenses': date_wise_expenses,
 								'date_wise_total': date_wise_total,
@@ -152,7 +152,7 @@ def user_login(request):
 
 			if username:
 				password = request.POST.get('pwd')
-				
+
 				if password:
 
 					user = authenticate(username = username, password = password)
@@ -165,7 +165,7 @@ def user_login(request):
 							return HttpResponseRedirect(reverse('index'))
 						else:
 							return HttpResponse("<h1>Account Not Active</h1>")
-					
+
 					else:
 						user_info.update({'errors': "Invalid Credentials"})
 
@@ -230,7 +230,11 @@ class ExpenseCreateView(LoginRequiredMixin, CreateView):
 		# Add in a QuerySet of the UserProfileModel
 		dictionary = make_dictionary(self.request)
 		context.update(dictionary)
-		context.update({'ref': 'new'})
+		print(self.request)
+		payment_accounts = models.Account.objects.filter(user = self.request.user)
+		for x in payment_accounts:
+			print(x)
+		context.update({'ref': 'new', 'payment_accounts': payment_accounts})
 		return context
 
 # ref == 'new' and 'date'
@@ -261,7 +265,7 @@ class ExpenseCreateViewWithDate(LoginRequiredMixin, CreateView):
 	def get_context_data(self, **kwargs):
 		# Call the base implementation first to get a context
 		context = super().get_context_data(**kwargs)
-		
+
 		date = self.kwargs.get('date')
 		# print(type(date))
 		datex = datetime.fromtimestamp(date)
@@ -271,11 +275,15 @@ class ExpenseCreateViewWithDate(LoginRequiredMixin, CreateView):
 		date_str = datetime.strptime(str(datex), "%Y-%m-%d %H:%M:%S")
 
 		# print(date_str)
+		
+		payment_accounts = models.Account.objects.filter(user = self.request.user)
+		for x in payment_accounts:
+			print(x)
 
 		# Add in a QuerySet of the UserProfileModel
 		dictionary = make_dictionary(self.request)
 		context.update(dictionary)
-		context.update({'ref': 'new', 'date': datex, 'date_in_str': str(date_str) })
+		context.update({'ref': 'new', 'payment_accounts': payment_accounts, 'date': datex, 'date_in_str': str(date_str) })
 		return context
 
 # ref == 'update'
@@ -289,8 +297,12 @@ class ExpenseUpdateView(LoginRequiredMixin, UpdateView):
 
 		dictionary = make_dictionary(self.request)
 		context.update(dictionary)
+		
+		payment_accounts = models.Account.objects.filter(user = self.request.user)
+		for x in payment_accounts:
+			print(x)
 
-		context.update({'ref': 'update'})
+		context.update({'ref': 'update', 'payment_accounts': payment_accounts})
 		return context
 
 class ExpenseListView(LoginRequiredMixin, ListView):
@@ -387,7 +399,7 @@ def filter_by_date(request):
 				# Now check if query exists
 				if request.GET.get('query'):
 					# Filter using query also.
-					
+
 					query = request.GET.get('query')
 					print("query exists")
 
@@ -439,6 +451,9 @@ class UserRegistration(CreateView):
 		print(username)
 		user = User.objects.get(username = username)
 		create_or_update_code(user)
+		models.Account.objects.create(user = user, title = "Cash")
+		models.Account.objects.create(user = user, title = "Paytm")
+		models.Account.objects.create(user = user, title = "Bank Account")
 
 		return HttpResponseRedirect(reverse('main:registration_success'))
 
@@ -589,13 +604,13 @@ def confirm_password_reset_code(request):
 		print("Email catched in confirm_password_reset_code: " + str(email))
 
 		code_entered = request.POST.get('code_entered')
-		
+
 		print("Code recieved from POST: " + str(code_entered))
 
 		u = models.User.objects.get(email = email)
 
 		print("User found from email: " + str(u))
-		
+
 		email = str(u.email)
 
 		print("Email found from user: " + str(email))
@@ -613,7 +628,7 @@ def confirm_password_reset_code(request):
 			return render(request, "main/reset_password.html", context = {'email': email})
 		else:
 			# Invalid Password reset code.
-			return render(request, "main/forgot_password_email_or_username_match.html", context = {'incorrect_code': True, 'email': email})	
+			return render(request, "main/forgot_password_email_or_username_match.html", context = {'incorrect_code': True, 'email': email})
 		# return HttpResponse("Test OK")
 
 	else:
@@ -631,10 +646,10 @@ def reset_password(request):
 		email = request.POST.get('email')
 
 		u = models.User.objects.get(email = email)
-		
+
 		new_password = request.POST.get('pass1')
 		confirm_new_password = request.POST.get('pass2')
-		
+
 		if new_password != confirm_new_password:
 			print("PASSWORDS DO NOT MATCH")
 
@@ -653,7 +668,7 @@ def reset_password(request):
 
 	else:
 		# If method is not POST
-		return HttpResponse("<h3>Invalid request method, Only POST accepted.</h3>")	
+		return HttpResponse("<h3>Invalid request method, Only POST accepted.</h3>")
 
 @login_required
 def ChangePassword(request):
@@ -666,7 +681,7 @@ def ChangePassword(request):
 		context.update(dictionary)
 
 		return render(request, "main/change_password.html", context)
-	
+
 	elif request.method == "POST":
 
 		context = {}

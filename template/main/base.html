@@ -69,7 +69,7 @@
 		.dropdown1:hover .dropdown-content {display: block;}
 
 		.dropdown1:hover .dropbtn {background-color: #4d82e4;  cursor: pointer;}*/
-		
+
 		#logo:hover{
 			cursor: pointer;
 		}
@@ -117,31 +117,6 @@
 		}
 
 	</style>
-
-	<script src="https://www.gstatic.com/firebasejs/5.7.0/firebase-app.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/5.7.0/firebase-messaging.js"></script>
-
-	<script type="text/javascript">
-	  // Initialize Firebase
-		var config = {
-			messagingSenderId: "156747095282"
-		};
-
-		firebase.initializeApp(config);
-
-		const messaging = firebase.messaging();
-	</script>
-	<script type="text/javascript" src="/firebase-messaging-sw.js"></script>
-	<script type="text/javascript">
-		messaging.usePublicVapidKey("BOPoscUJuqZq2NMsaDuK9XwR8u47sL0G5nlyil50VZR_PiwKon6yxBWq17U3l3xNzrwvYaVWU3Kfji3fEeGIawY");
-		messaging.requestPermission().then(function() {
-				console.log('Notification permission granted.');
-				// TODO(developer): Retrieve an Instance ID token for use with FCM.
-				// ...
-			}).catch(function(err) {
-				console.log('Unable to get permission to notify.', err);
-		});
-	</script>
 
 	{% if confirmed == False %}
 		<a href="{% url 'send_email_confirmation' %}" style="color: white"><div class="container-fluid btn btn-danger" style="border-radius: 0px">Confirm Your Email!</div></a>
@@ -194,13 +169,13 @@
 				</svg>
 			</button>
 
-			<ul class="nav navbar-nav ml-auto" id="logo">	
+			<ul class="nav navbar-nav ml-auto" id="logo">
 				<h4 style="padding-top: 12px;">EM</h4>
 			</ul>
 
 			<div class="collapse navbar-collapse" id="large_screen_main_navbar">
 				<ul class="navbar-nav">
-				
+
 					{% if not user.is_authenticated %}
 
 					{% else %}
@@ -216,7 +191,7 @@
 						</li>
 						<li class="nav-item">
 							<a href="{% url 'main:change_password' %}" class="nav-link">Change Password</a>
-						</li>			
+						</li>
 					{% endif %}
 				</ul>
 			</div>
@@ -240,7 +215,7 @@
 					</li>
 				{% endif %}
 			</ul>
-			
+
 
 		</div>
 	</nav>
@@ -249,7 +224,7 @@
 		<div class="container" style="padding: 0px;">
 			<ul class="navbar-nav">
 				<!-- <span style="border: 0.5px solid #90b0de"></span> -->
-			
+
 				{% if not user.is_authenticated %}
 					<li class="nav-item">
 						<a href="{% url 'main:user_registration' %}" class="nav-link">Sign Up</a>
@@ -264,7 +239,7 @@
 						<p class="small" style="margin: 0; color: #f4b2ff; font-family: sans-serif;">
 							<em>Manage Your Expenses</em>
 						</p>
-					</li>	
+					</li>
 
 					<li class="nav-item">
 						<a href="{% url 'main:expense_list' %}" id="first_nav_link" class="nav-link" >List Expenses</a>
@@ -291,8 +266,8 @@
 
 					<li class="nav-item" id="small_screen_logout">
 						<a href="{% url 'main:user_logout' %}" class="nav-link" style="">Logout</a>
-					</li>		
-					
+					</li>
+
 					<!-- <span style="border: 0.5px solid #90b0de"></span> -->
 
 				{% endif %}
@@ -307,7 +282,7 @@
 
 	<br>
 	<div class="container">
-		
+
 		{% block body_block %}
 		{% endblock %}
 	</div>
@@ -324,20 +299,20 @@
 		{% if user.first_name and user.last_name %}
 			ctx.font = "250px monospace";
 			var initials = "{{ user.first_name|first }}{{ user.last_name|first }}"
-			ctx.fillText(initials, 250, 330); 
+			ctx.fillText(initials, 250, 330);
 
 		{% elif user.username %}
 			ctx.font = "400px monospace";
 			var initials = "{{ user.username|first }}"
-			ctx.fillText(initials, 250, 360); 
+			ctx.fillText(initials, 250, 360);
 		{% endif %}
 
-		
+
 		var fullQuality = canvas.toDataURL();
 		// alert(fullQuality)
 		var uImage = document.getElementById('userImage');
 		uImage.src = fullQuality;
-		
+
 
 		document.querySelector('#logo').addEventListener('click', function(){
 				var address = window.location.protocol + "//" + window.location.host;
@@ -351,7 +326,7 @@
 		$(document).ready(function(){
 			$('input').change(function(){
 					for (var i = $(this).length - 1; i >= 0; i--) {
-						
+
 						// var x = $(this)[i];
 						// var val = x.value;
 						// alert(val);

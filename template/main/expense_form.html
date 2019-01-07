@@ -2,7 +2,7 @@
 {% load bootstrap4 %}
 
 {% block title_block %}
-	
+
 	{% if ref == 'update' and object.user == user %}
 		<title>Update Expense</title>
 	{% elif ref == 'new' %}	<!-- For add using Add button or Add for particular date. -->
@@ -14,6 +14,9 @@
 			border-radius: 3px;
 			border-width: 1px;*/
 			padding-right: 10px;
+		}
+		textarea{
+		    height: 40px!important;
 		}
 		#id_title, #id_amount
 		{
@@ -40,7 +43,8 @@
 			border-color: white!important;
 		}
 		input,
-		textarea{
+		textarea,
+		select{
 			/*border: 0.5px #80bdff solid!important;*/
 			color: white!important;
 			height: 36px;
@@ -97,8 +101,18 @@
 
 		<form method = "POST">
 			{% csrf_token %}
-			
+
 			{% bootstrap_form form %}
+
+			<div class="form-group">
+			    <label for="id_account">Payment Account</label>
+			    <select name="account" class="form-control" title="" required id="id_account">
+                    <option value="" selected>---------</option>
+
+                    {% for x in payment_accounts %}
+                          <option value="{{ x.id }}">{{ x.title }}</option>
+                    {% endfor %}
+            </select></div>
 
 
 		    {% if ref == 'new' %}
@@ -132,12 +146,12 @@
 							<p id="modal_content_description"></p>
 						</div>
 						<div>
-							
+
 							<button id="modal_delete_button" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn">
 								<a href="{% url 'main:expense_delete' pk=expense.pk %}" style="color: white; ">		Confirm Deletion?
 								</a>
 							</button>
-							
+
 							<button id="modal_cancel_button" style="margin-right: 5px!important; color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn" >Cancel</button>
 						</div>
 					</div>
@@ -159,7 +173,7 @@
 					    background-color: rgb(0,0,0); /* Fallback color */
 					    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
 						justify-content: center;
-						align-items: center; 
+						align-items: center;
 					}
 
 					/* modal_custom Content/Box */
@@ -181,8 +195,8 @@
 				<script type="text/javascript">
 					function displayDetailedInfo(){
 
-						var month_names = new Array("January", "February", "March", 
-						"April", "May", "June", "July", "August", "September", 
+						var month_names = new Array("January", "February", "March",
+						"April", "May", "June", "July", "August", "September",
 						"October", "November", "December");
 
 						//Required in JavaScript
@@ -192,7 +206,7 @@
 						date = new Date(parseInt(s))
 						date = date.getDate().toString() + "-" + month_names[date.getMonth()] + "-" + date.getFullYear()
 
-						
+
 						title = "{{ expense.title }}"
 
 						// console.log(title);
@@ -201,7 +215,7 @@
 
 						description = "{{ expense.description|escapejs }}"
 
-						description = description.replace(/(?:\r\n|\r|\n)/g, '<br>');	
+						description = description.replace(/(?:\r\n|\r|\n)/g, '<br>');
 
 						// console.log(amount);
 
@@ -222,7 +236,7 @@
 
 						var modal_content_date = document.getElementById('modal_content_date');
 						modal_content_date.innerHTML = "<hr/>Date: " + date;
-													
+
 
 						var modal_cancel_button = document.getElementById('modal_cancel_button');
 						modal_cancel_button.onclick = function() {
