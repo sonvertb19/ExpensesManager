@@ -25,24 +25,42 @@
 		transition: border 3s;
 
 		padding: 10px;
+
+	    background-color: #313131;
+        color: #b3b2b2;
+
+	}
+	#message_by_browser_container{
+        /*padding: 25px;*/
+
+	}
+	#message_by_browser_container2{
+        /*padding: 25px;*/
 	}
 	.message_by_user{
-		border: 1px solid grey;
+		/*border: 1px solid grey;*/
 		border-top-left-radius: 15px;
 		border-bottom-left-radius: 15px;
 		color: grey;
 		padding: 10px;
+	    background-color: #383737;
+        color: grey;
 	}
 	.reply_suggestions{
-		border:1px solid #909090;
+		/*border:1px solid #909090;*/
+		border: none;
 		border-radius: 15px;
 		padding: 10px;
+		margin-top: 10px;
+	    background-color: #383737;
+        color: grey;
 	}
 	.reply_suggestions:hover{
-		border: 1px solid white;
+	    background-color: #615c5c;
+        color: black;
 	}
 	#reply_suggestions_container{
-		margin-top: 50px;
+		margin-top: 30px;
 		text-align: center;
 	}
 	button{
@@ -52,6 +70,7 @@
 	button:focus,
 	button:active{
 		cursor: pointer;
+		outline: none;
 	}
 
 	</style>
@@ -62,7 +81,7 @@
 		<div id="conversation">
 
 			<div id="message_by_browser_container" style="display: none;">
-				<p>
+				<p style="margin-top: 10px;">
 					<span id="message_by_browser_1" class="message_by_browser">
 						Hi {{ user.first_name|title }}.
 					</span>
@@ -73,7 +92,7 @@
 					</span>
 				</p>
 			</div>
-			
+
 			<div id="reply_by_user" style="float: right; margin-top: 10px; width: 100%;">
 				<p id="reply_add_new_expense" style="text-align: right; display: none;">
 					<span class="message_by_user">
@@ -99,7 +118,7 @@
 
 			<div id="message_by_browser_container2" style="display: none; margin-top: 75px;">
 				<p>
-					<span id="final_message_by_browser" style="border: 1px solid white;" class="message_by_browser">
+					<span id="final_message_by_browser" class="message_by_browser">
 						Okay. Taking you trough.
 					</span>
 				</p>
@@ -109,30 +128,30 @@
 
 		<div id="reply_suggestions_container" style="display: none;">
 
-			<button id="add_new_expense" style="color: #909090; background-color: black" class="reply_suggestions">
+			<button id="add_new_expense" class="reply_suggestions">
 				Add a new expense.
 			</button>
 
-			<button id="expense_list" style="margin-top: 10px; color: #909090; background-color: black" class="reply_suggestions">
+			<button id="expense_list" class="reply_suggestions">
 				See my list of all expenses.
 			</button>
 
-			<button id="change_password" style="margin-top: 10px; color: #909090; background-color: black" class="reply_suggestions">
+			<button id="change_password" class="reply_suggestions">
 				Change my password.
 			</button>
 
-			<button id="filter_by_date" style="margin-top: 10px; color: #909090; background-color: black" class="reply_suggestions">
+			<button id="filter_by_date" class="reply_suggestions">
 				Filter my expenses date wise.
 			</button>
 
 		</div>
 
-		
+
 		{% else %}
 				<div id="conversation">
 
 			<div id="message_by_browser_container" style="display: none;">
-				<p>
+				<p style="margin-top: 10px;">
 					<span id="message_by_browser_1" class="message_by_browser">
 						Hi.
 					</span>
@@ -143,7 +162,7 @@
 					</span>
 				</p>
 			</div>
-			
+
 			<div id="reply_by_user" style="float: right; margin-top: 10px; width: 100%;">
 				<p id="reply_new_user" style="text-align: right; display: none;">
 					<span class="message_by_user">
@@ -159,7 +178,7 @@
 
 			<div id="message_by_browser_container2" style="display: none; margin-top: 75px;">
 				<p>
-					<span id="final_message_by_browser" style="border: 1px solid white;" class="message_by_browser">
+					<span id="final_message_by_browser" class="message_by_browser">
 						Okay. Taking you trough.
 					</span>
 				</p>
@@ -169,11 +188,11 @@
 
 		<div id="reply_suggestions_container" style="display: none;">
 
-			<button id="new_user" style="color: #909090; background-color: black" class="reply_suggestions">
+			<button id="new_user" class="reply_suggestions">
 				Yes, I am a new user.
 			</button>
 
-			<button id="old_user" style="margin-top: 10px; color: #909090; background-color: black" class="reply_suggestions">
+			<button id="old_user" class="reply_suggestions">
 				No, I have an account.
 			</button>
 		</div>
@@ -185,8 +204,6 @@
 		$(document).ready(function(){
 			$('#welcome_heading').slideToggle("slow", function(){
 				$('#message_by_browser_container').slideToggle(1000, function(){
-					document.querySelector('#message_by_browser_1').style.border = "1px solid whitesmoke";
-					document.querySelector('#message_by_browser_2').style.border = "1px solid whitesmoke";
 
 					document.querySelector('#reply_suggestions_container').style.display = "block";
 				})
@@ -225,7 +242,7 @@
 				console.log(address);
 				window.location.assign(address);
 			}, 2000);
-		})		
+		})
 
 		document.querySelector('#filter_by_date').addEventListener('click', function()
 		{
@@ -261,7 +278,7 @@
 		})
 
 		{% else %}
-		
+
 		document.querySelector('#new_user').addEventListener('click', function()
 		{
 			document.querySelector('#reply_suggestions_container').style.display= "none";
@@ -284,7 +301,7 @@
 			document.querySelector('#reply_old_user').style.display = "block";
 
 			document.querySelector('#final_message_by_browser').innerHTML = "Okay. Off to login page then."
-			
+
 			setTimeout(function(){document.querySelector('#message_by_browser_container2').style.display = "block";}, 500);
 
 			setTimeout(function(){

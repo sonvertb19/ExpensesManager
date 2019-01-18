@@ -98,7 +98,6 @@
 			<p style="font-size: 25px">Enter New Expense{% if date %} <small style="color: green; display: block;">for {{ date|date:"d-M-Y" }}{% endif %}:</small></p>
 		{% endif %}
 
-
 		<form method = "POST">
 			{% csrf_token %}
 
@@ -107,20 +106,37 @@
 			<div class="form-group">
 			    <label for="id_account">Payment Account</label>
 			    <select name="account" class="form-control" title="" required id="id_account">
+
                     <option value="" selected>---------</option>
 
                     {% for x in payment_accounts %}
-                          <option value="{{ x.id }}">{{ x.title }}</option>
+                        {% if ref == 'update' and x.id == current_account_pk %}
+                            <option value="{{ x.id }}" selected>{{ x.title }}</option>
+                        {% else %}
+                            <option value="{{ x.id }}">{{ x.title }}</option>
+                        {% endif %}
+
                     {% endfor %}
+
+
             </select></div>
 
 
-		    {% if ref == 'new' %}
+		    {% if ref == 'new' and not date %}
 
 				<button id="submit_button" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" type="submit"  class="btn">Submit</button>
 
-		    	<!-- For new_without_date and new_with_date -->
+		    	<!-- For new_without_date -->
 				<a id="cancel_button" href="{% url 'index' %}" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn">Cancel</a>
+
+			{% elif ref == 'new' and date %}
+
+                <button id="submit_button" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" type="submit"  class="btn">Submit</button>
+
+                <!-- For new_with_date, javascript back on cancel. -->
+
+                <a id="cancel_button" href="javascript:history.back(1)" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn">Cancel</a>
+
 			{% else %}
 
 				<!-- The Delete button if ref == 'update' -->
@@ -129,8 +145,9 @@
 
 				<a id="cancel_button" href="javascript:history.back(1)" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn" ">Cancel</a>
 
+            {% endif %}
 		</form>
-		    {% endif %}
+
 
 		    {% if ref == 'update' %}
 

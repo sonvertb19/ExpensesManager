@@ -15,119 +15,124 @@
 
 		<style type="text/css">
 
-		body{
-			color: white!important;
-			/*background-color: whitesmoke!important;*/
-		}
+    		body{
+    			color: white!important;
+    			/*background-color: whitesmoke!important;*/
+    		}
 
-		input,
-		textarea,
-		select{
-			/*border: 0.5px #80bdff solid!important;*/
-			color: white!important;
-			/*height: 36px;*/
-			padding-left: 0!important;
-			border-radius: 0!important;
-			border: none!important;
-			border-bottom: 1px solid grey!important;
-			box-shadow: none!important;
-			background-color: black!important;
-			/*background-color: #f7ccbe!important;*/
-		}
+    		input,
+    		textarea,
+    		select{
+    			/*border: 0.5px #80bdff solid!important;*/
+    			color: white!important;
+    			/*height: 36px;*/
+    			padding-left: 0!important;
+    			border-radius: 0!important;
+    			border: none!important;
+    			border-bottom: 1px solid grey!important;
+    			box-shadow: none!important;
+    			background-color: black!important;
+    			/*background-color: #f7ccbe!important;*/
+    		}
 
-		input:-webkit-autofill,
-		input:-webkit-autofill:hover,
-		input:-webkit-autofill:focus,
-		input:-webkit-autofill:active {
-		    transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s;
-		    color: white!important;
-		    outline: none;
-		    border: none;
-		}
+    		input:-webkit-autofill,
+    		input:-webkit-autofill:hover,
+    		input:-webkit-autofill:focus,
+    		input:-webkit-autofill:active {
+    		    transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s;
+    		    color: white!important;
+    		    outline: none;
+    		    border: none;
+    		}
 
 
 
-			table, th, td{
-				/*border:solid black 1px;*/
-				padding-left: 5px;
-				padding-right: 5px;
-				/*border-top: 1px #0850b6 solid;*/
-			}
-			td{
-				height: 35px!important;
-				/*border-top: 1px solid black;*/
-			}
-			thead>tr{
-				border:none!important;
-			}
-			.hover_cursor:hover{
-				cursor: pointer;
-			}
-			.main_table_div{
-				/*background-color: #e1ebf5;*/
-				/*box-shadow: 3px 3px 3px #dbe8fc;*/
-				/*border-radius: 0px;*/
-				/*border: 1px solid black;*/
-				/*border-top-left-radius: 0px;*/
-				/*border-top-right-radius: 0px;*/
-				/*background-color: #d7e8f9;*/
-				/*border-top: none;*/
-			}
-			.main_table{
-				/*border-top: 0;*/
-				width: 100%;
-				/*background-color: white;*/
-				/*background-color: #e1ebf5;*/
-				/*background-color: #d7e8f9;*/
-			}
-			.new_add:hover{
-				background-color: whitesmoke;
-				cursor: pointer;
-			}
-			#search_bar{
-				border-top-left-radius: 7px;
-				border-bottom-left-radius: 7px;
-				/*border: 1px solid black;*/
-			}
-			#search_bar:focus{
-				box-shadow: none;
-				outline: 0;
-			}
-			#search_button{
-				border-radius: 0;
-				border-top-right-radius: 7px;
-				border-bottom-right-radius: 7px;
-				/*border: 1px solid black;*/
-				border-left: none;
-				/*background-color: rgb(164, 197, 243);*/
-				background-color: grey;
-			}
+    			table, th, td{
+    				/*border:solid black 1px;*/
+    				padding-left: 5px;
+    				padding-right: 5px;
+    				/*border-top: 1px #0850b6 solid;*/
+    			}
+    			td{
+    				height: 35px!important;
+    				/*border-top: 1px solid black;*/
+    			}
+    			thead>tr{
+    				border:none!important;
+    			}
+    			.hover_cursor:hover{
+    				cursor: pointer;
+    			}
+    			.main_table_div{
+    				/*background-color: #e1ebf5;*/
+    				/*box-shadow: 3px 3px 3px #dbe8fc;*/
+    				/*border-radius: 0px;*/
+    				/*border: 1px solid black;*/
+    				/*border-top-left-radius: 0px;*/
+    				/*border-top-right-radius: 0px;*/
+    				/*background-color: #d7e8f9;*/
+    				/*border-top: none;*/
+    			}
+    			.main_table{
+    				/*border-top: 0;*/
+    				width: 100%;
+    				/*background-color: white;*/
+    				/*background-color: #e1ebf5;*/
+    				/*background-color: #d7e8f9;*/
+    			}
+    			.new_add{
+    			    border: 1px solid white;
+    			    float: right;
+    			}
+    			.new_add:hover{
+    				background-color: grey;
+    				cursor: pointer;
+    			}
+    			#search_bar{
+    				border-top-left-radius: 7px;
+    				border-bottom-left-radius: 7px;
+    				/*border: 1px solid black;*/
+    			}
+    			#search_bar:focus{
+    				box-shadow: none;
+    				outline: 0;
+    			}
+    			#search_button{
+    				border-radius: 0;
+    				border-top-right-radius: 7px;
+    				border-bottom-right-radius: 7px;
+    				/*border: 1px solid black;*/
+    				border-left: none;
+    				/*background-color: rgb(164, 197, 243);*/
+    				background-color: grey;
+    			}
 
-			#main_heading{
-				font-size: 20px;
-				color: white;
-			}
+    			#main_heading{
+    				font-size: 20px;
+    				color: white;
+    			}
 
-			.date_div{
-				padding-top: 10px;
-			}
-			{% if query %}
-				#search_query_tagline{
-					display: inline-block;
-					margin-top: 5px;
-					color: green;
-				}
-				#search_div{
-					margin: 0;
-					padding: 0;
-				}
-			{% else %}
-				#search_query_tagline{
-					display: none;
-				}
-	    	{% endif %}
+    			.date_div{
+    				padding-top: 10px;
+    			}
+    			{% if query %}
+    				#search_query_tagline{
+    					display: inline-block;
+    					margin-top: 5px;
+    					color: green;
+    				}
+    				#search_div{
+    					margin: 0;
+    					padding: 0;
+    				}
+    			{% else %}
+    				#search_query_tagline{
+    					display: none;
+    				}
+    	    	{% endif %}
 		</style>
-				{% regroup expense_list by date as regrouped_expense_list %}
+
+		{% regroup expense_list by date as regrouped_expense_list %}
 
 		<script type="text/javascript">
 			$(document).ready(function(){
@@ -135,7 +140,7 @@
 
 					{% for date, expense_data in regrouped_expense_list %}
 
-							// Totalling All the Dayily Expenses and Appending it to the last table row.
+							// Totalling All the Daily Expenses and Appending it to the last table row.
 							var t = 0;
 							{% for e in expense_data %}
 								{% if forloop.counter0 == 0 %}
@@ -176,11 +181,7 @@
 				var address = window.location.protocol + "//" + window.location.host + "/main/add/" + date;
 				console.log(address);
 				window.location.assign(address);
-			}
-			// function showMonthlyTotal(){
-			// 	document.getElementById('monthly_total').style.display = "inline";
-			// 	document.getElementById('monthly_total_header').innerHTML = "Monthly Total: ";
-			// }
+            }
 
 			function toggle_table(event, a) {
 				// event.stopPropagation();
@@ -220,7 +221,7 @@
 		<!-- <p style="color: red; text-align: center;">Work in Progress. This page not updated yet.</p> -->
 
 <!-- 		<div>
-				<span>Filter by: </span> 
+				<span>Filter by: </span>
 				{% for x in payment_accounts %}
 					<a href="?filter={{ x | slugify }}" style="padding-left: 10px;"><button>{{ x }}</button></a>
 				{% endfor %}
@@ -252,10 +253,10 @@
 		{% endif %}
 
 
-		<p style = "font-size: 17px"><!-- 
+		<p style = "font-size: 17px">
 			{% if grand_total and grand_total != 0 %}
 				<p>GrandTotal is Rs {{ grand_total }} </p>
-			{% else %} -->
+			{% else %}
 
 			    <!-- <p id="monthly_total_header">Click <span style="color: blue;" onclick='showMonthlyTotal()'>here </span> to view monthly total.</p> -->
 		    	<!-- <div id="monthly_total" style="display: none;"> -->
@@ -271,12 +272,16 @@
 
 		{% for date, expense_data in regrouped_expense_list %}
 			<!-- <p>asd</p> -->
-			<div class="date_div" id = "{{ date|date:'U' }}_dropdown_button" style="border-bottom: 1px dotted grey" onclick="toggle_table(event, this)">
+			<div class="date_div hover_cursor" id = "{{ date|date:'U' }}_dropdown_button" style="border-bottom: 1px dotted grey" onclick="toggle_table(event, this)">
 				<h5 style="display: inline;" id="{{ date|date:"U" }}">
 					{{ date }}
 				</h5>
 
 				<span id="{{ date|date:"U" }}_p" style="padding-left: 10px;">+</span>
+
+				<span class="new_add" id="{{ date|date:"U" }}" onclick="add_for_date(event, this)">
+						<span style="padding-left: 6px; padding-right: 6px;">Add</span>
+				</span>
 
 			</div>
 
@@ -287,7 +292,7 @@
 					{% for e in expense_data %}
 					<tr style="cursor: pointer; border-bottom: 1px dotted grey" onclick="displayDetailedInfo({{date|date:'U'}}, '{{e.pk}}', this)">
 						<td style="text-align: left;">{{e.title}} </td>
-						
+
 						<td style="text-align: right;">
 							<small style="color: grey; padding-right: 10px;"> {{ e.account }}</small>
 							Rs {{ e.amount }}
@@ -498,11 +503,6 @@
 							description;
 				}
 			{% endif %}
-
-
-
-
-
 
 			var modal_cancel_button = document.getElementById('modal_cancel_button');
 			modal_cancel_button.onclick = function() {

@@ -27,7 +27,7 @@ from django.contrib.auth.models import User
 import json
 
 from django.contrib.auth.hashers import check_password
-from django.contrib.auth import update_session_auth_hash
+# from django.contrib.auth import update_session_auth_hash
 
 from django.db.models import Q
 
@@ -51,7 +51,7 @@ def make_dictionary(request):
 
 def get_expenses_in_json(expenses):
 
-	prev_date = 0;
+# 	prev_date = 0;
 
 	date_wise_expenses = {}
 	present_date_expenses = {}
@@ -296,7 +296,7 @@ class ExpenseCreateViewWithDate(LoginRequiredMixin, CreateView):
 		date_str = datetime.strptime(str(datex), "%Y-%m-%d %H:%M:%S")
 
 		# print(date_str)
-		
+
 		payment_accounts = models.Account.objects.filter(user = self.request.user)
 
 		# Add in a QuerySet of the UserProfileModel
@@ -325,10 +325,11 @@ class ExpenseUpdateView(LoginRequiredMixin, UpdateView):
 
 		dictionary = make_dictionary(self.request)
 		context.update(dictionary)
-		
-		payment_accounts = models.Account.objects.filter(user = self.request.user)
 
-		context.update({'ref': 'update', 'payment_accounts': payment_accounts})
+		payment_accounts = models.Account.objects.filter(user = self.request.user)
+		current_account_pk = self.object.account.pk
+
+		context.update({'ref': 'update', 'payment_accounts': payment_accounts, 'current_account_pk': current_account_pk})
 		return context
 
 class ExpenseListView(LoginRequiredMixin, ListView):
