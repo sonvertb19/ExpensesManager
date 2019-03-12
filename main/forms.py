@@ -41,3 +41,7 @@ class UserRegistrationForm(UserCreationForm):
 		if email and User.objects.filter(email=email).count() > 0:
 			raise forms.ValidationError('This email address is already registered.')
 		return email
+
+
+class FreshStartForm(forms.Form):
+    fresh_start_date = forms.DateField(label='Fresh Start from', widget = forms.DateInput(attrs = {'type': 'date'}))

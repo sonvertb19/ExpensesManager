@@ -194,9 +194,9 @@
 	    	</span>
     	</p>
 
-		<form id="search_form" action="{% url 'main:filter_by_date' %}" method="GET">
+		<form id="search_form" action="{% url 'main:filter_by_date' %}" method="POST">
 			<div id="search_div" class="input-group input-group-sm mb-3">
-				{% csrf_token %}
+			    {% csrf_token %}
 				<input type="hidden" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
 				<input type="hidden" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
 				<input type="text" id="search_bar" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query" required>

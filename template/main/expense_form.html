@@ -110,13 +110,28 @@
                     <option value="" selected>---------</option>
 
                     {% for x in payment_accounts %}
-                        {% if ref == 'update' and x.id == current_account_pk %}
-                            <option value="{{ x.id }}" selected>{{ x.title }}</option>
-                        {% else %}
-                            <option value="{{ x.id }}">{{ x.title }}</option>
-                        {% endif %}
 
+
+                        <!-- Hard Coding "Cash" for home account -->
+                        {% if user.username == "bhardwaj_home" %}
+                            {% if x.title == "Cash" or x.title == "cash" %}
+                                <option value="{{ x.id }}" selected>{{ x.title }}</option>
+                            {% else %}
+                                <option value="{{ x.id }}">{{ x.title }}</option>
+                            {% endif %}
+                        <!-- For all other users -->
+                        {% else %}
+                            <!-- If ref id update, set the selected as the value in db -->
+                            {% if ref == 'update' and x.id == current_account_pk %}
+                                <option value="{{ x.id }}" selected>{{ x.title }}</option>
+                            <!-- Otherwise "-------" was selected earlier -->
+                            {% else %}
+                                <option value="{{ x.id }}">{{ x.title }}</option>
+                            {% endif %}
+                        {% endif %}
                     {% endfor %}
+
+
 
 
             </select></div>

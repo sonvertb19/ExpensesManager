@@ -11,7 +11,7 @@
 	{% if confirmed == False %}
 		<p style="color: red;">Your email is not confirmed.You can only add expenses but can not view them.</p>
 	{% else %}
-		<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-2.2.4.min.js" crossorigin="anonymous"></script>
 
 		<style type="text/css">
 
@@ -115,6 +115,34 @@
     			.date_div{
     				padding-top: 10px;
     			}
+    			#fresh_start{
+    			    /*border: 0.5px solid white;*/
+    			    /*padding: 5px;*/
+
+    			}
+    			#fresh_start_container{
+    			    border: 0.5px solid white;
+    			    border-radius: 5px;
+    			    margin-top: 5px;
+    			    padding: 5px;
+    			    background-color: #323c2a;
+    			}
+    			#fresh_start_header{
+                    /*border: 0.5px solid white;*/
+    			    margin-top: 5px;
+    			    padding: 5px;
+    			}
+    			#fresh_start_body{
+    			    padding: 5px;
+    			}
+    			#fresh_start_close_button{
+    			    /*border: 0.5px solid white;*/
+    			    /*border-radius: 3px;*/
+    			    cursor: pointer;
+    			    /*box-sizing: border-box;*/
+    			    /*padding-left: 3px;*/
+    			    /*padding-right: 3px;*/
+    			}
     			{% if query %}
     				#search_query_tagline{
     					display: inline-block;
@@ -181,6 +209,7 @@
 				var address = window.location.protocol + "//" + window.location.host + "/main/add/" + date;
 				console.log(address);
 				window.location.assign(address);
+				{# // window.location.assign({% url'main:add' %} + date); #}
             }
 
 			function toggle_table(event, a) {
@@ -210,45 +239,65 @@
 			}
 	    </script>
 
-
     	<p id="main_heading">
     		EXPENSES LIST
+    		{% if pay_acc and pay_acc_name %}
+        		<span class="small" style="color: green"> {{ pay_acc_name }} </span>
+        	{% else %}
+        	    <span class="small" style="color: green"> All </span>
+    		{% endif %}
 			<!--Only shown when query exists.-->
     		<span id="search_query_tagline" class="small">
 	    		( Expenses containing "{{ query }}" )
 	    	</span>
     	</p>
-		<!-- <p style="color: red; text-align: center;">Work in Progress. This page not updated yet.</p> -->
 
-<!-- 		<div>
-				<span>Filter by: </span>
-				{% for x in payment_accounts %}
-					<a href="?filter={{ x | slugify }}" style="padding-left: 10px;"><button>{{ x }}</button></a>
-				{% endfor %}
-		</div> -->
-
-		<!-- <br> -->
-
-		<form id="search_form" action="{% url 'main:search' %}" method="GET">
+		<form id="search_form" action="{% url 'main:expense_list' %}" method="GET">
 			<div id="search_div" class="input-group input-group-sm mb-3">
 				<input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query" placeholder="Enter a word/phrase" required>
-				<button type = "submit" id="search_button" class="btn btn-sm">-></button>
+				<button type = "submit" id="search_button" class="btn btn-sm">Go</button>
 			</div>
 		</form>
 
-		<!-- Uncomment to get PDF functionality -->
-		<!-- <button class="container-fluid btn btn-primary" style="height: 30px; padding: 0" onClick ="generate()">Download list as PDF</button> -->
+		<!-- Hide account_filters if query exists. -->
+		{% if not query %}
+			<div id="account_filters">
+	            <p>Account:
+	            	{% for x in payment_accounts %}
+	    				<small><a href="?pay_acc={{ x.pk }}" style="margin-left: 10px;">{{ x }}</a></small>
+	    			{% endfor %}
+	    			<small><a href="{% url 'main:expense_list' %}" style="margin-left: 10px;">All</a></small>
+	    		</p>
+			</div>
+		{% endif %}
 
-		<!-- <hr> -->
+		<div id="fresh_start">
+		    <button id="fresh_start_button" onclick="show_fresh_start()" class="btn btn-sm">Fresh Start</button>
+		    <div id="fresh_start_container" style="display:none;">
+                <div id="fresh_start_header">
+                    <span>Frest Start</span>
+                    <span style="float:right" id="fresh_start_close_button" onclick="close_fresh_start()">&#x2716;</span>
+                </div>
+    		    <div id="fresh_start_body">
+    		        <!--<small style="display: block;">Select a date to continue: </small>-->
+    		        <form class="input-group input-group-sm mb-3" action="{% url 'main:fresh_start' %}" method="POST">
+                        {% csrf_token %}
+				        <input type="date" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="fresh_start_date" required>
+				        <button type = "submit" id="search_button" class="btn btn-sm">Go</button>
+				        <!-- {{ form }} -->
+			        </form>
 
-
+                    <small>This will archive the expenses of all the previous dates.</small>
+                </div>
+		    </div>
+	    </div>
 
 		{% if not regrouped_expense_list %}
 			<!-- If query exists and no regrouped list formed -->
 			{% if query %}
 				<p style="color: red;">0 match found.</p>
 				<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
-				<a href="javascript:history.back(1)"><button class="btn btn-info">Go Back</button></a>
+				<a href="javascript:history.back(1)"><button class="btn">Go Back</button></a>
 			{% endif %}
 		{% endif %}
 
@@ -283,6 +332,12 @@
 						<span style="padding-left: 6px; padding-right: 6px;">Add</span>
 				</span>
 
+				{% if pay_acc and pay_acc_name %}
+					<span class="small" style="color: #606060; float: right; margin-right: 10px;">
+						{{ pay_acc_name }} only
+					</span>
+				{% endif %}
+
 			</div>
 
 
@@ -307,14 +362,24 @@
 			{% empty %}
 				{% if not query %}
 					<p>No expenses yet!</p>
-					<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
 				{% endif %}
 			{% endfor %}
-		{% endif %}
+	{% endif %}
 
-		<br>
+	<br>
 
-		<div id="mymodal_custom" class="modal_custom">
+	<script>
+	    function show_fresh_start(){
+	        $('#fresh_start_container').show();
+	        $('#fresh_start_button').hide();
+	    }
+	    function close_fresh_start(){
+	        $('#fresh_start_container').hide();
+	        $('#fresh_start_button').show();
+	    }
+	</script>
+
+	<div id="mymodal_custom" class="modal_custom">
 
 		<!-- modal_custom content -->
 		<div class="modal_custom-content">
@@ -410,36 +475,6 @@
 			var modal_content_date = document.getElementById('modal_content_date');
 
 			var modal_content_account = document.getElementById('modal_content_account');
-
-			// var xhttp = new XMLHttpRequest();
-			// 	xhttp.onreadystatechange = function() {
-			// 		if (this.readyState == 4 && this.status == 200) {
-			// 			description_result = this.responseText;
-
-			// 			change_description(description_result);
-			// 		}
-			// 	};
-			// xhttp.open("GET",
-			// 			window.location.protocol + "//" + window.location.host + "/main/description/" + pk,
-			// 			true);
-			// xhttp.send();
-
-			// function change_description(description_result){
-			// 	description_result = JSON.parse(description_result)
-			// 	// console.log(description_result.description);
-
-			// 	if(description_result.description == "")
-			// 	{
-			// 		document.getElementById('modal_content_description').innerHTML =
-			// 				"<strong>Description: </strong><br>" + "No Description";
-			// 	}
-			// 	else{
-			// 		document.getElementById('modal_content_description').innerHTML =
-			// 				"<strong>Description: </strong><br>" + description_result.description;
-			// 	}
-
-			// };
-
 
 			//Storing JSON from special JSON object passed using context
 			//Getting date from unixEpoh

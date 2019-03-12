@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.views.generic.edit import CreateView, DeleteView
-from django.views.generic import DetailView, ListView, UpdateView
+from django.views.generic import ListView, UpdateView
 from . import models
 from django import forms as djangoForms
 from django.urls import reverse_lazy
 
-from main.forms import FilterForm, ExpenseCreateForm
+from main.forms import FilterForm, ExpenseCreateForm, FreshStartForm
 
 from datetime import datetime
 
@@ -335,15 +335,23 @@ class ExpenseUpdateView(LoginRequiredMixin, UpdateView):
 class ExpenseListView(LoginRequiredMixin, ListView):
 	# model = models.Expense
 	ordering = ['-date']
-
 	def get_queryset(self):
-
 		query = self.request.GET.get('query')
-
+		pay_acc = self.request.GET.get('pay_acc')
 		if query:
+			if pay_acc:
+				account_object = models.Account.objects.get(pk = pay_acc)
+				return models.Expense.objects.filter((\
+				    Q(title__icontains = query) | Q(description__icontains = query)),\
+				    account = account_object , user = self.request.user)\
+				    .order_by('-date')
+
 			return models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), user = self.request.user).order_by('-date')
 
 		else:
+			if pay_acc:
+				account_object = models.Account.objects.get(pk = pay_acc)
+				return models.Expense.objects.filter(account = account_object , user = self.request.user).order_by('-date')
 
 			e = models.Expense.objects.filter(user = self.request.user,).order_by('-date')
 			return(e)
@@ -353,14 +361,27 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 		context = super().get_context_data(**kwargs)
 
 		query = self.request.GET.get('query')
+		pay_acc = self.request.GET.get('pay_acc')
 
 		if query:
 			expenses = models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), user = self.request.user).order_by('-date')
 			context.update({'query': query})
 
+			if pay_acc:
+				context.update({'pay_acc': pay_acc})
+				account_object = models.Account.objects.get(pk = pay_acc)
+				context.update({'pay_acc_name': account_object.title})
+				expenses = models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), account = account_object , user = self.request.user).order_by('-date')
+
 			# context.update(expenses_json)
 		else:
 			expenses = models.Expense.objects.filter(user = self.request.user,).order_by('-date')
+
+			if pay_acc:
+				context.update({'pay_acc': pay_acc})
+				account_object = models.Account.objects.get(pk = pay_acc)
+				context.update({'pay_acc_name': account_object.title})
+				expenses = models.Expense.objects.filter(account = account_object , user = self.request.user).order_by('-date')
 
 		expenses_json = get_expenses_in_json(expenses)
 
@@ -398,9 +419,9 @@ class ExpenseDeleteView(LoginRequiredMixin, DeleteView):
 @login_required
 def filter_by_date(request):
 
-	if request.GET.get('start_date') and request.GET.get('end_date'):
+	if request.POST.get('start_date') and request.POST.get('end_date'):
 		# If start_date and end_date exists
-		formData = FilterForm(request.GET)
+		formData = FilterForm(request.POST)
 		print(formData)
 		if formData.is_valid():
 			start_date = formData.cleaned_data['start_date']
@@ -760,3 +781,22 @@ def description_api(request, **kwargs):
 
 def password_changed(request):
 	return render(request, 'main/password_changed.html')
+
+@login_required
+def FreshStart(request):
+
+    if request.method == "POST":
+        form_data = FreshStartForm(request.POST)
+        if form_data.is_valid():
+            fresh_start_date = form_data.cleaned_data['fresh_start_date']
+
+            return HttpResponse('<h5>date: ' + str(fresh_start_date) + '</h5>')
+    else:
+        return HttpResponse(status=405, content="<h3> 405 - METHOD NOT ALLOWED </h3> <p>Only POST allowed</p>")
+
+
+    # if request.POST.get('fresh_start_date'):
+
+    #     return HttpResponse('<h5>date: ' + request.POST.get('fresh_start_date') + '</h5>')
+
+    # return HttpResponseRedirect(reverse('index'))
