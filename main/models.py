@@ -18,6 +18,8 @@ class Expense(models.Model):
 	date = models.DateField()
 	account = models.ForeignKey(Account, on_delete = models.CASCADE, null = True)
 	user = models.ForeignKey(User, on_delete = models.CASCADE, null = True)
+	archived = models.BooleanField(null=False, default=False)
+
 
 	def __str__(self):
 		return self.title

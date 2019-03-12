@@ -114,6 +114,11 @@
 						Change my password.
 					</span>
 				</p>
+				<p id="reply_fresh_start" style="text-align: right; display: none;">
+					<span class="message_by_user">
+						Get a fresh start!
+					</span>
+				</p>
 			</div>
 
 			<div id="message_by_browser_container2" style="display: none; margin-top: 75px;">
@@ -144,11 +149,15 @@
 				Filter my expenses date wise.
 			</button>
 
+			<button id="fresh_start" class="reply_suggestions">
+				Get a fresh start!
+			</button>
+
 		</div>
 
 
 		{% else %}
-				<div id="conversation">
+		<div id="conversation">
 
 			<div id="message_by_browser_container" style="display: none;">
 				<p style="margin-top: 10px;">
@@ -272,6 +281,23 @@
 
 			setTimeout(function(){
 				var address = window.location.protocol + "//" + window.location.host + "/main/change_password";
+				console.log(address);
+				window.location.assign(address);
+			}, 2000);
+		})
+
+		document.querySelector('#fresh_start').addEventListener('click', function()
+		{
+
+			document.querySelector('#reply_suggestions_container').style.display= "none";
+			document.querySelector('#reply_fresh_start').style.display = "block";
+
+			document.querySelector('#final_message_by_browser').innerHTML = "Okay. Let's get a fresh start"
+
+			setTimeout(function(){document.querySelector('#message_by_browser_container2').style.display = "block";}, 500);
+
+			setTimeout(function(){
+				var address = window.location.protocol + "//" + window.location.host + "/main/fresh_start";
 				console.log(address);
 				window.location.assign(address);
 			}, 2000);

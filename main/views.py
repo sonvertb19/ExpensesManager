@@ -343,17 +343,17 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 				account_object = models.Account.objects.get(pk = pay_acc)
 				return models.Expense.objects.filter((\
 				    Q(title__icontains = query) | Q(description__icontains = query)),\
-				    account = account_object , user = self.request.user)\
+				    account = account_object , user = self.request.user, archived=False)\
 				    .order_by('-date')
 
-			return models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), user = self.request.user).order_by('-date')
+			return models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), archived=False, user = self.request.user).order_by('-date')
 
 		else:
 			if pay_acc:
 				account_object = models.Account.objects.get(pk = pay_acc)
 				return models.Expense.objects.filter(account = account_object , user = self.request.user).order_by('-date')
 
-			e = models.Expense.objects.filter(user = self.request.user,).order_by('-date')
+			e = models.Expense.objects.filter(user = self.request.user, archived=False).order_by('-date')
 			return(e)
 
 	def get_context_data(self, **kwargs):
@@ -364,24 +364,24 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 		pay_acc = self.request.GET.get('pay_acc')
 
 		if query:
-			expenses = models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), user = self.request.user).order_by('-date')
+			expenses = models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), user = self.request.user, archived=False).order_by('-date')
 			context.update({'query': query})
 
 			if pay_acc:
 				context.update({'pay_acc': pay_acc})
 				account_object = models.Account.objects.get(pk = pay_acc)
 				context.update({'pay_acc_name': account_object.title})
-				expenses = models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), account = account_object , user = self.request.user).order_by('-date')
+				expenses = models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), account = account_object , user = self.request.user, archived=False).order_by('-date')
 
 			# context.update(expenses_json)
 		else:
-			expenses = models.Expense.objects.filter(user = self.request.user,).order_by('-date')
+			expenses = models.Expense.objects.filter(user = self.request.user,archived=False).order_by('-date')
 
 			if pay_acc:
 				context.update({'pay_acc': pay_acc})
 				account_object = models.Account.objects.get(pk = pay_acc)
 				context.update({'pay_acc_name': account_object.title})
-				expenses = models.Expense.objects.filter(account = account_object , user = self.request.user).order_by('-date')
+				expenses = models.Expense.objects.filter(account = account_object , user = self.request.user,archived=False).order_by('-date')
 
 		expenses_json = get_expenses_in_json(expenses)
 
@@ -452,14 +452,14 @@ def filter_by_date(request):
 					print("query exists")
 
 					dictionary = make_dictionary(request)
-					x = models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), date__gte=start_date, date__lte=end_date, user = request.user).order_by('-date')
+					x = models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), date__gte=start_date, date__lte=end_date, user = request.user, archived=False).order_by('-date')
 					dictionary.update({'query': request.GET.get('query')})
 				else:
 					# i.e. no query
 					# Filter without query.
 					print("query does not exist")
 					dictionary = make_dictionary(request)
-					x = models.Expense.objects.filter(date__gte=start_date, date__lte=end_date, user = request.user).order_by('-date')
+					x = models.Expense.objects.filter(date__gte=start_date, date__lte=end_date, user = request.user, archived=False).order_by('-date')
 
 		print(start_date)
 		print(end_date)
@@ -681,7 +681,9 @@ def confirm_password_reset_code(request):
 
 	else:
 		# If method is not POST
-		return HttpResponse("<h3>Invalid request method, Only POST accepted.</h3>")
+		# return HttpResponse("<h3>Invalid request method, Only POST accepted.</h3>")
+		return HttpResponse(status=405, content="<h3> 405 - METHOD NOT ALLOWED </h3> <p>Only POST allowed</p>")
+
 
 # Carried from def confirm_password_reset_code
 def reset_password(request):
@@ -716,7 +718,8 @@ def reset_password(request):
 
 	else:
 		# If method is not POST
-		return HttpResponse("<h3>Invalid request method, Only POST accepted.</h3>")
+		# return HttpResponse("<h3>Invalid request method, Only POST accepted.</h3>")
+		return HttpResponse(status=405, content="<h3> 405 - METHOD NOT ALLOWED </h3> <p>Only POST allowed</p>")
 
 @login_required
 def ChangePassword(request):
@@ -789,10 +792,28 @@ def FreshStart(request):
         form_data = FreshStartForm(request.POST)
         if form_data.is_valid():
             fresh_start_date = form_data.cleaned_data['fresh_start_date']
+            date = fresh_start_date.strftime('%d %b %Y')
 
-            return HttpResponse('<h5>date: ' + str(fresh_start_date) + '</h5>')
+            e = models.Expense.objects.filter(date__lt = fresh_start_date, user=request.user)
+            
+            total_expenses_arcihved = 0
+            total_amount = 0
+
+            for x in e:
+            	# print(x.date)
+            	total_amount = total_amount + x.amount
+            	total_expenses_arcihved = total_expenses_arcihved + 1
+            	
+            	x.archived = True
+            	x.save()
+
+            return render(request, 'main/fresh_start.html', {'fresh_start_completed': True, 'date': date, 'total_expenses_arcihved': total_expenses_arcihved, 'total_amount': total_amount})
+
+
+            # return HttpResponse('<h5>Date: ' + str(fresh_start_date) + '</h5>' + '<h5>' + str(total_expenses_arcihved) + ' expenses archived worth Rs ' + str(total_amount) + '</h5>')
     else:
-        return HttpResponse(status=405, content="<h3> 405 - METHOD NOT ALLOWED </h3> <p>Only POST allowed</p>")
+    	return render(request, 'main/fresh_start.html')
+        # return HttpResponse(status=405, content="<h3> 405 - METHOD NOT ALLOWED </h3> <p>Only POST allowed</p>")
 
 
     # if request.POST.get('fresh_start_date'):

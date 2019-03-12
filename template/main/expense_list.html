@@ -115,34 +115,6 @@
     			.date_div{
     				padding-top: 10px;
     			}
-    			#fresh_start{
-    			    /*border: 0.5px solid white;*/
-    			    /*padding: 5px;*/
-
-    			}
-    			#fresh_start_container{
-    			    border: 0.5px solid white;
-    			    border-radius: 5px;
-    			    margin-top: 5px;
-    			    padding: 5px;
-    			    background-color: #323c2a;
-    			}
-    			#fresh_start_header{
-                    /*border: 0.5px solid white;*/
-    			    margin-top: 5px;
-    			    padding: 5px;
-    			}
-    			#fresh_start_body{
-    			    padding: 5px;
-    			}
-    			#fresh_start_close_button{
-    			    /*border: 0.5px solid white;*/
-    			    /*border-radius: 3px;*/
-    			    cursor: pointer;
-    			    /*box-sizing: border-box;*/
-    			    /*padding-left: 3px;*/
-    			    /*padding-right: 3px;*/
-    			}
     			{% if query %}
     				#search_query_tagline{
     					display: inline-block;
@@ -271,26 +243,7 @@
 			</div>
 		{% endif %}
 
-		<div id="fresh_start">
-		    <button id="fresh_start_button" onclick="show_fresh_start()" class="btn btn-sm">Fresh Start</button>
-		    <div id="fresh_start_container" style="display:none;">
-                <div id="fresh_start_header">
-                    <span>Frest Start</span>
-                    <span style="float:right" id="fresh_start_close_button" onclick="close_fresh_start()">&#x2716;</span>
-                </div>
-    		    <div id="fresh_start_body">
-    		        <!--<small style="display: block;">Select a date to continue: </small>-->
-    		        <form class="input-group input-group-sm mb-3" action="{% url 'main:fresh_start' %}" method="POST">
-                        {% csrf_token %}
-				        <input type="date" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="fresh_start_date" required>
-				        <button type = "submit" id="search_button" class="btn btn-sm">Go</button>
-				        <!-- {{ form }} -->
-			        </form>
-
-                    <small>This will archive the expenses of all the previous dates.</small>
-                </div>
-		    </div>
-	    </div>
+		
 
 		{% if not regrouped_expense_list %}
 			<!-- If query exists and no regrouped list formed -->
@@ -367,17 +320,6 @@
 	{% endif %}
 
 	<br>
-
-	<script>
-	    function show_fresh_start(){
-	        $('#fresh_start_container').show();
-	        $('#fresh_start_button').hide();
-	    }
-	    function close_fresh_start(){
-	        $('#fresh_start_container').hide();
-	        $('#fresh_start_button').show();
-	    }
-	</script>
 
 	<div id="mymodal_custom" class="modal_custom">
 
