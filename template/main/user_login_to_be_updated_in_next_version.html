@@ -1,7 +1,7 @@
 {% extends 'main/base.html' %}
 
 {% block title_block %}
-	<title>Find Your Account</title>
+	<title>Login</title>
 {% endblock %}
 
 
@@ -83,9 +83,7 @@
 
 <div id="card1">
 	<div id="heading_div" class="container">
-		<h4>Find Your Account</h4>
-		<!-- <hr> -->
-		<small class="form-text">Enter your Email/Username to find your account</small>
+		<h4 id="heading">Login</h4>
 	</div>
 	<div id="content">
 		
@@ -93,26 +91,30 @@
 
 
 		<div class="container">
-			{% if message %}
-				<p style="color: {{ message_color }}; margin-top: 0px">
-						{{ message }}
+			{% if errors %}
+				<p style="color: red; margin-top: 0px">
+						{{ errors }}
 				</p>
 			{% endif %}
 			
-			<form id="login" action="{% url 'main:forgot_password' %}" method="POST">
+			<form id="login" action="{% url 'main:user_login' %}" method="POST">
 				{% csrf_token %}
 				<div class="form-group" autocomplete="off">
-						<input type="username" class="form-control inputs" id="email" placeholder="Enter email/username" name="email_or_username" required autocomplete="off" autofocus="true">
+						<input type="username" class="form-control inputs" id="email" placeholder="Enter username" name="username" required autocomplete="off" autofocus="true">
 				</div>
 				
 				<br>
-
-				<div style="display: inline; float: right">
-					<button style="background-color: #0850b6; color: white;" type="submit"  class="btn">Next</button>
-				</div>
+				<!-- <div style="border: 1px solid black"> -->
+					<div style="display: inline;">
+						<button style="background-color: whitesmoke;" class="btn" href=""><a href="{% url 'main:user_registration' %}">Create Account</a></button>
+					</div>
+					<div style="display: inline; float: right">
+						<button style="background-color: #0850b6; color: white;" type="submit"  class="btn">Next</button>
+					</div>
+				<!-- </div> -->
 			</form>
-
-
+			
+			<!-- <a style="color: white" href="{% url 'main:user_registration' %}"><button class="btn btn-sm btn-info btn-block">New User?</button></a> -->
 
 			<br>
 

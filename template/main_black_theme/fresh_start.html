@@ -1,0 +1,99 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title_block %}
+    <title>Fresh Start</title>
+{% endblock %}
+
+
+{% block body_block %}
+<style>
+    input{
+        /*border: 0.5px #80bdff solid!important;*/
+        color: white!important;
+        /*height: 36px;*/
+        padding-left: 0!important;
+        border-radius: 0!important;
+        /*border: none!important;*/
+        border: 1px solid grey!important;
+        box-shadow: none!important;
+        background-color: black!important;
+        /*background-color: #f7ccbe!important;*/
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s;
+        color: white!important;
+        outline: none;
+        border: none;
+    }
+    button{
+        background-color: grey;
+        border-radius: 0px!important;
+    }
+</style>
+
+{% if not fresh_start_completed %}
+    <div id="fresh_start_container">
+        <h5> Fresh Start </h5>
+        <br/>
+
+        <p> You can use this feature when you want to manage you expenses starting from a particular date, like when you recieve your pocket money or your salary!</p>
+
+        <p>After you select a date, your expenses before that date will be <em>archived</em>. This is like creating a new account.</p>
+
+        <p>
+            <strong style="color:green">Your older expenses will not be deleted.</strong>
+        </p>
+
+        <br/>
+
+        <p style="display: block;">Select a date to continue: </p>
+        <form class="input-group input-group-sm mb-3" action="{% url 'main:fresh_start' %}" method="POST">
+            {% csrf_token %}
+            <input type="date" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="fresh_start_date" required>
+            <button type = "submit" id="search_button" class="btn btn-sm">Go</button>
+            <!-- {{ form }} -->
+        </form>
+
+        <small>This process will archive all the expenses before the selected date.</small>
+
+        <small>This process may take a few seconds to minutes depending on the number of expenses.</small>
+    </div>
+{% else %}
+    <script type="text/javascript">
+        var x = 5;
+        setInterval(function(){
+
+            x = x - 1;
+            document.getElementById('redirect_in').innerHTML = x;
+
+            if(x == 0){
+                window.location.assign("{% url 'main:expense_list'%}");
+            }
+        }, 1000);
+    </script>
+    <div id="fresh_start_completed">
+        <h5>Fresh Started!</h5>
+        <br/>
+
+        <p>
+            <strong style="color: pink">Congratulations! </strong>You just had a fresh start.
+        </p>
+        <p>
+            You archived {{ total_expenses_arcihved }} expenses worth Rs {{ total_amount }} before {{ date }}.
+            <br/>
+            You can access your archived expenses from the main menu.
+        </p>
+        <p>
+            Review your revised Expenses List <a href="{% url 'main:expense_list' %}">now!</a>
+        </p>
+
+    </div>
+
+{% endif %}
+
+{% endblock %}

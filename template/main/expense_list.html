@@ -11,144 +11,120 @@
 	{% if confirmed == False %}
 		<p style="color: red;">Your email is not confirmed.You can only add expenses but can not view them.</p>
 	{% else %}
-		<script src="https://code.jquery.com/jquery-2.2.4.min.js" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="crossorigin="anonymous"></script>
 
 		<style type="text/css">
 
-    		body{
-    			color: white!important;
-    			/*background-color: whitesmoke!important;*/
-    		}
-
-    		input,
-    		textarea,
-    		select{
-    			/*border: 0.5px #80bdff solid!important;*/
-    			color: white!important;
-    			/*height: 36px;*/
-    			padding-left: 0!important;
-    			border-radius: 0!important;
-    			border: none!important;
-    			border-bottom: 1px solid grey!important;
-    			box-shadow: none!important;
-    			background-color: black!important;
-    			/*background-color: #f7ccbe!important;*/
-    		}
-
-    		input:-webkit-autofill,
-    		input:-webkit-autofill:hover,
-    		input:-webkit-autofill:focus,
-    		input:-webkit-autofill:active {
-    		    transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s;
-    		    color: white!important;
-    		    outline: none;
-    		    border: none;
-    		}
+		body{
+			color: black!important;
+			background-color: whitesmoke!important;
+		}
 
 
 
-    			table, th, td{
-    				/*border:solid black 1px;*/
-    				padding-left: 5px;
-    				padding-right: 5px;
-    				/*border-top: 1px #0850b6 solid;*/
-    			}
-    			td{
-    				height: 35px!important;
-    				/*border-top: 1px solid black;*/
-    			}
-    			thead>tr{
-    				border:none!important;
-    			}
-    			.hover_cursor:hover{
-    				cursor: pointer;
-    			}
-    			.main_table_div{
-    				/*background-color: #e1ebf5;*/
-    				/*box-shadow: 3px 3px 3px #dbe8fc;*/
-    				/*border-radius: 0px;*/
-    				/*border: 1px solid black;*/
-    				/*border-top-left-radius: 0px;*/
-    				/*border-top-right-radius: 0px;*/
-    				/*background-color: #d7e8f9;*/
-    				/*border-top: none;*/
-    			}
-    			.main_table{
-    				/*border-top: 0;*/
-    				width: 100%;
-    				/*background-color: white;*/
-    				/*background-color: #e1ebf5;*/
-    				/*background-color: #d7e8f9;*/
-    			}
-    			.new_add{
-    			    border: 1px solid white;
-    			    float: right;
-    			}
-    			.new_add:hover{
-    				background-color: grey;
-    				cursor: pointer;
-    			}
-    			#search_bar{
-    				border-top-left-radius: 7px;
-    				border-bottom-left-radius: 7px;
-    				/*border: 1px solid black;*/
-    			}
-    			#search_bar:focus{
-    				box-shadow: none;
-    				outline: 0;
-    			}
-    			#search_button{
-    				border-radius: 0;
-    				border-top-right-radius: 7px;
-    				border-bottom-right-radius: 7px;
-    				/*border: 1px solid black;*/
-    				border-left: none;
-    				/*background-color: rgb(164, 197, 243);*/
-    				background-color: grey;
-    			}
+			table, th, td{
+				/*border:solid black 1px;*/
+				padding-left: 5px;
+				padding-right: 5px;
+				/*border-top: 1px #0850b6 solid;*/
+			}
+			td{
+				width: 100%;
+				height: 35px!important;
+				border-top: 1px solid black;
+			}
+			th{
+				width: 70%;
+				height: 35px!important;
+				border-top: 1px solid black;
+			}
+			thead>tr{
+				border:none!important;
+			}
+			.hover_cursor:hover{
+				cursor: pointer;
+			}
+			.main_table_div{
+				/*background-color: #e1ebf5;*/
+				box-shadow: 3px 3px 3px #dbe8fc;
+				border-radius: 0px;
+				border: 1px solid black;
+				border-top-left-radius: 0px;
+				border-top-right-radius: 0px;
+				background-color: #d7e8f9;
+				border-top: none;
+			}
+			.main_table{
+				/*border-top: 0;*/
+				width: 100%;
+				/*background-color: white;*/
+				/*background-color: #e1ebf5;*/
+				background-color: #d7e8f9;
+			}
+			.new_add:hover{
+				background-color: whitesmoke;
+				cursor: pointer;
+			}
+			#search_bar{
+				border-top-left-radius: 7px;
+				border-bottom-left-radius: 7px;
+				border: 1px solid black;
+			}
+			#search_bar:focus{
+				box-shadow: none;
+				outline: 0;
+			}
+			#search_button{
+				border-radius: 0;
+				border-top-right-radius: 7px;
+				border-bottom-right-radius: 7px;
+				border: 1px solid black;
+				border-left: none;
+				background-color: rgb(164, 197, 243);
+			}
 
-    			#main_heading{
-    				font-size: 20px;
-    				color: white;
-    			}
-
-    			.date_div{
-    				padding-top: 10px;
-    			}
-    			{% if query %}
-    				#search_query_tagline{
-    					display: inline-block;
-    					margin-top: 5px;
-    					color: green;
-    				}
-    				#search_div{
-    					margin: 0;
-    					padding: 0;
-    				}
-    			{% else %}
-    				#search_query_tagline{
-    					display: none;
-    				}
-    	    	{% endif %}
+			{% if query %}
+				#main_heading{
+					font-size: 20px;
+					color: #000000;
+				}
+				#search_query_tagline{
+					display: inline-block;
+					margin-top: 5px;
+					color: green;
+				}
+				#search_div{
+					margin: 0;
+					padding: 0;
+				}
+			{% else %}
+				#main_heading{
+					font-size: 30px;
+					color: #000000;
+					text-align: center;
+					}
+				#search_query_tagline{
+					display: none;
+				}
+	    	{% endif %}
 		</style>
-
-		{% regroup expense_list by date as regrouped_expense_list %}
 
 		<script type="text/javascript">
 			$(document).ready(function(){
 
+				{% regroup expense_list by date as regrouped_expense_list %}
 
 					{% for date, expense_data in regrouped_expense_list %}
 
-							// Totalling All the Daily Expenses and Appending it to the last table row.
+							// Totalling All the Dayily Expenses and Appending it to the last table row.
 							var t = 0;
 							{% for e in expense_data %}
 								{% if forloop.counter0 == 0 %}
 								{% endif %}
 								t += {{ e.amount }};
 							{% endfor %}
-									a = "<p style='text-align: right; padding: 5px;'>Rs " + t + "</p>"
-									$("#{{ date|date:"U" }}_table_footer").append(a)
+									a = "<tr><th style = 'text-align:right'>Total: </th><td><strong>Rs " + t + "</strong></td></tr>"
+									$("#{{ date|date:"U" }}_table").append(a);
 
 							// Hiding/Unhiding the tables as per the page type.
 							{% if query %}
@@ -181,8 +157,11 @@
 				var address = window.location.protocol + "//" + window.location.host + "/main/add/" + date;
 				console.log(address);
 				window.location.assign(address);
-				{# // window.location.assign({% url'main:add' %} + date); #}
-            }
+			}
+			// function showMonthlyTotal(){
+			// 	document.getElementById('monthly_total').style.display = "inline";
+			// 	document.getElementById('monthly_total_header').innerHTML = "Monthly Total: ";
+			// }
 
 			function toggle_table(event, a) {
 				// event.stopPropagation();
@@ -211,13 +190,9 @@
 			}
 	    </script>
 
+
     	<p id="main_heading">
     		EXPENSES LIST
-    		{% if pay_acc and pay_acc_name %}
-        		<span class="small" style="color: green"> {{ pay_acc_name }} </span>
-        	{% else %}
-        	    <span class="small" style="color: green"> All </span>
-    		{% endif %}
 			<!--Only shown when query exists.-->
     		<span id="search_query_tagline" class="small">
 	    		( Expenses containing "{{ query }}" )
@@ -226,38 +201,31 @@
 
 		<form id="search_form" action="{% url 'main:expense_list' %}" method="GET">
 			<div id="search_div" class="input-group input-group-sm mb-3">
-				<input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query" placeholder="Enter a word/phrase" required>
-				<button type = "submit" id="search_button" class="btn btn-sm">Go</button>
+				<input type="text" id="search_bar" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query" required>
+				<input type = "submit" id="search_button" class=" btn input-group-text"id="inputGroup-sizing-sm" value = "Search">
 			</div>
 		</form>
 
-		<!-- Hide account_filters if query exists. -->
-		{% if not query %}
-			<div id="account_filters">
-	            <p>Account:
-	            	{% for x in payment_accounts %}
-	    				<small><a href="?pay_acc={{ x.pk }}" style="margin-left: 10px;">{{ x }}</a></small>
-	    			{% endfor %}
-	    			<small><a href="{% url 'main:expense_list' %}" style="margin-left: 10px;">All</a></small>
-	    		</p>
-			</div>
-		{% endif %}
+		<!-- Uncomment to get PDF functionality -->
+		<!-- <button class="container-fluid btn btn-primary" style="height: 30px; padding: 0" onClick ="generate()">Download list as PDF</button> -->
 
-		
+		<!-- <hr> -->
+
+
 
 		{% if not regrouped_expense_list %}
 			<!-- If query exists and no regrouped list formed -->
 			{% if query %}
 				<p style="color: red;">0 match found.</p>
 				<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
-				<a href="javascript:history.back(1)"><button class="btn">Go Back</button></a>
+				<a href="javascript:history.back(1)"><button class="btn btn-info">Go Back</button></a>
 			{% endif %}
 		{% endif %}
 
 
 		<p style = "font-size: 17px">
 			{% if grand_total and grand_total != 0 %}
-				<p>GrandTotal is Rs {{ grand_total }} </p>
+				<p>GrandTotal is <strong> Rs {{ grand_total }} </strong></p>
 			{% else %}
 
 			    <!-- <p id="monthly_total_header">Click <span style="color: blue;" onclick='showMonthlyTotal()'>here </span> to view monthly total.</p> -->
@@ -273,23 +241,16 @@
 		</p>
 
 		{% for date, expense_data in regrouped_expense_list %}
-			<!-- <p>asd</p> -->
-			<div class="date_div hover_cursor" id = "{{ date|date:'U' }}_dropdown_button" style="border-bottom: 1px dotted grey" onclick="toggle_table(event, this)">
-				<h5 style="display: inline;" id="{{ date|date:"U" }}">
-					{{ date }}
-				</h5>
-
-				<span id="{{ date|date:"U" }}_p" style="padding-left: 10px;">+</span>
-
-				<span class="new_add" id="{{ date|date:"U" }}" onclick="add_for_date(event, this)">
+			<div class="btn btn-block" id = "{{ date|date:'U' }}_dropdown_button" style="background-color: rgb(164, 197, 243); color: black; cursor: pointer; border-radius:0px; border: 1px solid black; box-shadow: 3px 3px 3px #dbe8fc;" onclick="toggle_table(event, this)">
+				<span class="new_add" id="{{ date|date:"U" }}" style="border: 1px solid black; float:left;background-color: #d7e8f9; color: black; border-radius: 3px;" onclick="add_for_date(event, this)">
 						<span style="padding-left: 6px; padding-right: 6px;">Add</span>
 				</span>
 
-				{% if pay_acc and pay_acc_name %}
-					<span class="small" style="color: #606060; float: right; margin-right: 10px;">
-						{{ pay_acc_name }} only
-					</span>
-				{% endif %}
+				<div style="display: inline;" id="{{ date|date:"U" }}">
+					{{ date }}
+				</div>
+
+				<span id="{{ date|date:"U" }}_p" style="padding-left: 10px;">+</span>
 
 			</div>
 
@@ -297,56 +258,54 @@
 
 			<div id="{{ date|date:"U" }}_div" class="main_table_div" style="display: none; width: 100%; overflow-x: auto;">
 				<table id="{{ date|date:"U" }}_table" class="main_table">
+					<thead style="color: green;">
+						<th>Title</th>
+						<td>Amount</td>
+					</thead>
 					{% for e in expense_data %}
-					<tr style="cursor: pointer; border-bottom: 1px dotted grey" onclick="displayDetailedInfo({{date|date:'U'}}, '{{e.pk}}', this)">
-						<td style="text-align: left;">{{e.title}} </td>
-
-						<td style="text-align: right;">
-							<small style="color: grey; padding-right: 10px;"> {{ e.account }}</small>
-							Rs {{ e.amount }}
-						</td>
+					<tr style="color: blue; cursor: pointer;" onclick="displayDetailedInfo({{date|date:'U'}}, '{{e.pk}}', this)">
+						<th>{{e.title}}</th>
+						<td>Rs {{ e.amount }}</td>
 					</tr>
 					{% endfor %}
 				</table>
-				<div id="{{ date|date:"U" }}_table_footer"  style="text-align: right;"></div>
 			</div>
 
 			<br>
 			{% empty %}
 				{% if not query %}
 					<p>No expenses yet!</p>
+					<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
 				{% endif %}
 			{% endfor %}
-	{% endif %}
+		{% endif %}
 
-	<br>
+		<br>
 
+	<!-- The modal_custom -->
 	<div id="mymodal_custom" class="modal_custom">
 
 		<!-- modal_custom content -->
 		<div class="modal_custom-content">
 			<div class="modal_custom-header">
 				<div class="modal_custom-header-line">
-						<h2 id="modal_title" style="margin: 0; color: white; display:inline-block;">Title</h2>
-						<h5 id="modal_amount" style="margin: 0; color: white; display:inline-block;">Amount</h5>
+						<h2 id="modal_title" style="margin: 0; color: blue; display:inline-block;">Title</h2>
+						<h5 id="modal_amount" style="margin: 0; color: black; display:inline-block;">Amount</h5>
 				</div>
 			</div>
 			<div class="modal_custom-body">
-				<span id="modal_content_date"></span>
-				<span id="modal_content_account"></span>
-				<hr>
+				<p id="modal_content_date"></p>
 				<p id="modal_content_description"></p>
 			</div>
-			<div>
-
-				<a style="color: white;color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn" id="modal_update_button">Update</a>
-
-				<a id="modal_cancel_button" style="margin-right: 5px!important; color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn" >Cancel</a>
+			<div class="modal_custom-footer">
+				<div id="modal_update_button" style="display: inline-block; float: right;">Update</div>
+				<button id="modal_cancel_button" style="display: inline-block; float: right; background-color: #645fd2; color: white; margin-right: 5px;"  class="btn">Cancel</button>
 			</div>
 		</div>
+
 	</div>
 
-	<!-- modal_custom -->
+	<!-- modal_custom Styling -->
 	<style type="text/css">
 
 		/* The modal_custom (background) */
@@ -358,25 +317,61 @@
 		    top: 0;
 		    width: 100%; /* Full width */
 		    height: 100%; /* Full height */
-		    overflow: auto; /* Enable scroll if needed */
+		    overflow: none; /* Enable scroll if needed */
 		    background-color: rgb(0,0,0); /* Fallback color */
-		    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+		    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 			justify-content: center;
 			align-items: center;
 		}
 
 		/* modal_custom Content/Box */
 		.modal_custom-content {
-		    background-color: black;
+		    background-color: #a6d0cd;
 		    margin: 20% auto; /* 15% from the top and centered */
-		    padding: 40px;
+		    padding: 20px;
 		    border: 1px solid #888;
 		    /*max-width: 80%;  Could be more or less, depending on screen size */
 		    /*min-width: 60%;*/
+			background-color: #e1ebf5;
+			box-shadow: 2px 1px #dbe8fc;
+			border-radius: 7px;
+			border: 0.5px solid #a4aebf;
+			/*padding: 20px 15px 20px 15px;*/
 		}
 		.modal_custom-header-line {
 			/*width: */
 			display: inline-block;
+		}
+		/* The Close Button */
+		.modal_custom-header-close {
+		    color: #730edc;
+		    float: right;
+		    /*display: inline;*/
+		    font-size: 28px;
+		    font-weight: bold;
+		}
+
+		/*Close button hidden.*/
+		/*.close:hover,
+		.close:focus {
+		    color: black;
+		    text-decoration: none;
+		    cursor: pointer;
+		}*/
+
+
+		.modal_custom-header {
+		    padding: 2px 16px;
+		    /*background-color: #5cb85c;*/
+		    color: white;
+		}
+
+		.modal_custom-body {padding: 2px 16px;}
+
+		.modal_custom-footer {
+		    padding: 2px 16px;
+		    /*background-color: #5cb85c;*/
+		    color: white;
 		}
 	</style>
 
@@ -406,17 +401,48 @@
 			var modal_update_button = document.getElementById('modal_update_button');
 			modal_update_button.innerHTML =
 							//Using ard link and not url reverse_lazy
-							"<a style='color:white;' href = '/main/update/" + pk + "'> Update</a>"
+							"<a class='btn btn-primary' href = '/main/update/" + pk + "'> Update</a>"
 
 
 			var modal_title = document.getElementById('modal_title');
+			modal_title.innerHTML = title;
 
 			var modal_amount = document.getElementById('modal_amount');
+			modal_amount.innerHTML = amount;
 
 
 			var modal_content_date = document.getElementById('modal_content_date');
+			modal_content_date.innerHTML = "<hr/> <strong>Date: </strong>" + date;
 
-			var modal_content_account = document.getElementById('modal_content_account');
+			// var xhttp = new XMLHttpRequest();
+			// 	xhttp.onreadystatechange = function() {
+			// 		if (this.readyState == 4 && this.status == 200) {
+			// 			description_result = this.responseText;
+
+			// 			change_description(description_result);
+			// 		}
+			// 	};
+			// xhttp.open("GET",
+			// 			window.location.protocol + "//" + window.location.host + "/main/description/" + pk,
+			// 			true);
+			// xhttp.send();
+
+			// function change_description(description_result){
+			// 	description_result = JSON.parse(description_result)
+			// 	// console.log(description_result.description);
+
+			// 	if(description_result.description == "")
+			// 	{
+			// 		document.getElementById('modal_content_description').innerHTML =
+			// 				"<strong>Description: </strong><br>" + "No Description";
+			// 	}
+			// 	else{
+			// 		document.getElementById('modal_content_description').innerHTML =
+			// 				"<strong>Description: </strong><br>" + description_result.description;
+			// 	}
+
+			// };
+
 
 			//Storing JSON from special JSON object passed using context
 			//Getting date from unixEpoh
@@ -446,25 +472,15 @@
 		    {% if expenses_json %}
 				expenses_array = JSON.parse('{{ expenses_json|escapejs }}')
 
-				// console.log(expenses_array);
+				console.log(expenses_array);
 
-				// console.log(date);
+				console.log(date);
 
 				s = expenses_array["date_wise_expenses"][date];
 
-				console.log(s);
-
 				x = s['expenses'][pk];
 				description = x.description;
-				amount = x.amount;
-				console.log("Amount = " + amount)
 
-				account = x.account;
-				console.log("account = " + account)
-
-				modal_title.innerHTML = x.title;
-
-				modal_amount.innerHTML = "(Rs "  + x.amount + ")";
 
 				description = description.replace(/(?:\r\n|\r|\n)/g, '<br>');
 
@@ -473,13 +489,18 @@
 				if(description == "")
 				{
 					document.getElementById('modal_content_description').innerHTML =
-							"No Description";
+							"<strong>Description: </strong><br>" + "No Description";
 				}
 				else{
 					document.getElementById('modal_content_description').innerHTML =
-							description;
+							"<strong>Description: </strong><br>" + description;
 				}
 			{% endif %}
+
+
+
+
+
 
 			var modal_cancel_button = document.getElementById('modal_cancel_button');
 			modal_cancel_button.onclick = function() {

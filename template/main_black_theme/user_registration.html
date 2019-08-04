@@ -1,0 +1,60 @@
+{% extends "main/base.html" %}
+{% load bootstrap4 %}
+
+{% block title_block %}
+<title>Register</title>
+{% endblock %}
+
+
+{% block body_block %}
+
+<style type="text/css">
+	input:focus{
+		outline: none!important;
+		box-shadow: none!important;
+		border-color: white!important;
+	}
+	input{
+		/*border: 0.5px #80bdff solid!important;*/
+		color: white!important;
+		height: 36px;
+		padding-left: 0!important;
+		border-radius: 0!important;
+		border: none!important;
+		border-bottom: 1px solid grey!important;
+		box-shadow: none!important;
+		background-color: black!important;
+		/*background-color: #f7ccbe!important;*/
+	}
+
+	input:-webkit-autofill,
+	input:-webkit-autofill:hover,
+	input:-webkit-autofill:focus,
+	input:-webkit-autofill:active {
+	    transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s;
+	    outline: none;
+	    border: none;
+	}
+	label{
+		display: none;
+	}
+	.form-text{
+		display: none;
+	}
+	.alert{
+		display: none;
+	}
+</style>
+<div class="container" style="padding-top: 15px">
+	<div>
+		<h5>Create your account</h5>
+		<form method="POST" autocomplete="new-password" autocomplete="off">
+			{% csrf_token %}
+			{% bootstrap_form form %}
+			<button class="btn" style="border:1px solid white; color: white; background-color: black!important; width:100%; text-align: center!important;" type="submit">Register</button>
+		</form>
+		<br/>
+	</div>
+</div>
+
+{% endblock %}

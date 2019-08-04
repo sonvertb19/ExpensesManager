@@ -1,0 +1,14 @@
+{% extends "main/base.html" %}
+
+{% block title_block %}
+<title>Registration</title>
+{% endblock %}
+
+
+{% block body_block %}
+	<p>You are logged in as 
+		<em style = "color: blue;"><strong>{{ user.first_name|title }} {{ user.last_name|title }}</strong></em>
+		<br>
+		You need to <a href="{% url 'main:user_logout' %}">logout</a> if you want to register.
+	</p>
+{% endblock %}

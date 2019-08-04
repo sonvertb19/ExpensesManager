@@ -1,0 +1,124 @@
+{% extends 'main/base.html' %}
+
+{% block title_block %}
+	<title>Filter Form</title>
+{% endblock %}
+
+
+
+{% block body_block %}
+
+	<style type="text/css">
+		body{
+			/*border: 1px solid black;*/
+			background-color: white;
+		}
+		#card1{
+			border-radius: 7px;
+			padding-top: 3px;
+			/*box-shadow: 2px 4px #dbe8fc;*/
+			/*border: 1px solid #a4aebf;*/
+			/*background-color: #98c5c2; */
+			/*background-color: #032e72;*/
+			/*background-color: #f9c8c2;*/
+			/*background-color: whitesmoke;*/
+			margin: auto;
+		}
+		#heading_div{
+			/*padding-left: 10px;*/
+			margin-top: 5px;
+			/*padding-right: 10px;
+			padding-top: 10px;*/
+			margin-bottom: 8px;
+			font-size: 1em;
+			/*background-color: #f7ccbe!important;*/
+
+		}
+		#content{
+			border-bottom-right-radius: 7px;
+			border-bottom-left-radius: 7px;
+			/*background-color: whitesmoke;*/
+			/*background-color: #f7ccbe!important;*/
+		}
+		#email{
+			/*border-bottom: 0!important;*/
+		}
+		input:focus{
+			outline: none!important;
+			box-shadow: none!important;
+			border-color: white!important;
+		}
+		input{
+			/*border: 0.5px #80bdff solid!important;*/
+			color: white!important;
+			height: 36px;
+			padding-left: 0!important;
+			border-radius: 0!important;
+			border: none!important;
+			border-bottom: 1px solid grey!important;
+			box-shadow: none!important;
+			background-color: black!important;
+			/*background-color: #f7ccbe!important;*/
+		}
+
+		input:-webkit-autofill,
+		input:-webkit-autofill:hover,
+		input:-webkit-autofill:focus,
+		input:-webkit-autofill:active {
+		    transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s;
+		    color: white!important;
+		    outline: none;
+		    border: none;
+		}
+
+		input{
+			width: 100%;
+			text-align: center;
+		}
+
+		table, tr{
+			width: 100%;
+		}
+
+		td{
+			width:70%;
+		}
+
+		#submit_button, #cancel_button{
+			width: 49%;
+		}
+		@media only screen and (min-width: 600px) {
+		    #card1 {
+		        max-width: 450px;
+		        margin-top: 60px;
+		    }
+		}
+	</style>
+
+	<div id="card1">
+		<div id="heading_div">
+			<h4 id="heading">Filter Your Expenses</h4>
+		</div>
+
+		<div id="content">
+			<div style="padding-top: 15px;">
+				{% if error %}
+					<p style="color: red;">{{ error }}</p>
+				{% endif %}
+			<form method="POST" action="">
+    			{% csrf_token %}
+				{{ form.as_p }}
+			<br>
+			<button id="submit_button" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" type="submit"  class="btn">Submit</button>
+			<a id="cancel_button" href="{% url 'index' %}" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn">Cancel</a>
+		</form>
+
+				<br>
+
+			</div>
+
+
+		</div>
+	</div>
+
+{% endblock %}

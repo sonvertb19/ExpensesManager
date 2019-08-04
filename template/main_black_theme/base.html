@@ -1,0 +1,369 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+	{% block title_block %}
+	{% endblock %}
+
+	{% block extra_head_content %}
+	{% endblock %}
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>-->
+	<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>-->
+
+	<!-- Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+</head>
+<body >
+	<style type="text/css">
+		body{
+			font-family: 'Roboto', serif;
+		}
+		.navbar-custom {
+		    /*background-color: #087e8b!important;*/
+		    /*background-color: #032e72!important;*/
+		    /*background-color: #dd8980!important;*/
+		    /*background-color: #0850b6!important;*/
+		    /*background-color: #a4ae00!important;*/
+		    background-color: black!important;
+
+
+		    opacity: 1;
+		    color: white!important;
+		    /*border-bottom: 1px black solid;*/
+		}
+		body{
+			background-color: black!important;
+			color: white!important;
+		}
+		.nav-link{
+			color: white!important;
+		}
+		.nav-link:hover{
+			color: pink!important;
+		}
+
+
+/*		.dropdown-content {
+		    display: none;
+		    position: absolute;
+		    right: 5%;
+		    background-color: #f1f1f1;
+		    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+		    z-index: 1;
+		}
+
+		.dropdown-content a {
+		    color: black;
+		    padding: 10px;
+		    text-decoration: none;
+		    display: block;
+		}
+
+		.dropdown-content a:hover {background-color: #ddd;}
+
+		.dropdown1:hover .dropdown-content {display: block;}
+
+		.dropdown1:hover .dropbtn {background-color: #4d82e4;  cursor: pointer;}*/
+
+		#logo:hover{
+			cursor: pointer;
+		}
+		#navbar_menu_button{
+			/*background-color: #0850b6;*/
+			background-color: black;
+			color: white;
+			border: none;
+			/*border: 1px solid white;*/
+			/*border-radius: 4px;*/
+			padding-top: 8px;
+		}
+		#navbar_menu_button:focus,
+		#navbar_menu_button:hover,
+		#navbar_menu_button:active{
+			outline: none;
+		}
+		#large_screen_logout{
+			display: none;
+		}
+		#small_screen_logout{
+			display: none;
+		}
+		#navbar_menu_button{
+			cursor: pointer;
+		}
+		@media only screen and (min-width: 992px) {
+		    #first_nav_link{
+		    	margin-left: 30px;
+		    }
+		    #navbar_menu_button{
+		    	display: none;
+		    }
+			#large_screen_logout{
+		    	display: block;
+			}
+			#small_screen_main_navbar{
+				display: none;
+			}
+		}
+		@media only screen and (max-width: 992px) {
+			#small_screen_logout{
+				display: block;
+			}
+			#large_screen_main_navbar{
+				display: none;
+			}
+		}
+
+	</style>
+
+	{% if confirmed == False %}
+		<a href="{% url 'send_email_confirmation' %}" style="color: white"><div class="container-fluid btn btn-danger" style="border-radius: 0px">Confirm Your Email!</div></a>
+	{% endif %}
+
+	<nav class="navbar nav-default navbar-expand-lg navbar-dark navbar-custom">
+		<div class="container">
+			<a id="navbar_menu_button">
+				<svg id="menu_three_bars"
+				   xmlns:dc
+				   xmlns:cc="http://creativecommons.org/ns#"
+				   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+				   xmlns:svg="http://www.w3.org/2000/svg"
+				   xmlns="http://www.w3.org/2000/svg"
+				   version="1.1"
+				   viewBox="0 0 7.9374998 7.9375002"
+				   height="30"
+				   width="30">
+				  <g
+				     transform="translate(0,-289.06247)"
+				     id="layer1">
+				    <rect id="top_rect"
+				       style="opacity:0.98000004;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.07513026;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+				       id="rect3737"
+				       width="6.7723083"
+				       height="0.49147439"
+				       x="0.63959306"
+				       y="290.57959"
+				       rx="0.11693024"
+				       ry="1.5367998" />
+				    <rect id="middle_rect"
+				       style="opacity:0.98000004;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.07513026;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+				       id="rect3761"
+				       width="6.7723083"
+				       height="0.49147439"
+				       x="0.63959306"
+				       y="292.69629"
+				       rx="0.11693024"
+				       ry="1.5367998" />
+				    <rect id="bottom_rect"
+				       ry="1.5367998"
+				       rx="0.11693024"
+				       y="294.81299"
+				       x="0.63959306"
+				       height="0.49147439"
+				       width="6.7723083"
+				       id="rect3759"
+				       style="opacity:0.98000004;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.07513026;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+				  </g>
+				</svg>
+			</a>
+
+			<ul class="nav navbar-nav ml-auto" id="logo">
+				<h4 style="padding-top: 12px;">EM</h4>
+			</ul>
+
+			<div class="collapse navbar-collapse" id="large_screen_main_navbar">
+				<ul class="navbar-nav">
+
+					{% if not user.is_authenticated %}
+
+					{% else %}
+
+						<li class="nav-item">
+							<a href="{% url 'main:expense_list' %}" id="first_nav_link" class="nav-link" >List Expenses</a>
+						</li>
+						<li class="nav-item">
+							<a href="{% url 'main:add_expense' %}" class="nav-link">Add Expense</a>
+						</li>
+						<li class="nav-item">
+							<a href="{% url 'main:filter_by_date' %}" class="nav-link">Filter by Date</a>
+						</li>
+						<li class="nav-item">
+							<a href="{% url 'main:change_password' %}" class="nav-link">Change Password</a>
+						</li>
+						<li class="nav-item">
+							<a href="{% url 'main:fresh_start' %}" class="nav-link">Fresh Start</a>
+						</li>
+					{% endif %}
+				</ul>
+			</div>
+
+			<ul class="nav navbar-nav ml-auto">
+				{% if user.is_authenticated %}
+					<li class="nav-item navbar-right" >
+						<!-- <div class="dropdown1"> -->
+							<li class="nav-item" id="large_screen_logout" style="margin-right: 10px;">
+								<a href="{% url 'main:user_logout' %}" class="nav-link" style="">Logout</a>
+							</li>
+							<image class="dropbtn" id = "userImage" height = "40px" width = "40px" style="border:2px solid white; border-radius: 5px" >
+							<!-- <div class="dropdown-content" > -->
+								<!-- <a href="{% url 'main:user_logout' %}">Logout</a> -->
+							<!-- </div> -->
+						<!-- </div> -->
+					</li>
+				{% else %}
+					<li class="nav-item navbar-right" >
+						<a style="color: white;" class = "nav-link" href="{% url 'main:user_login' %}">Login</a>
+					</li>
+				{% endif %}
+			</ul>
+
+
+		</div>
+	</nav>
+
+	<div class="collapse navbar-custom container-fluid" id="small_screen_main_navbar">
+		<div class="container" style="padding: 0px;">
+			<ul class="navbar-nav">
+				<!-- <span style="border: 0.5px solid #90b0de"></span> -->
+
+				{% if not user.is_authenticated %}
+					<li class="nav-item">
+						<a href="{% url 'main:user_registration' %}" class="nav-link">Sign Up</a>
+					</li>
+
+					<!-- <span style="border: 0.5px solid #90b0de"></span> -->
+
+
+				{% else %}
+
+					<li class="nav-item">
+						<p class="small" style="margin: 0; color: #f4b2ff; font-family: sans-serif;">
+							<em>Manage Your Expenses</em>
+						</p>
+					</li>
+
+					<li class="nav-item">
+						<a href="{% url 'main:expense_list' %}" id="first_nav_link" class="nav-link" >List Expenses</a>
+					</li>
+					<li class="nav-item">
+						<a href="{% url 'main:add_expense' %}" class="nav-link">Add Expense</a>
+					</li>
+
+					<li class="nav-item">
+						<a href="{% url 'main:filter_by_date' %}" class="nav-link">Filter by Date</a>
+					</li>
+					<li class="nav-item">
+						<a href="{% url 'main:fresh_start' %}" class="nav-link">Fresh Start</a>
+					</li>
+
+					<!-- <span style="border: 0.5px solid #90b0de"></span> -->
+					<li class="nav-item">
+						<p class="small" style="margin: 0; color: #f4b2ff; font-family: sans-serif;">
+							<em>Manage Your Account</em>
+						</p>
+					</li>
+					<li class="nav-item">
+						<a href="{% url 'main:change_password' %}" class="nav-link">Change Password</a>
+					</li>
+
+					<!-- <span style="border: 0.5px solid #90b0de"></span> -->
+
+					<li class="nav-item" id="small_screen_logout">
+						<a href="{% url 'main:user_logout' %}" class="nav-link" style="">Logout</a>
+					</li>
+
+					<!-- <span style="border: 0.5px solid #90b0de"></span> -->
+
+				{% endif %}
+			</ul>
+		</div>
+		<br>
+	</div>
+
+
+
+	<canvas id="myCanvas" width="500" height="500" style="border:2px solid #000000; display: none;"></canvas>
+
+	<br>
+	<div class="container">
+
+		{% block body_block %}
+		{% endblock %}
+	</div>
+
+	{% if user.is_authenticated %}
+	<script>
+
+		var canvas = document.getElementById('myCanvas');
+		canvas.style.display = "none";
+		var ctx = canvas.getContext("2d");
+		ctx.fillStyle = "white";
+		ctx.textAlign = "center"
+
+		{% if user.first_name and user.last_name %}
+			ctx.font = "250px monospace";
+			var initials = "{{ user.first_name|first }}{{ user.last_name|first }}"
+			ctx.fillText(initials, 250, 330);
+
+		{% elif user.username %}
+			ctx.font = "400px monospace";
+			var initials = "{{ user.username|first }}"
+			ctx.fillText(initials, 250, 360);
+		{% endif %}
+
+
+		var fullQuality = canvas.toDataURL();
+		// alert(fullQuality)
+		var uImage = document.getElementById('userImage');
+		uImage.src = fullQuality;
+
+
+		document.querySelector('#logo').addEventListener('click', function(){
+				var address = window.location.protocol + "//" + window.location.host;
+				console.log(address);
+				window.location.assign(address);
+			});
+	</script>
+	{% endif %}
+
+	<script>
+		$(document).ready(function(){
+			$('input').change(function(){
+					for (var i = $(this).length - 1; i >= 0; i--) {
+
+						// var x = $(this)[i];
+						// var val = x.value;
+						// alert(val);
+						// x.value = val + "s"
+						// x.style.display = "none";
+						// x.style.backgroundColor = "green";
+						// alert(x.style.backgroundColor);
+					}
+			})
+		})
+
+		document.querySelector('#logo').addEventListener('click', function(){
+			var address = window.location.protocol + "//" + window.location.host;
+			console.log(address);
+			window.location.assign(address);
+		});
+
+		var menu = document.querySelector('#navbar_menu_button');
+
+		menu.addEventListener('click', function(){
+			var menu_three_bars = document.querySelector('#menu_three_bars');
+			// if(!menu_three_bars.style.display)
+			{
+				// menu_three_bars.style.display = "block";
+				$("#small_screen_main_navbar").slideToggle();
+			}
+		});
+	</script>
+
+</body>
+</html>

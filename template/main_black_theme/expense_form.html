@@ -15,6 +15,9 @@
 			border-width: 1px;*/
 			padding-right: 10px;
 		}
+		textarea{
+		    height: 40px!important;
+		}
 		#id_title, #id_amount
 		{
 			width: 100%
@@ -33,6 +36,53 @@
 				padding-bottom: 10px
 			}
 		}
+		input:focus,
+		textarea:focus{
+			outline: none!important;
+			box-shadow: none!important;
+			border-color: white!important;
+		}
+		input,
+		textarea,
+		select{
+			/*border: 0.5px #80bdff solid!important;*/
+			color: white!important;
+			height: 36px;
+			padding-left: 0!important;
+			border-radius: 0!important;
+			border: none!important;
+			border-bottom: 1px solid grey!important;
+			box-shadow: none!important;
+			background-color: black!important;
+			/*background-color: #f7ccbe!important;*/
+		}
+
+		input:-webkit-autofill,
+		input:-webkit-autofill:hover,
+		input:-webkit-autofill:focus,
+		input:-webkit-autofill:active {
+		    transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s;
+		    color: white!important;
+		    outline: none;
+		    border: none;
+		}
+		{% if ref == 'new' %}
+		#submit_button, #cancel_button{
+			width: 49%;
+		}
+		{% elif ref == 'update' %}
+		#update_button, #cancel_button, #delete_button{
+			width: 32.5%;
+		}
+		{% endif %}
+
+		@media only screen and (min-width: 600px) {
+		    #container {
+		        max-width: 700px;
+		        /*margin-top: 60px;*/
+		        margin: auto;
+		    }
+		}
 	</style>
 {% endblock %}
 
@@ -41,33 +91,27 @@
 
 	{% if ref == 'new' or ref == 'update' and object.user == user %}
 
+	<div id="container">
 		{% if ref == 'update' %}
 			<p style="font-size: 25px">Update Your Expense: </p>
 		{% elif ref == 'new' %}
 			<p style="font-size: 25px">Enter New Expense{% if date %} <small style="color: green; display: block;">for {{ date|date:"d-M-Y" }}{% endif %}:</small></p>
 		{% endif %}
 
-
 		<form method = "POST">
 			{% csrf_token %}
 
 			{% bootstrap_form form %}
 
-            <div class="form-group">
-			    <!--<label for="id_account">Payment Account</label>-->
-			    <select hidden="true" name="account" class="form-control" title="" required id="id_account">
+			<div class="form-group">
+			    <label for="id_account">Payment Account</label>
+			    <select name="account" class="form-control" title="" required id="id_account">
 
                     <option value="" selected>---------</option>
 
                     {% for x in payment_accounts %}
 
-                    <!--Hardcoding all as CASH for BLUE THEME-->
-                    {% if x.title == "Cash" or x.title == "cash" %}
-                        <option value="{{ x.id }}" selected>{{ x.title }}</option>
-                    {% endif %}
 
-
-                        {#
                         <!-- Hard Coding "Cash" for home account -->
                         {% if user.username == "bhardwaj_home" %}
                             {% if x.title == "Cash" or x.title == "cash" %}
@@ -85,7 +129,6 @@
                                 <option value="{{ x.id }}">{{ x.title }}</option>
                             {% endif %}
                         {% endif %}
-                        #}
                     {% endfor %}
 
 
@@ -94,17 +137,34 @@
             </select></div>
 
 
-			<input style="display: inline-block;" class="btn btn-primary" type="submit" value="Submit">
+		    {% if ref == 'new' and not date %}
 
-		    {% if ref == 'new' %}
-		    	<!-- For new_without_date and new_with_date -->
-				<a href="javascript:history.back(1)" class="btn btn-info" style="background-color: #645fd2; color: white; border-color: #645fd2">Cancel</a>
+				<button id="submit_button" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" type="submit"  class="btn">Submit</button>
+
+		    	<!-- For new_without_date -->
+				<a id="cancel_button" href="{% url 'index' %}" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn">Cancel</a>
+
+			{% elif ref == 'new' and date %}
+
+                <button id="submit_button" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" type="submit"  class="btn">Submit</button>
+
+                <!-- For new_with_date, javascript back on cancel. -->
+
+                <a id="cancel_button" href="javascript:history.back(1)" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn">Cancel</a>
+
 			{% else %}
 
 				<!-- The Delete button if ref == 'update' -->
-				<a style="display: inline-block; color: white;"  class="btn btn-danger" onclick="displayDetailedInfo()">Delete</a>
+				<button id="update_button" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" type="submit" class="btn">Update</button>
+				<a id="delete_button" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn" onclick="displayDetailedInfo()">Delete</a>
 
-				<a href="javascript:history.back(1)" class="btn btn-info" style="background-color: #645fd2; color: white; border-color: #645fd2">Cancel</a>
+				<a id="cancel_button" href="javascript:history.back(1)" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn" ">Cancel</a>
+
+            {% endif %}
+		</form>
+
+
+		    {% if ref == 'update' %}
 
 				<!-- The modal_custom -->
 				<div id="mymodal_custom" class="modal_custom">
@@ -113,21 +173,22 @@
 					<div class="modal_custom-content">
 						<div class="modal_custom-header">
 							<div class="modal_custom-header-line">
-									<h2 id="modal_title" style="margin: 0; color: blue; display:inline-block;">Title</h2>
-									<h5 id="modal_amount" style="margin: 0; color: black; display:inline-block;">Amount</h5>
+									<h2 id="modal_title" style="margin: 0; color: white; display:inline-block;">Title</h2>
+									<span> for </span>
+									<h5 id="modal_amount" style="margin: 0; color: white; display:inline-block;">Amount</h5>
 							</div>
 						</div>
 						<div class="modal_custom-body">
 							<p id="modal_content_date"></p>
 							<p id="modal_content_description"></p>
 						</div>
-						<div style="display: flex; justify-content: center; align-items: center;" class="modal_custom-footer">
+						<div>
 
-							<a style="color: white;" href="{% url 'main:expense_delete' pk=expense.pk %}" class="btn btn-danger">
-                                Confirm Deletion?
-                            </a>
+							<a href="{% url 'main:expense_delete' pk=expense.pk %}" id="modal_delete_button"  style="color: white;color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn">
+									Confirm Deletion?
+							</a>
 
-							<a id="modal_cancel_button" class="btn btn-info">Cancel</a>
+							<a id="modal_cancel_button" style="margin-right: 5px!important; color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn" >Cancel</a>
 						</div>
 					</div>
 				</div>
@@ -146,16 +207,16 @@
 					    height: 100%; /* Full height */
 					    overflow: auto; /* Enable scroll if needed */
 					    background-color: rgb(0,0,0); /* Fallback color */
-					    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+					    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
 						justify-content: center;
 						align-items: center;
 					}
 
 					/* modal_custom Content/Box */
 					.modal_custom-content {
-					    background-color: #a6d0cd;
+					    background-color: black;
 					    margin: 20% auto; /* 15% from the top and centered */
-					    padding: 20px;
+					    padding: 40px;
 					    border: 1px solid #888;
 					    /*max-width: 80%;  Could be more or less, depending on screen size */
 					    /*min-width: 60%;*/
@@ -163,28 +224,6 @@
 					.modal_custom-header-line {
 						/*width: */
 						display: inline-block;
-					}
-					/* The Close Button */
-					.modal_custom-header-close {
-					    color: #730edc;
-					    float: right;
-					    /*display: inline;*/
-					    font-size: 28px;
-					    font-weight: bold;
-					}
-
-					.modal_custom-header {
-					    padding: 2px 16px;
-					    /*background-color: #5cb85c;*/
-					    color: white;
-					}
-
-					.modal_custom-body {padding: 2px 16px;}
-
-					.modal_custom-footer {
-					    padding: 2px 16px;
-					    /*background-color: #5cb85c;*/
-					    color: white;
 					}
 				</style>
 
@@ -225,14 +264,14 @@
 						modal_title.innerHTML = title;
 
 						var modal_amount = document.getElementById('modal_amount');
-						modal_amount.innerHTML = amount;
+						modal_amount.innerHTML = "Rs " + amount;
 
 						var modal_content_description = document.getElementById('modal_content_description');
 						modal_content_description.innerHTML = description;
 
 
 						var modal_content_date = document.getElementById('modal_content_date');
-						modal_content_date.innerHTML = "<hr/> <strong>Date: </strong>" + date;
+						modal_content_date.innerHTML = "<hr/>Date: " + date;
 
 
 						var modal_cancel_button = document.getElementById('modal_cancel_button');
@@ -252,9 +291,9 @@
 				</script>
 		    {% endif %}
 
-		</form>
 
 			<br>
+	</div>
 
 	{% else %}
 		<h3>Error 403</h3>

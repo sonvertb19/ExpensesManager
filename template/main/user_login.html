@@ -8,10 +8,9 @@
 {% block body_block %}
 
 <style type="text/css">
-
 	body{
 		/*border: 1px solid black;*/
-		color: white!important;
+		background-color: whitesmoke;
 	}
 	*{
 		/*border: 1px solid black;*/
@@ -25,8 +24,7 @@
 		/*background-color: #032e72;*/
 		/*background-color: #f9c8c2;*/
 		/*background-color: whitesmoke;*/
-		max-width: 340px;
-		margin: auto;
+		width: 340px;
 	}
 	#heading_div{
 		/*border-bottom:	1px solid #a4aebf;*/
@@ -57,44 +55,27 @@
 	input:focus{
 		outline: none!important;
 		box-shadow: none!important;
-		border-color: white!important;
+		border-color: blue!important;
 	}
 	input{
 		/*border: 0.5px #80bdff solid!important;*/
-		color: white!important;
+		background-color: ;
 		height: 36px;
-		padding-left: 0!important;
+		padding-left: 5px;
 		border-radius: 0!important;
 		border: none!important;
-		border-bottom: 1px solid grey!important;
-		box-shadow: none!important;
-		background-color: black!important;
+		border-bottom: 1px solid #dbe8fc!important;
+		background-color: whitesmoke!important;
 		/*background-color: #f7ccbe!important;*/
-	}
 
-	input:-webkit-autofill,
-	input:-webkit-autofill:hover,
-	input:-webkit-autofill:focus,
-	input:-webkit-autofill:active {
-	    transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s;
-	    color: white!important;
-	    outline: none;
-	    border: none;
 	}
-	@media only screen and (min-width: 600px) {
-	    #card1 {
-	        max-width: 450px;
-	        margin-top: 60px;
-	    }
-	}
-
 </style>
 
-
-<div id="card1">
+<div id="card1" class="mx-auto">
 	<div id="heading_div" class="container">
 		<h4 id="heading">Login</h4>
 	</div>
+
 	<div id="content">
 		
 		<br>
@@ -110,21 +91,19 @@
 			<form id="login" action="{% url 'main:user_login' %}" method="POST">
 				{% csrf_token %}
 				<div class="form-group" autocomplete="off">
-						<input type="text" class="form-control inputs" id="uname" placeholder="Enter username/email" name="uname" required autocomplete="off" autofocus="true">
+						<input type="username" class="form-control inputs" id="email" placeholder="Enter username" name="username" required autocomplete="false" autofocus="true">
+						<input type="password" class="form-control inputs" id="password" placeholder="Enter password" name="password" required>
+						<p style="margin-top: 10px;">
+							<a href="{% url 'main:forgot_password' %}" style="font-size: 15px; color: black;">Forgot Password?</a>
+						</p>
 				</div>
 				
-				<br>
-				<!-- <div style="border: 1px solid black"> -->
-					<div style="display: inline;">
-						<a href="{% url 'main:user_registration' %}" style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" type="text" class="btn">Create Account?</button></a>
-					</div>
-					<div style="display: inline; float: right">
-						<button style="color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" type="submit"  class="btn">Next</button>
-					</div>
-				<!-- </div> -->
+				<div class="form-group">
+					<button type="submit" class="btn btn-sm btn-block btn-success">Login</button>
+				</div>
 			</form>
 			
-			<!-- <a style="color: white" href="{% url 'main:user_registration' %}"><button class="btn btn-sm btn-info btn-block">New User?</button></a> -->
+			<a style="color: white" href="{% url 'main:user_registration' %}"><button class="btn btn-sm btn-info btn-block">New User?</button></a>
 
 			<br>
 

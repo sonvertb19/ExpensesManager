@@ -162,10 +162,14 @@ def user_login(request):
 
 		elif request.method == "POST":
 
-			username = request.POST.get('uname')
+# 			username = request.POST.get('uname')
+			# For blue theme
+			username = request.POST.get('username')
 
 			if username:
-				password = request.POST.get('pwd')
+				# password = request.POST.get('pwd')
+				# For blue theme
+				password = request.POST.get('password')
 
 				if password:
 
@@ -342,9 +346,9 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 			if pay_acc:
 				account_object = models.Account.objects.get(pk = pay_acc)
 				return models.Expense.objects.filter((\
-				    Q(title__icontains = query) | Q(description__icontains = query)),\
-				    account = account_object , user = self.request.user, archived=False)\
-				    .order_by('-date')
+					Q(title__icontains = query) | Q(description__icontains = query)),\
+					account = account_object , user = self.request.user, archived=False)\
+					.order_by('-date')
 
 			return models.Expense.objects.filter((Q(title__icontains = query) | Q(description__icontains = query)), archived=False, user = self.request.user).order_by('-date')
 
@@ -788,36 +792,36 @@ def password_changed(request):
 @login_required
 def FreshStart(request):
 
-    if request.method == "POST":
-        form_data = FreshStartForm(request.POST)
-        if form_data.is_valid():
-            fresh_start_date = form_data.cleaned_data['fresh_start_date']
-            date = fresh_start_date.strftime('%d %b %Y')
+	if request.method == "POST":
+		form_data = FreshStartForm(request.POST)
+		if form_data.is_valid():
+			fresh_start_date = form_data.cleaned_data['fresh_start_date']
+			date = fresh_start_date.strftime('%d %b %Y')
 
-            e = models.Expense.objects.filter(date__lt = fresh_start_date, user=request.user)
-            
-            total_expenses_arcihved = 0
-            total_amount = 0
+			e = models.Expense.objects.filter(date__lt = fresh_start_date, user=request.user)
 
-            for x in e:
-            	# print(x.date)
-            	total_amount = total_amount + x.amount
-            	total_expenses_arcihved = total_expenses_arcihved + 1
-            	
-            	x.archived = True
-            	x.save()
+			total_expenses_arcihved = 0
+			total_amount = 0
 
-            return render(request, 'main/fresh_start.html', {'fresh_start_completed': True, 'date': date, 'total_expenses_arcihved': total_expenses_arcihved, 'total_amount': total_amount})
+			for x in e:
+				# print(x.date)
+				total_amount = total_amount + x.amount
+				total_expenses_arcihved = total_expenses_arcihved + 1
 
+				x.archived = True
+				x.save()
 
-            # return HttpResponse('<h5>Date: ' + str(fresh_start_date) + '</h5>' + '<h5>' + str(total_expenses_arcihved) + ' expenses archived worth Rs ' + str(total_amount) + '</h5>')
-    else:
-    	return render(request, 'main/fresh_start.html')
-        # return HttpResponse(status=405, content="<h3> 405 - METHOD NOT ALLOWED </h3> <p>Only POST allowed</p>")
+			return render(request, 'main/fresh_start.html', {'fresh_start_completed': True, 'date': date, 'total_expenses_arcihved': total_expenses_arcihved, 'total_amount': total_amount})
 
 
-    # if request.POST.get('fresh_start_date'):
+			# return HttpResponse('<h5>Date: ' + str(fresh_start_date) + '</h5>' + '<h5>' + str(total_expenses_arcihved) + ' expenses archived worth Rs ' + str(total_amount) + '</h5>')
+	else:
+		return render(request, 'main/fresh_start.html')
+		# return HttpResponse(status=405, content="<h3> 405 - METHOD NOT ALLOWED </h3> <p>Only POST allowed</p>")
 
-    #     return HttpResponse('<h5>date: ' + request.POST.get('fresh_start_date') + '</h5>')
 
-    # return HttpResponseRedirect(reverse('index'))
+	# if request.POST.get('fresh_start_date'):
+
+	#     return HttpResponse('<h5>date: ' + request.POST.get('fresh_start_date') + '</h5>')
+
+	# return HttpResponseRedirect(reverse('index'))

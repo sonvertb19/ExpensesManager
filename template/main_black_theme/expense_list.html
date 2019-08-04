@@ -1,0 +1,510 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title_block %}
+	<title>Expense List</title>
+{% endblock %}
+
+
+{% block body_block %}
+
+	{% if confirmed == False %}
+		<p style="color: red;">Your email is not confirmed.You can only add expenses but can not view them.</p>
+	{% else %}
+		<script src="https://code.jquery.com/jquery-2.2.4.min.js" crossorigin="anonymous"></script>
+
+		<style type="text/css">
+
+    		body{
+    			color: white!important;
+    			/*background-color: whitesmoke!important;*/
+    		}
+
+    		input,
+    		textarea,
+    		select{
+    			/*border: 0.5px #80bdff solid!important;*/
+    			color: white!important;
+    			/*height: 36px;*/
+    			padding-left: 0!important;
+    			border-radius: 0!important;
+    			border: none!important;
+    			border-bottom: 1px solid grey!important;
+    			box-shadow: none!important;
+    			background-color: black!important;
+    			/*background-color: #f7ccbe!important;*/
+    		}
+
+    		input:-webkit-autofill,
+    		input:-webkit-autofill:hover,
+    		input:-webkit-autofill:focus,
+    		input:-webkit-autofill:active {
+    		    transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s;
+    		    color: white!important;
+    		    outline: none;
+    		    border: none;
+    		}
+
+
+
+    			table, th, td{
+    				/*border:solid black 1px;*/
+    				padding-left: 5px;
+    				padding-right: 5px;
+    				/*border-top: 1px #0850b6 solid;*/
+    			}
+    			td{
+    				height: 35px!important;
+    				/*border-top: 1px solid black;*/
+    			}
+    			thead>tr{
+    				border:none!important;
+    			}
+    			.hover_cursor:hover{
+    				cursor: pointer;
+    			}
+    			.main_table_div{
+    				/*background-color: #e1ebf5;*/
+    				/*box-shadow: 3px 3px 3px #dbe8fc;*/
+    				/*border-radius: 0px;*/
+    				/*border: 1px solid black;*/
+    				/*border-top-left-radius: 0px;*/
+    				/*border-top-right-radius: 0px;*/
+    				/*background-color: #d7e8f9;*/
+    				/*border-top: none;*/
+    			}
+    			.main_table{
+    				/*border-top: 0;*/
+    				width: 100%;
+    				/*background-color: white;*/
+    				/*background-color: #e1ebf5;*/
+    				/*background-color: #d7e8f9;*/
+    			}
+    			.new_add{
+    			    border: 1px solid white;
+    			    float: right;
+    			}
+    			.new_add:hover{
+    				background-color: grey;
+    				cursor: pointer;
+    			}
+    			#search_bar{
+    				border-top-left-radius: 7px;
+    				border-bottom-left-radius: 7px;
+    				/*border: 1px solid black;*/
+    			}
+    			#search_bar:focus{
+    				box-shadow: none;
+    				outline: 0;
+    			}
+    			#search_button{
+    				border-radius: 0;
+    				border-top-right-radius: 7px;
+    				border-bottom-right-radius: 7px;
+    				/*border: 1px solid black;*/
+    				border-left: none;
+    				/*background-color: rgb(164, 197, 243);*/
+    				background-color: grey;
+    			}
+
+    			#main_heading{
+    				font-size: 20px;
+    				color: white;
+    			}
+
+    			.date_div{
+    				padding-top: 10px;
+    			}
+    			{% if query %}
+    				#search_query_tagline{
+    					display: inline-block;
+    					margin-top: 5px;
+    					color: green;
+    				}
+    				#search_div{
+    					margin: 0;
+    					padding: 0;
+    				}
+    			{% else %}
+    				#search_query_tagline{
+    					display: none;
+    				}
+    	    	{% endif %}
+		</style>
+
+		{% regroup expense_list by date as regrouped_expense_list %}
+
+		<script type="text/javascript">
+			$(document).ready(function(){
+
+
+					{% for date, expense_data in regrouped_expense_list %}
+
+							// Totalling All the Daily Expenses and Appending it to the last table row.
+							var t = 0;
+							{% for e in expense_data %}
+								{% if forloop.counter0 == 0 %}
+								{% endif %}
+								t += {{ e.amount }};
+							{% endfor %}
+									a = "<p style='text-align: right; padding: 5px;'>Rs " + t + "</p>"
+									$("#{{ date|date:"U" }}_table_footer").append(a)
+
+							// Hiding/Unhiding the tables as per the page type.
+							{% if query %}
+								//In case of a search, the code will execute for all, but in case of not query, it will execute only for counter0.
+								$("#{{ date|date:"U" }}_div").slideToggle();
+								$("#{{ date|date:"U" }}_p").html('-');
+
+							{% else %}
+								//No Query, general list.
+								//Showing the first table only.
+								{% if forloop.counter0 == 0 %}
+
+								$("#{{ date|date:"U" }}_div").slideToggle("slow");
+								$("#{{ date|date:"U" }}_p").html('-');
+
+								{% endif %}
+
+							{% endif %}
+					{% endfor %}
+			})
+		</script>
+
+	    <script type="text/javascript">
+			function add_for_date(event, a){
+				event.stopPropagation();
+
+				date = a.id;
+				console.log(date);
+
+				var address = window.location.protocol + "//" + window.location.host + "/main/add/" + date;
+				console.log(address);
+				window.location.assign(address);
+				{# // window.location.assign({% url'main:add' %} + date); #}
+            }
+
+			function toggle_table(event, a) {
+				// event.stopPropagation();
+
+				// alert(event.target.id);
+
+				// alert(a.id);
+				var id = a.id;
+				var s = id.indexOf("_");
+
+				id = id.slice(0, s);
+
+				var symbol = document.getElementById(id + "_p").innerHTML;
+				symbol = symbol.toString();
+				// alert(symbol);
+
+				$("#" + id + "_div").slideToggle("slow");
+				if(symbol == '+')
+				{
+					$("#" + id + "_p").html('-');
+				}
+				else if(symbol == '-')
+				{
+					$("#" + id + "_p").html('+');
+				}
+			}
+	    </script>
+
+    	<p id="main_heading">
+    		EXPENSES LIST
+    		{% if pay_acc and pay_acc_name %}
+        		<span class="small" style="color: green"> {{ pay_acc_name }} </span>
+        	{% else %}
+        	    <span class="small" style="color: green"> All </span>
+    		{% endif %}
+			<!--Only shown when query exists.-->
+    		<span id="search_query_tagline" class="small">
+	    		( Expenses containing "{{ query }}" )
+	    	</span>
+    	</p>
+
+		<form id="search_form" action="{% url 'main:expense_list' %}" method="GET">
+			<div id="search_div" class="input-group input-group-sm mb-3">
+				<input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query" placeholder="Enter a word/phrase" required>
+				<button type = "submit" id="search_button" class="btn btn-sm">Go</button>
+			</div>
+		</form>
+
+		<!-- Hide account_filters if query exists. -->
+		{% if not query %}
+			<div id="account_filters">
+	            <p>Account:
+	            	{% for x in payment_accounts %}
+	    				<small><a href="?pay_acc={{ x.pk }}" style="margin-left: 10px;">{{ x }}</a></small>
+	    			{% endfor %}
+	    			<small><a href="{% url 'main:expense_list' %}" style="margin-left: 10px;">All</a></small>
+	    		</p>
+			</div>
+		{% endif %}
+
+		
+
+		{% if not regrouped_expense_list %}
+			<!-- If query exists and no regrouped list formed -->
+			{% if query %}
+				<p style="color: red;">0 match found.</p>
+				<p>Click <a href="{% url 'main:add_expense' %}">here</a> to add a new expense.</p>
+				<a href="javascript:history.back(1)"><button class="btn">Go Back</button></a>
+			{% endif %}
+		{% endif %}
+
+
+		<p style = "font-size: 17px">
+			{% if grand_total and grand_total != 0 %}
+				<p>GrandTotal is Rs {{ grand_total }} </p>
+			{% else %}
+
+			    <!-- <p id="monthly_total_header">Click <span style="color: blue;" onclick='showMonthlyTotal()'>here </span> to view monthly total.</p> -->
+		    	<!-- <div id="monthly_total" style="display: none;"> -->
+		    		<!-- <ol> -->
+			    		<!-- {% for x in month_wise_total %} -->
+			    			<!-- <li><strong>{{ x.month }}</strong> : Rs <strong>{{ x.amount }}</strong></li> -->
+			    		<!-- {% endfor %} -->
+		    		<!-- </ol> -->
+		    	<!-- </div> -->
+
+			{% endif %}
+		</p>
+
+		{% for date, expense_data in regrouped_expense_list %}
+			<!-- <p>asd</p> -->
+			<div class="date_div hover_cursor" id = "{{ date|date:'U' }}_dropdown_button" style="border-bottom: 1px dotted grey" onclick="toggle_table(event, this)">
+				<h5 style="display: inline;" id="{{ date|date:"U" }}">
+					{{ date }}
+				</h5>
+
+				<span id="{{ date|date:"U" }}_p" style="padding-left: 10px;">+</span>
+
+				<span class="new_add" id="{{ date|date:"U" }}" onclick="add_for_date(event, this)">
+						<span style="padding-left: 6px; padding-right: 6px;">Add</span>
+				</span>
+
+				{% if pay_acc and pay_acc_name %}
+					<span class="small" style="color: #606060; float: right; margin-right: 10px;">
+						{{ pay_acc_name }} only
+					</span>
+				{% endif %}
+
+			</div>
+
+
+
+			<div id="{{ date|date:"U" }}_div" class="main_table_div" style="display: none; width: 100%; overflow-x: auto;">
+				<table id="{{ date|date:"U" }}_table" class="main_table">
+					{% for e in expense_data %}
+					<tr style="cursor: pointer; border-bottom: 1px dotted grey" onclick="displayDetailedInfo({{date|date:'U'}}, '{{e.pk}}', this)">
+						<td style="text-align: left;">{{e.title}} </td>
+
+						<td style="text-align: right;">
+							<small style="color: grey; padding-right: 10px;"> {{ e.account }}</small>
+							Rs {{ e.amount }}
+						</td>
+					</tr>
+					{% endfor %}
+				</table>
+				<div id="{{ date|date:"U" }}_table_footer"  style="text-align: right;"></div>
+			</div>
+
+			<br>
+			{% empty %}
+				{% if not query %}
+					<p>No expenses yet!</p>
+				{% endif %}
+			{% endfor %}
+	{% endif %}
+
+	<br>
+
+	<div id="mymodal_custom" class="modal_custom">
+
+		<!-- modal_custom content -->
+		<div class="modal_custom-content">
+			<div class="modal_custom-header">
+				<div class="modal_custom-header-line">
+						<h2 id="modal_title" style="margin: 0; color: white; display:inline-block;">Title</h2>
+						<h5 id="modal_amount" style="margin: 0; color: white; display:inline-block;">Amount</h5>
+				</div>
+			</div>
+			<div class="modal_custom-body">
+				<span id="modal_content_date"></span>
+				<span id="modal_content_account"></span>
+				<hr>
+				<p id="modal_content_description"></p>
+			</div>
+			<div>
+
+				<a style="color: white;color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn" id="modal_update_button">Update</a>
+
+				<a id="modal_cancel_button" style="margin-right: 5px!important; color: white; background-color: black!important; background-image: linear-gradient(#212121, #040404)!important; border: none!important;" class="btn" >Cancel</a>
+			</div>
+		</div>
+	</div>
+
+	<!-- modal_custom -->
+	<style type="text/css">
+
+		/* The modal_custom (background) */
+		.modal_custom {
+		    display: none;
+		    position: fixed; /* Stay in place */
+		    z-index: 1; /* Sit on top */
+		    left: 0;
+		    top: 0;
+		    width: 100%; /* Full width */
+		    height: 100%; /* Full height */
+		    overflow: auto; /* Enable scroll if needed */
+		    background-color: rgb(0,0,0); /* Fallback color */
+		    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+			justify-content: center;
+			align-items: center;
+		}
+
+		/* modal_custom Content/Box */
+		.modal_custom-content {
+		    background-color: black;
+		    margin: 20% auto; /* 15% from the top and centered */
+		    padding: 40px;
+		    border: 1px solid #888;
+		    /*max-width: 80%;  Could be more or less, depending on screen size */
+		    /*min-width: 60%;*/
+		}
+		.modal_custom-header-line {
+			/*width: */
+			display: inline-block;
+		}
+	</style>
+
+	<!-- JavaScript for modal_custom -->
+	<script type="text/javascript">
+		function displayDetailedInfo(epoh_date, pk, element){
+
+			var month_names = new Array("January", "February", "March",
+			"April", "May", "June", "July", "August", "September",
+			"October", "November", "December");
+
+			//Required in JavaScript
+			s = epoh_date.toString() + "000";
+
+			//Getting date from unixEpoh
+			date = new Date(parseInt(s))
+			date = date.getDate().toString() + "-" + month_names[date.getMonth()] + "-" + date.getFullYear()
+
+			title_node = element.childNodes[1]
+			title = title_node.innerHTML;
+
+			// console.log(title);
+
+			amount_node = element.childNodes[3];
+			amount = amount_node.innerHTML;
+
+			var modal_update_button = document.getElementById('modal_update_button');
+			modal_update_button.innerHTML =
+							//Using ard link and not url reverse_lazy
+							"<a style='color:white;' href = '/main/update/" + pk + "'> Update</a>"
+
+
+			var modal_title = document.getElementById('modal_title');
+
+			var modal_amount = document.getElementById('modal_amount');
+
+
+			var modal_content_date = document.getElementById('modal_content_date');
+
+			var modal_content_account = document.getElementById('modal_content_account');
+
+			//Storing JSON from special JSON object passed using context
+			//Getting date from unixEpoh
+			//Required in JavaScript
+			s = epoh_date.toString() + "000";
+
+			date = new Date(parseInt(s))
+
+		    day = date.getDate();
+		    month = date.getMonth() + 1;
+		    year = date.getFullYear();
+
+		    //month returns 3 not 03
+		    if(month < 10)
+		    {
+		    	month = "0" + month.toString();
+		    }
+
+		    //day returns 3 not 03
+		    if(day < 10)
+		    {
+		    	day = "0" + day.toString();
+		    }
+
+		    date = year.toString()  + "-" + month + "-" + day;
+
+		    {% if expenses_json %}
+				expenses_array = JSON.parse('{{ expenses_json|escapejs }}')
+
+				// console.log(expenses_array);
+
+				// console.log(date);
+
+				s = expenses_array["date_wise_expenses"][date];
+
+				console.log(s);
+
+				x = s['expenses'][pk];
+				description = x.description;
+				amount = x.amount;
+				console.log("Amount = " + amount)
+
+				account = x.account;
+				console.log("account = " + account)
+
+				modal_title.innerHTML = x.title;
+
+				modal_amount.innerHTML = "(Rs "  + x.amount + ")";
+
+				description = description.replace(/(?:\r\n|\r|\n)/g, '<br>');
+
+				console.log(description)
+
+				if(description == "")
+				{
+					document.getElementById('modal_content_description').innerHTML =
+							"No Description";
+				}
+				else{
+					document.getElementById('modal_content_description').innerHTML =
+							description;
+				}
+			{% endif %}
+
+			var modal_cancel_button = document.getElementById('modal_cancel_button');
+			modal_cancel_button.onclick = function() {
+				modal_custom.style.display = "none";
+			}
+
+			// Get the modal_custom.
+			var modal_custom = document.getElementById('mymodal_custom');
+
+				modal_custom.style.display = "flex";
+
+			// When the user clicks anywhere outside of the modal_custom, close it
+			window.onclick = function(event) {
+				// console.log(event);
+			    if (event.target == modal_custom) {
+			        modal_custom.style.display = "none";
+			    }
+			}
+
+			$(document).keydown(function(event) {
+				if (event.keyCode == 27) {
+					$('#mymodal_custom').hide();
+				}
+			});
+		}
+	</script>
+
+{% endblock %}
