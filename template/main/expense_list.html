@@ -3,6 +3,10 @@
 
 {% block title_block %}
 	<title>Expense List</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+	<script src="https://unpkg.com/jspdf-autotable@2.3.1/dist/jspdf.plugin.autotable.js"></script>
+
+
 {% endblock %}
 
 
@@ -61,6 +65,13 @@
 				/*background-color: #e1ebf5;*/
 				background-color: #d7e8f9;
 			}
+			.new_add{
+    			border: 1px solid black;
+    			float:left;
+    			background-color: #d7e8f9;
+    			color: black;
+    			border-radius: 3px;
+			}
 			.new_add:hover{
 				background-color: whitesmoke;
 				cursor: pointer;
@@ -82,6 +93,18 @@
 				border-left: none;
 				background-color: rgb(164, 197, 243);
 			}
+
+			.dropdown_button{
+    			background-color: rgb(164, 197, 243);
+    			color: black;
+    			cursor: pointer;
+    			border-radius:0px;
+    			border: 1px solid black;
+    			box-shadow: 3px 3px 3px #dbe8fc;
+    		}
+    		.header_total{
+    		    float:right;
+    		}
 
 			{% if query %}
 				#main_heading{
@@ -123,8 +146,19 @@
 								{% endif %}
 								t += {{ e.amount }};
 							{% endfor %}
-									a = "<tr><th style = 'text-align:right'>Total: </th><td><strong>Rs " + t + "</strong></td></tr>"
-									$("#{{ date|date:"U" }}_table").append(a);
+    								a = "<tr><th style = 'text-align:right'>Total: </th><td><strong>Rs " + t + "</strong></td></tr>"
+    								$("#{{ date|date:"U" }}_table").append(a);
+    								$('#{{ date|date:"U" }}_header_total').html("Rs " + t);
+
+
+    						if(t > 250){
+    						    $("#{{ date|date:"U" }}_table").css("background-color", "rgb(255, 103, 103)");
+    						    $("#{{ date|date:"U" }}_dropdown_button").css({"background-color": "#ff3333", "color": "white"});
+    						    $("#{{ date|date:"U" }}").css({"background-color": "red", "color": "whitesmoke",
+    						                                    "border-bottom-color": "white", "border-right-color": "white",
+    						                                    "border-top-color": "white", "border-left-color": "white"});
+
+    						}
 
 							// Hiding/Unhiding the tables as per the page type.
 							{% if query %}
@@ -190,6 +224,107 @@
 			}
 	    </script>
 
+        <script type="text/javascript">
+			function generate() {
+				var month_names = new Array("January", "February", "March",
+				"April", "May", "June", "July", "August", "September",
+				"October", "November", "December");
+				tableObjects = document.getElementsByTagName('table');
+				var tableIdArray = []
+				var previousY = 0
+				var doc = new jsPDF('p', 'pt');
+				//Creating array of table ID's.
+				for (var i = 0 ; i < tableObjects.length ; i++)
+				{
+					xx = i+1
+					indexOfUnderscore = tableObjects[i].id.indexOf("_");
+					tableIdArray[i] = tableObjects[i].id.toString().slice(0, indexOfUnderscore);
+					//Required in JavaScript
+					s = tableIdArray[i] + "000";
+					x = tableIdArray[i];
+					//Getting date from unixEpoh
+					date = new Date(parseInt(s))
+					s = date.getDate().toString() + "-" + month_names[date.getMonth()] + "-" + date.getFullYear()
+					if (i == 0)
+					{
+						endDate = s;
+					}
+					if(i == tableObjects.length - 1)
+					{
+						startDate = s;
+					}
+				}
+				doc.setFontSize(12);
+				doc.setTextColor(40);
+				d = new Date()
+				userDetails = " Downloaded by {{ user.first_name }} {{ user.last_name }} on " + d.getDate().toString() + "-" + month_names[d.getMonth()] + "-" + d.getFullYear() + " at " + d.toLocaleTimeString()
+				doc.text(userDetails , 40, 30);
+				doc.setFontSize(17);
+				doc.setTextColor(40);
+				message = "Expenses Report from " + startDate + " to " + endDate
+				doc.text(message , 40, 55);
+				for (var i = 0 ; i < tableObjects.length ; i++)
+				{
+					doc.setFontSize(5);
+					//Required in JavaScript
+					s = tableIdArray[i] + "000";
+					x = tableIdArray[i];
+					//Getting date from unixEpoh
+					date = new Date(parseInt(s))
+					s = date.getDate().toString() + "-" + month_names[date.getMonth()] + "-" + date.getFullYear()
+					id = x + "_table"
+					pageNumberBeforeTablePrinting = doc.internal.getCurrentPageInfo().pageNumber
+					var header = function(data) {
+						doc.setFontSize(13);
+						doc.setTextColor(40);
+						doc.setFontStyle('normal');
+						if (i == 0){
+							doc.text(s , data.settings.margin.left, previousY + 80);
+						}
+						else{
+							if(doc.internal.getCurrentPageInfo().pageNumber != pageNumberBeforeTablePrinting)
+							{
+								previousY = 0
+								doc.text(s , data.settings.margin.left, previousY + 50);
+							}
+							else
+							{
+								doc.text(s , data.settings.margin.left, previousY + 50);
+							}
+						}
+					};
+					var options = {
+						theme: 'grid',
+						//Auto paggination makes header text print twice on the same and the following page.
+						margin: { top: 60 },
+
+						//startY overrides margin top, startY is used when auto paggination does not occur.
+						startY: previousY + 60,
+						pageBreak: "avoid",
+						addPageContent: header,
+						//WRAP CELLS ACCORDING TO TEST LENGTH.
+						// styles: {overflow: 'hidden', columnWidth: 'wrap'},
+						// columnStyles: {text: {columnWidth: 'auto'}}
+						drawCell: function(cell, data) {
+							var rows = data.table.rows;
+							if (data.row.index == rows.length - 1) {
+								doc.setTextColor("green");
+								doc.setFillColor(220, 220, 220);
+							}
+						}
+					};
+					if (i == 0)
+					{
+						options.startY = previousY + 90;
+					}
+
+					var res = doc.autoTableHtmlToJson(document.getElementById(id));
+					doc.autoTable(res.columns, res.data, options);
+					previousY = doc.autoTable.previous.finalY;
+				}
+				doc.save("ExpensesList_" + startDate + "_to_" + endDate + ".pdf");
+			}
+	    </script>
 
     	<p id="main_heading">
     		EXPENSES LIST
@@ -207,7 +342,7 @@
 		</form>
 
 		<!-- Uncomment to get PDF functionality -->
-		<!-- <button class="container-fluid btn btn-primary" style="height: 30px; padding: 0" onClick ="generate()">Download list as PDF</button> -->
+		 <button class="container-fluid btn btn-primary" style="height: 30px; padding: 0" onClick ="generate()">Download list as PDF</button>
 
 		<!-- <hr> -->
 
@@ -241,8 +376,8 @@
 		</p>
 
 		{% for date, expense_data in regrouped_expense_list %}
-			<div class="btn btn-block" id = "{{ date|date:'U' }}_dropdown_button" style="background-color: rgb(164, 197, 243); color: black; cursor: pointer; border-radius:0px; border: 1px solid black; box-shadow: 3px 3px 3px #dbe8fc;" onclick="toggle_table(event, this)">
-				<span class="new_add" id="{{ date|date:"U" }}" style="border: 1px solid black; float:left;background-color: #d7e8f9; color: black; border-radius: 3px;" onclick="add_for_date(event, this)">
+			<div class="btn btn-block dropdown_button" id = "{{ date|date:'U' }}_dropdown_button"  onclick="toggle_table(event, this)">
+				<span class="new_add" id="{{ date|date:"U" }}" onclick="add_for_date(event, this)">
 						<span style="padding-left: 6px; padding-right: 6px;">Add</span>
 				</span>
 
@@ -251,6 +386,8 @@
 				</div>
 
 				<span id="{{ date|date:"U" }}_p" style="padding-left: 10px;">+</span>
+
+				<span class="header_total" id="{{ date|date:"U" }}_header_total">Rs </span>
 
 			</div>
 
