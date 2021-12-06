@@ -1,0 +1,54 @@
+{% extends 'main/base.html' %}
+{% load bootstrap4 %}
+
+{% block title_block %}
+<title>Category List</title>
+<style type="text/css">
+		input, textarea{/*
+			border-radius: 3px;
+			border-width: 1px;*/
+			padding-right: 10px;
+		}
+		#id_title, #id_amount
+		{
+			width: 100%
+		}
+
+		@media screen and (max-width: 992px){
+			th, td
+			{
+				display: block;
+				min-width: 100%;
+				padding-top: 0;
+			}
+
+			td
+			{
+				padding-bottom: 10px
+			}
+		}
+
+
+</style>
+{% endblock %}
+
+
+{% block body_block %}
+<body>
+
+<p style="font-size: 25px">Category Wise List</p>
+
+<form method="POST">
+    {% csrf_token %}
+    {% for category in categories_with_expenses %}
+        <h4>{{ category.title }} ({{ category.budget }})</h4>
+        <ul>
+            {% for expense in category.expense_set.all %}
+            <li>{{ expense.title }} - Rs {{ expense.amount }}</li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+</form>
+</body>
+</html>
+{% endblock %}

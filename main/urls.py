@@ -7,22 +7,23 @@ app_name = "main"
 urlpatterns = [
 
 	# Registration
-	path('register/',  views.UserRegistration.as_view(), name = "user_registration"),
-	path('registration_success/', views.registration_success, name = "registration_success"),
+	path('register/',  views.UserRegistration.as_view(), name="user_registration"),
+	path('registration_success/', views.registration_success, name="registration_success"),
 
 	# Login
-	path('login/', views.user_login, name = "user_login"),
+	path('login/', views.user_login, name="user_login"),
 
-	path('logout/', views.user_logout, name = "user_logout"),
+	path('logout/', views.user_logout, name="user_logout"),
 
 	# Manage Expenses
-	path('add/', views.ExpenseCreateView.as_view(), name = "add_expense"),
-	path('add/<int:date>/', views.ExpenseCreateViewWithDate.as_view(), name = "add_expense"),
-	path('update/<int:pk>/', views.ExpenseUpdateView.as_view(), name = "expense_update"),
-	path('delete/<int:pk>/', views.ExpenseDeleteView.as_view(), name = "expense_delete"),
+	path('add/', views.ExpenseCreateView.as_view(), name="add_expense"),
+	path('add/<int:date>/', views.ExpenseCreateViewWithDate.as_view(), name="add_expense"),
+	path('categories/', views.CategoryListView.as_view(), name="category_add"),
+	path('update/<int:pk>/', views.ExpenseUpdateView.as_view(), name="expense_update"),
+	path('delete/<int:pk>/', views.ExpenseDeleteView.as_view(), name="expense_delete"),
 	# path('filter/', views.ExpenseListView.as_view(), name="filter"),
 	path('filter_by_date/', views.filter_by_date, name="filter_by_date"),
-	path('list/', views.ExpenseListView.as_view(), name = "expense_list"),
+	path('list/', views.ExpenseListView.as_view(), name="expense_list"),
 
 	# Manage Account
 	path('forgot_password/', views.ForgotPassword, name = "forgot_password"),
