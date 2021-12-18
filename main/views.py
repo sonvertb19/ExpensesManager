@@ -4,7 +4,6 @@ from django.shortcuts import render
 from django.views.generic.edit import CreateView, DeleteView
 from django.views.generic import ListView, UpdateView, DetailView
 from . import models
-from django import forms as djangoForms
 from django.urls import reverse_lazy
 
 from main.forms import FilterForm, ExpenseCreateForm, FreshStartForm
@@ -239,7 +238,6 @@ class CategoryListView(LoginRequiredMixin, ListView):
             categories_with_expenses.update({
                 c: c.expense_set
             })
-        print(categories_with_expenses)
         context['categories_with_expenses'] = categories_with_expenses
         return context
 
@@ -248,17 +246,56 @@ class CategoryListView(LoginRequiredMixin, ListView):
     #     categories = models.Category.objects.all()
     #     print(categories)
 
+
 # ref == 'new'
 class ExpenseCreateView(LoginRequiredMixin, CreateView):
     model = models.Expense
     form_class = ExpenseCreateForm
 
-    # dictionary = { 'date': datetime.now() }
-    # initial = dictionary
-
     def get_initial(self):
         initial = super().get_initial()
         initial.update({'date': datetime.now()})
+
+        expense_title = self.request.GET.get('title')
+        number_of_packets = self.request.GET.get('number_of_packets')
+
+        if expense_title and number_of_packets:
+            category = models.Category.objects.get(title=expense_title)
+            expense_amount = int(number_of_packets) * 21
+            initial.update(
+                {
+                    'title': expense_title,
+                    'amount': expense_amount,
+                    'description': number_of_packets + " packets double toned milk",
+                    'category': category
+                 }
+            )
+
+        vegetable_title = self.request.GET.get('vegetable_title')
+        vegetable_unit_price = self.request.GET.get('vegetable_unit_price')
+        vegetable_quantity = self.request.GET.get('vegetable_quantity')
+        vegetable_total_amount = self.request.GET.get('vegetable_total_amount')
+
+        if vegetable_title and vegetable_unit_price and vegetable_quantity and vegetable_total_amount:
+            category = models.Category.objects.get(title="Vegetables")
+            initial.update(
+                {
+                    'title': vegetable_title,
+                    'amount': vegetable_total_amount,
+                    'description': vegetable_quantity + " grams\nUnit Price: Rs " + vegetable_unit_price + " per Kg",
+                    'category': category
+                }
+            )
+        elif vegetable_title and vegetable_quantity and vegetable_total_amount:
+            category = models.Category.objects.get(title="Vegetables")
+            initial.update(
+                {
+                    'title': vegetable_title,
+                    'amount': vegetable_total_amount,
+                    'description': vegetable_quantity + " grams",
+                    'category': category
+                }
+            )
         return initial
 
     def form_valid(self, form):
@@ -286,18 +323,17 @@ class ExpenseCreateViewWithDate(LoginRequiredMixin, CreateView):
     model = models.Expense
     form_class = ExpenseCreateForm
 
-    # dictionary = { 'date': date }
-    # initial = dictionary
-
     def get_initial(self):
         initial = super().get_initial()
-
         date = self.kwargs.get('date')
-
-        print(datetime.now())
         date = datetime.fromtimestamp(date).strftime('%Y-%m-%d')
+        expense_title = self.request.GET.get('title')
+        if expense_title:
+            initial.update({'title': expense_title})
 
-        print(date)
+        expense_amount = self.request.GET.get('amount')
+        if expense_amount:
+            initial.update({'amount': expense_amount})
 
         initial.update({'date': date})
         return initial
@@ -412,7 +448,6 @@ class ExpenseListView(LoginRequiredMixin, ListView):
         # context.update(expenses_json)
         else:
             expenses = models.Expense.objects.filter(user=self.request.user, archived=False).order_by('-date')
-            print(expenses)
             if pay_acc:
                 context.update({'pay_acc': pay_acc})
                 account_object = models.Account.objects.get(pk=pay_acc)
@@ -461,19 +496,13 @@ def filter_by_date(request):
     if request.POST.get('start_date') and request.POST.get('end_date'):
         # If start_date and end_date exists
         formData = FilterForm(request.POST)
-        print(formData)
         if formData.is_valid():
             start_date = formData.cleaned_data['start_date']
             end_date = formData.cleaned_data['end_date']
-
-            print("data cleaned")
-
             # If start_date is more than end_date
             if end_date < start_date:
                 dictionaryForm = {'start_date': datetime.now(), 'end_date': datetime.now()}
                 form = FilterForm(initial=dictionaryForm)
-
-                print("start date greater error")
 
                 dictionary = make_dictionary(request)
                 dictionary.update({'form': form, 'error': "'Start Date' can not be more than 'End Date"})
@@ -481,13 +510,11 @@ def filter_by_date(request):
 
             else:
                 # Start and End Date OK.
-                print("Start and End Date OK.")
                 # Now check if query exists
                 if request.GET.get('query'):
                     # Filter using query also.
 
                     query = request.GET.get('query')
-                    print("query exists")
 
                     dictionary = make_dictionary(request)
                     x = models.Expense.objects.filter((Q(title__icontains=query) | Q(description__icontains=query)),
@@ -497,13 +524,9 @@ def filter_by_date(request):
                 else:
                     # i.e. no query
                     # Filter without query.
-                    print("query does not exist")
                     dictionary = make_dictionary(request)
                     x = models.Expense.objects.filter(date__gte=start_date, date__lte=end_date, user=request.user,
                                                       archived=False).order_by('-date')
-
-        print(start_date)
-        print(end_date)
         dictionary.update({'expense_list': x, 'start_date': start_date, 'end_date': end_date})
 
         expenses_json = get_expenses_in_json(x)
@@ -538,7 +561,6 @@ class UserRegistration(CreateView):
     def form_valid(self, form):
         super().form_valid(form)
         username = form.cleaned_data.get('username')
-        print(username)
         user = User.objects.get(username=username)
         create_or_update_code(user)
         models.Account.objects.create(user=user, title="Cash")
@@ -563,7 +585,6 @@ def create_or_update_code(user):
         user_email_confirmation.save()
 
     except ObjectDoesNotExist:
-        print("ObjectDoesNotExist")
         models.UserEmailConfirmation.objects.create(user=user, code=x, confirmed=False)
 
 
@@ -623,9 +644,6 @@ def ForgotPassword(request):
 
         if email_match:
             # Email Match Found
-            print("email match")
-            print(email_match)
-
             create_or_update_code(email_match)
 
             x = models.UserEmailConfirmation.objects.get(user=email_match)
@@ -645,7 +663,6 @@ def ForgotPassword(request):
             )
 
             email = email_match.email
-            print("Email found in email match: " + str(email))
 
             return render(request, "main/forgot_password_email_or_username_match.html",
                           context={'message': "Hurray, we found a matching account!", 'message_color': 'green',
@@ -658,8 +675,6 @@ def ForgotPassword(request):
 
             if username_match:
                 # Username Match Found
-                print("username match")
-                print(username_match)
 
                 create_or_update_code(username_match)
 
@@ -680,7 +695,6 @@ def ForgotPassword(request):
                 )
 
                 email = username_match.email
-                print("Email found in username match: " + str(email))
 
                 return render(request, "main/forgot_password_email_or_username_match.html",
                               context={'message': "Hurray, we found a matching account!", 'message_color': 'green',
@@ -699,25 +713,14 @@ def confirm_password_reset_code(request):
     if request.method == "POST":
 
         email = request.POST.get('email')
-        print("Email catched in confirm_password_reset_code: " + str(email))
 
         code_entered = request.POST.get('code_entered')
 
-        print("Code recieved from POST: " + str(code_entered))
-
         u = models.User.objects.get(email=email)
-
-        print("User found from email: " + str(u))
 
         email = str(u.email)
 
-        print("Email found from user: " + str(email))
-
         x = models.UserEmailConfirmation.objects.get(user=u)
-
-        print("Confirmation Code from database: " + str(x.code))
-
-        print("type of x.code = " + str(type(x.code)))
 
         if x.code == int(code_entered):
             # Show password Reset Page.
@@ -749,7 +752,6 @@ def reset_password(request):
         confirm_new_password = request.POST.get('pass2')
 
         if new_password != confirm_new_password:
-            print("PASSWORDS DO NOT MATCH")
 
             context.update({'error': "Entered passwords do not match.", 'email': email})
 
@@ -793,7 +795,6 @@ def ChangePassword(request):
         confirm_new_password = request.POST.get('pass3')
 
         if new_password != confirm_new_password:
-            print("PASSWORDS DO NOT MATCH")
 
             context.update({'error': "New passwords do not match."})
 
@@ -808,7 +809,6 @@ def ChangePassword(request):
             return HttpResponseRedirect(reverse('main:password_changed'))
 
         else:
-            print("Else")
 
             context.update({'error': "Invalid Current Password"})
 
@@ -849,7 +849,6 @@ def FreshStart(request):
             total_amount = 0
 
             for x in e:
-                # print(x.date)
                 total_amount = total_amount + x.amount
                 total_expenses_arcihved = total_expenses_arcihved + 1
 

@@ -18,14 +18,10 @@
 		<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="crossorigin="anonymous"></script>
 
 		<style type="text/css">
-
-		body{
-			color: black!important;
-			background-color: whitesmoke!important;
-		}
-
-
-
+			body{
+				color: black!important;
+				background-color: whitesmoke!important;
+			}
 			table, th, td{
 				/*border:solid black 1px;*/
 				padding-left: 5px;
@@ -48,8 +44,7 @@
 			.hover_cursor:hover{
 				cursor: pointer;
 			}
-			.main_table_div{
-				/*background-color: #e1ebf5;*/
+			.main_table_div, #quick_add_div{
 				box-shadow: 3px 3px 3px #dbe8fc;
 				border-radius: 0px;
 				border: 1px solid black;
@@ -59,10 +54,7 @@
 				border-top: none;
 			}
 			.main_table{
-				/*border-top: 0;*/
 				width: 100%;
-				/*background-color: white;*/
-				/*background-color: #e1ebf5;*/
 				background-color: #d7e8f9;
 			}
 			.new_add{
@@ -105,6 +97,22 @@
     		.header_total{
     		    float:right;
     		}
+			#quick_add_div{
+				margin-bottom: 20px;
+				border-top: 1px solid black;
+				padding: 10px;
+			}
+			#editQuantityButtonsDiv{
+			    display: block;
+			}
+			#vegetable_amount_edit_manually{
+			    color: blue;
+			    text-decoration: underline;
+			}
+			#vegetable_amount_edit_manually:hover{
+			    cursor: pointer;
+			}
+
 
 			{% if query %}
 				#main_heading{
@@ -326,6 +334,45 @@
 			}
 	    </script>
 
+        <!-- Function for Quick Add Vegetables Modal -->
+        <script type="text/javascript">
+            function changeQuantity(buttonElement){
+                var buttonText = buttonElement.innerHTML;
+                var addOrSubtract = buttonText[0];
+                var currentQuantity = parseInt($('#quickAddVegetables').find('#vegetable_quantity').val());
+                var newQuantity = 0;
+                if(addOrSubtract == '+'){
+                    newQuantity = currentQuantity + parseInt(buttonText.split()[0].substr(1));
+                }
+                else if(addOrSubtract == '-'){
+                    newQuantity = currentQuantity - parseInt(buttonText.split()[0].substr(1));
+                }
+
+                if(newQuantity <= 0){
+                    var message = "Can not be subtracted since the quantity will be less or equal to 0";
+                    newQuantity = currentQuantity;
+                    alert(message);
+                }
+                $('#quickAddVegetables').find('#vegetable_quantity').val(newQuantity);
+
+                if(Number.isInteger(parseInt($('#quickAddVegetables').find('#vegetable_unit_price').val()))){
+	                updateVegetableTotal();
+	            }
+            }
+            function updateVegetableTotal(){
+                let quantity = parseInt($('#quickAddVegetables').find('#vegetable_quantity').val());
+                let unit_price = parseInt($('#quickAddVegetables').find('#vegetable_unit_price').val());
+
+
+				$('#quickAddVegetables').find('#vegetable_total_amount').val(quantity * unit_price/1000);
+            }
+            function edit_manually(){
+                $('#quickAddVegetables').find('#vegetable_total_amount').prop("readonly", false);
+                $('#quickAddVegetables').find('#vegetable_unit_price').val("0");
+                $('#quickAddVegetables').find('#vegetable_unit_price').prop("disabled", true);
+            }
+        </script>
+
     	<p id="main_heading">
     		EXPENSES LIST
 			<!--Only shown when query exists.-->
@@ -336,17 +383,28 @@
 
 		<form id="search_form" action="{% url 'main:expense_list' %}" method="GET">
 			<div id="search_div" class="input-group input-group-sm mb-3">
-				<input type="text" id="search_bar" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="query" required>
-				<input type = "submit" id="search_button" class=" btn input-group-text"id="inputGroup-sizing-sm" value = "Search">
+				<input type="text" id="search_bar"
+					   class="form-control"
+					   aria-label="Small"
+					   aria-describedby="inputGroup-sizing-sm"
+					   name="query"
+					   required
+				>
+				<input type = "submit"
+					   id="search_button"
+					   class=" btn input-group-text"
+					   id="inputGroup-sizing-sm"
+					   value = "Search"
+				>
 			</div>
 		</form>
 
-		<!-- Uncomment to get PDF functionality -->
-		 <button class="container-fluid btn btn-primary" style="height: 30px; padding: 0" onClick ="generate()">Download list as PDF</button>
-
-		<!-- <hr> -->
-
-
+		<!-- PDF functionality -->
+		<button class="container-fluid btn btn-primary"
+				style="height: 30px; padding: 0"
+				onClick ="generate()">
+			Download list as PDF
+		</button>
 
 		{% if not regrouped_expense_list %}
 			<!-- If query exists and no regrouped list formed -->
@@ -362,18 +420,203 @@
 			{% if grand_total and grand_total != 0 %}
 				<p>GrandTotal is <strong> Rs {{ grand_total }} </strong></p>
 			{% else %}
-
-			    <!-- <p id="monthly_total_header">Click <span style="color: blue;" onclick='showMonthlyTotal()'>here </span> to view monthly total.</p> -->
-		    	<!-- <div id="monthly_total" style="display: none;"> -->
-		    		<!-- <ol> -->
-			    		<!-- {% for x in month_wise_total %} -->
-			    			<!-- <li><strong>{{ x.month }}</strong> : Rs <strong>{{ x.amount }}</strong></li> -->
-			    		<!-- {% endfor %} -->
-		    		<!-- </ol> -->
-		    	<!-- </div> -->
-
 			{% endif %}
 		</p>
+
+		<div id="quick_add_div">
+			<h5>Quick Add</h5>
+			<div class="btn-group">
+				<button type="button" class="btn btn-info mr-2"data-toggle="modal" data-target="#quickAddMilk">
+					Milk
+				</button>
+				<!-- Modal for Quick Add: Milk -->
+				<div class="modal fade" id="quickAddMilk" tabindex="-1" role="dialog">
+					<div class="modal-dialog modal-dialog-centered" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="quickAddMilkTitle">Quick Add: Milk</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<form action="{% url 'main:add_expense' %}" method="get">
+									<input name="title" hidden value="Milk">
+									<div class="form-group">
+										<label for="number_of_packets">Select number of packets</label>
+										<select id="number_of_packets" name="number_of_packets" class="custom-select">
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+											<option value="6">6</option>
+											<option value="7">7</option>
+											<option value="8">8</option>
+											<option value="9">9</option>
+											<option value="10">10</option>
+										</select>
+									</div>
+									<input style="float: right" type="submit" class="btn btn-success" value="Add">
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="btn-group">
+					<button class="btn btn-info dropdown-toggle mr-2"
+                            type="button"
+                            id="quickAddVegetablesButton"
+                            data-toggle="dropdown">
+						Vegetables
+					</button>
+					<div class="dropdown-menu">
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Arvi">Arvi
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Brinjal">Brinjal
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Cabbage">Cabbage
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Capsicum">Capsicum
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Carrots">Carrots
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Cauliflower">Cauliflower
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Corn">Corn
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Garlic">Garlic
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Ginger">Ginger
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Lettuce">Lettuce
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Methi">Methi
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Mushroom">Mushroom
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Onions">Onions
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Peas">Peas
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Potatoes">Potatoes
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Pumpkin">Pumpkin
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Radish">Radish
+						</button>
+						<button class="dropdown-item" data-toggle="modal" data-target="#quickAddVegetables"
+								data-vegetable-name="Tomatoes">Tomatoes
+						</button>
+					</div>
+
+					<!-- Modal for quickAddVegetables -->
+					<div class="modal fade" id="quickAddVegetables" tabindex="-1" role="dialog">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="quickAddVegetablesLabel">Quick Add: Vegetables</h5>
+									<button type="button" class="close" data-dismiss="modal">
+										<span>&times;</span>
+									</button>
+								</div>
+								<div class="modal-body">
+                                    <form action="{% url 'main:add_expense' %}" method="get">
+                                        <div class="form-group">
+                                            <input class="form-control" id="vegetable_title" name="vegetable_title" hidden>
+                                            <label for="vegetable_unit_price">Unit Price (per Kg)</label>
+                                            <input class="form-control" id="vegetable_unit_price"
+                                                   type="number"
+                                                   name="vegetable_unit_price"
+                                                   placeholder="per Kg"
+                                                   onkeyup="updateVegetableTotal()"
+                                                   min="1"
+                                                   required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="vegetable_quantity">Quantity (in grams)</label>
+                                            <input class="form-control"
+                                                   id="vegetable_quantity"
+                                                   name="vegetable_quantity"
+                                                   value="1000" readonly>
+                                            <div id="editQuantityButtonsDiv" class="my-3">
+                                                <button type="button"
+                                                        id="add500grams"
+                                                        class="btn"
+                                                        onclick="changeQuantity(this)">+500 g
+                                                </button>
+                                                <button type="button"
+                                                        id="subtract500grams"
+                                                        class="btn"
+                                                        onclick="changeQuantity(this)">-500 g
+                                                </button>
+                                                <button type="button"
+                                                        id="add250grams"
+                                                        class="btn"
+                                                        onclick="changeQuantity(this)">+250 g
+                                                </button>
+                                                <button type="button"
+                                                        id="subtract250grams"
+                                                        class="btn"
+                                                        onclick="changeQuantity(this)">-250 g
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="vegetable_total_amount">Total Amount</label>
+                                            <input class="form-control"
+                                                   id="vegetable_total_amount"
+                                                   name="vegetable_total_amount"
+                                                   value="0"
+                                                   readonly>
+                                            <small id="vegetable_amount_edit_manually"
+                                                   class=""
+                                                   onclick="edit_manually()">Edit Manually
+                                            </small>
+                                        </div>
+                                        <input style="float: right;" type="submit" class="btn btn-success" value="Add">
+                                    </form>
+                                </div>
+							</div>
+						</div>
+					</div>
+
+					<script type="text/javascript">
+						jQuery.noConflict();
+						$('#quickAddVegetables').on('show.bs.modal', function (event) {
+							var button = $(event.relatedTarget);
+							var vegetableName = button.data('vegetableName');
+							var modal = $(this);
+							modal.find('.modal-title').text('Quick Add: ' + vegetableName);
+							modal.find('#vegetable_title').val(vegetableName);
+						})
+						jQuery.noConflict();
+						$('#quickAddVegetables').on('hidden.bs.modal', function (e) {
+						    $('#quickAddVegetables').find('#vegetable_total_amount').prop("readonly", true);
+                            $('#quickAddVegetables').find('#vegetable_total_amount').val(0);
+                            $('#quickAddVegetables').find('#vegetable_unit_price').val("");
+                            $('#quickAddVegetables').find('#vegetable_unit_price').prop("disabled", false);
+						})
+					</script>
+				</div>
+			</div>
+		</div>
 
 		{% for date, expense_data in regrouped_expense_list %}
 			<div class="btn btn-block dropdown_button" id = "{{ date|date:'U' }}_dropdown_button"  onclick="toggle_table(event, this)">

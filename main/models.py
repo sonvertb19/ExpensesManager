@@ -69,3 +69,4 @@ class Group(models.Model):
         self.save()
 
 # class Member(models.Model):
+
