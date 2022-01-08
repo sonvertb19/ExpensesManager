@@ -35,6 +35,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.views.decorators.csrf import csrf_exempt
 
 
 def make_dictionary(request):
@@ -829,6 +830,37 @@ def description_api(request, **kwargs):
         return JsonResponse({"pk": pk, "description": d})
     else:
         return JsonResponse({"error_code": "Error 403", "error_descrition": "Unauthorised User"})
+
+
+@csrf_exempt
+def alexa_add_expenses_without_login(request, **kwargs):
+    print(request)
+    print(request.POST)
+
+    if request.method == 'GET':
+        return JsonResponse({'message': "GET requests not allowed"}, status=405)
+
+    title = request.POST["title"]
+    amount = request.POST["amount"]
+    date = request.POST["date"]
+    
+    parsed_date = datetime.strptime(date, "%Y-%m-%d")
+    print(parsed_date)
+
+    alexa_category = models.Category.objects.get(title="ADDED_USING_ALEXA")
+    home_user = models.User.objects.get(username="bhardwaj_home")
+    cash_account = models.Account.objects.get(title="Cash",user=home_user)
+
+    expense = models.Expense.objects.create(title=title,
+                                            amount=amount,
+                                            date=parsed_date,
+                                            category=alexa_category,
+                                            user=home_user,
+                                            account=cash_account)
+
+    expense.save()
+
+    return JsonResponse({'message': "OK"}, status=200)
 
 
 def password_changed(request):
