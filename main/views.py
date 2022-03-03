@@ -262,7 +262,7 @@ class ExpenseCreateView(LoginRequiredMixin, CreateView):
 
         if expense_title and number_of_packets:
             category = models.Category.objects.get(title=expense_title)
-            expense_amount = int(number_of_packets) * 21
+            expense_amount = int(number_of_packets) * 22
             initial.update(
                 {
                     'title': expense_title,
